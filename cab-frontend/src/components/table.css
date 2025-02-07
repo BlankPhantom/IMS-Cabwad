@@ -1,0 +1,87 @@
+/* Custom table styling with increased specificity */
+.tableStyle {
+  background-color: #eaf3e8 !important;
+  color: #333 !important;
+  border: 2px solid #8d8b29 !important;
+  width: 100%; /* Ensure the table takes up the full width */
+  overflow-x: auto; /* Add horizontal scroll for smaller screens */
+}
+
+/* Adjust font size and padding for smaller screens */
+@media (max-width: 768px) {
+  .tableStyle {
+    font-size: medium; /* Decrease font size for smaller screens */
+  }
+
+  .tableStyle th,
+  .tableStyle td {
+    padding: 6px; /* Reduce padding for better fit */
+  }
+
+  .tableStyle th {
+    font-size: medium; /* Adjust header font size */
+  }
+}
+
+/* Adjustments for very small screens */
+@media (max-width: 480px) {
+  .tableStyle {
+    font-size: small; /* Further decrease font size */
+  }
+
+  .tableStyle th,
+  .tableStyle td {
+    padding: 4px; /* Further reduce padding */
+  }
+}
+
+/* Styles for table header */
+.tableStyle th {
+  background-color: #c0d0c7 !important;
+  color: rgb(71, 71, 71) !important;
+  font-weight: bold;
+  font-size: 19px !important;
+  padding: 10px;
+  text-align: center; /* Center text */
+  vertical-align: middle; /* Align text vertically in the middle */
+  white-space: nowrap; /* Prevent text wrapping */
+}
+
+/* Styles for table cells */
+.tableStyle td {
+  text-align: center; /* Center the text */
+  vertical-align: middle; /* Align text in the middle vertically */
+  font-size: 18px !important; /* Smaller font size for a sleeker look */
+  line-height: 1 !important; /* Tighter line height */
+}
+
+/* Alternating row background color */
+.table-striped tbody tr:nth-of-type(odd) > * {
+  background-color: color-mix(in srgb, #f0efed 20%, white 100%) !important;
+}
+
+/* Style for buttons in the Actions column */
+.tableStyle .btn-success {
+  background-color: #71a872 !important;
+  border: none !important;
+}
+
+.tableStyle .btn-danger {
+  background-color: #ff5252 !important;
+  border: none !important;
+}
+
+.tableStyle .btn-success:hover,
+.tableStyle .btn-danger:hover {
+  opacity: 0.8 !important;
+}
+
+.tableStyle th,
+.tableStyle td {
+  border-right: 1px solid #6d6e6f !important; 
+}
+
+.tableStyle th:last-child,
+.tableStyle td:last-child {
+  border-right: none !important;
+}

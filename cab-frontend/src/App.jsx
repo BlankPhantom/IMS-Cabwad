@@ -1,13 +1,14 @@
-import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
+import React from 'react';
 import './App.css';
 import Login from './components/Login.jsx';
+import Masterlist from './components/Sections/MasterList.jsx';
+import DashBoard from './components/MainPages/DashBoard.jsx';
 
 const App = () => {
   return (
     <div>
-      <Login/>
+      <DashBoard/>
+      {/* <Login/> */}
     </div>
   );
 }
