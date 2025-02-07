@@ -4,7 +4,7 @@ from ims.models import Item, Classification, Measurement, Section, Purpose, Tran
 class ItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
-        fields = ('itemID', 'classificationID','itemName','itemQuantity','unitCost','totalCost')
+        fields = ('itemID', 'classificationID','measurementID','itemName','itemQuantity','unitCost','totalCost')
 
 class ClassificationSerializer(serializers.ModelSerializer):
     class Meta:
