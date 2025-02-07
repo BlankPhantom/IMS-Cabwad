@@ -5,7 +5,7 @@ import { Button, Container, Table, Col, Row } from "react-bootstrap";
 
 const BeginningBalance = () => {
     return (
-        <Container style={{ width: '80%' }} fluid className="d-flex flex-column justify-content-center mt-5">
+        <Container style={{ width: '90%' }} fluid className="d-flex flex-column justify-content-center mt-5">
             <Row>
                 <Col className="d-flex justify-content-end mt-3">
                     <input type="search" className="" placeholder="Search" style={{ width: '300px' }} />
@@ -24,7 +24,7 @@ const BeginningBalance = () => {
                         <th>Actions</th>
                     </thead>
                     <tbody>
-
+                        {/* DATA */}
                     </tbody>
                 </Table>
             </Row>

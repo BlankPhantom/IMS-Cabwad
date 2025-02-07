@@ -32,7 +32,7 @@ const RunningBalance = () => {
                         <th>Actions</th>
                     </thead>
                     <tbody>
-
+                        {/* DATA */}
                     </tbody>
                 </Table>
             </Row>

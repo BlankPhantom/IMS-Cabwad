@@ -34,12 +34,39 @@ html {
   margin: 0;
 }
 
-.loginbtn{
+.loginbtn {
   text-align: center;
 }
 
-.loglbl{
+.loglbl {
   color: rgb(71, 71, 71);
 }
 
+.genReport {
+  background-color: blanchedalmond !important;
+}
 
+/* Navbar Link Styling */
+.nav-link-custom {
+  transition: color 0.3s ease-in-out !important;
+}
+
+.nav-link-custom:hover {
+  color: #ffcc00 !important; /* Change hover color */
+}
+
+/* Active Page Highlight */
+.active-link {
+  color: #ffcc00 !important;
+  font-weight: bold;
+  border-bottom: 3px solid #ffcc00; /* Optional underline */
+}
+
+/* Navbar on Small Screens */
+@media (max-width: 992px) {
+  .topNav .nav-link-custom {
+    text-align: center;
+    display: block;
+    padding: 10px;
+  }
+}
