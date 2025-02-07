@@ -9,13 +9,11 @@ import RunningBalance from "../Sections/RunningBalance";
 const DashBoard = () => {
     return (
         <div>
-            <TopNav/>
-            <Masterlist/>
-            {/* <BeginningBalance/> */}
-            {/* <Transactions/> */}
-            {/* <RunningBalance/> */}
-            {/* <MonthlyConsumption/> */}
-            {/* <SummaryReport/> */}
+            <TopNav />
+            <Container>
+                <Outlet /> {/* This will render the current page based on the route */}
+            </Container>
+            <CabFooter />
         </div>
     );
 };
