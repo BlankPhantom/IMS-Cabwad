@@ -10,10 +10,10 @@ const DashBoard = () => {
     return (
         <div>
             <TopNav/>
-            {/* <Masterlist/> */}
+            <Masterlist/>
             {/* <BeginningBalance/> */}
             {/* <Transactions/> */}
-            <RunningBalance/>
+            {/* <RunningBalance/> */}
             {/* <MonthlyConsumption/> */}
             {/* <SummaryReport/> */}
         </div>
