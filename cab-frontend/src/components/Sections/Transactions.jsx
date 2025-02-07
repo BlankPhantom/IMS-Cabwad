@@ -41,6 +41,14 @@ const Transactions = () => {
                     </tbody>
                 </Table>
             </Row>
+
+            <Row>
+                <Col className="d-flex justify-content-end mt-3">
+                    <Button >
+                        + Record New Transaction
+                    </Button>
+                </Col>
+            </Row>
         </Container>
     );
 };

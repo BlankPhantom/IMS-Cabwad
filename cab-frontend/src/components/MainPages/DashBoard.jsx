@@ -1,21 +1,17 @@
-import React, { useState } from "react";
-import { Row, Col, Container } from "react-bootstrap";
-import Masterlist from "../Sections/MasterList";
-import TopNav  from "../TopNav"
-import BeginningBalance from "../Sections/BeginningBalance";
-import Transactions from "../Sections/Transactions";
-import RunningBalance from "../Sections/RunningBalance";
+import React from "react";
+import { Outlet } from "react-router-dom";
+import { Container } from "react-bootstrap";
+import TopNav from "../TopNav";
+import CabFooter from "../CabFooter";
 
 const DashBoard = () => {
     return (
         <div>
-            <TopNav/>
-            {/* <Masterlist/> */}
-            {/* <BeginningBalance/> */}
-            {/* <Transactions/> */}
-            <RunningBalance/>
-            {/* <MonthlyConsumption/> */}
-            {/* <SummaryReport/> */}
+            <TopNav />
+            <Container>
+                <Outlet /> {/* This will render the current page based on the route */}
+            </Container>
+            <CabFooter />
         </div>
     );
 };
