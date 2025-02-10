@@ -2,10 +2,17 @@ import React from "react";
 import "../table.css";
 
 import { Button, Container, Table, Col, Row } from "react-bootstrap";
+import MonthYearPicker from "../MonthYearPicker";
 
 const BeginningBalance = () => {
     return (
         <Container style={{ width: '90%' }} fluid className="d-flex flex-column justify-content-center mt-5">
+            <Row>
+                <Col>
+                    < MonthYearPicker />
+                </Col>
+            </Row>
+
             <Row>
                 <Col className="d-flex justify-content-end mt-3">
                     <input type="search" className="" placeholder="Search" style={{ width: '300px' }} />

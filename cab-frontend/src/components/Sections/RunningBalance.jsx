@@ -2,10 +2,17 @@ import React from "react";
 import "../table.css";
 
 import { Button, Container, Table, Col, Row } from "react-bootstrap";
+import MonthYearPicker from "../MonthYearPicker";
 
 const RunningBalance = () => {
     return (
         <Container style={{ width: '90%' }} fluid className="d-flex flex-column justify-content-center mt-5">
+            <Row>
+                <Col>
+                    < MonthYearPicker />
+                </Col>
+            </Row>
+
             <Row>
                 <Col className="d-flex justify-content-end mt-3">
                     <input type="search" className="" placeholder="Search" style={{ width: '300px' }} />
@@ -23,7 +30,7 @@ const RunningBalance = () => {
                         <th>Return to Supplier</th>
                         <th>Transfer From Other Warehouse</th>
                         <th>Transfer to Other Warehouse</th>
-                        <th>Issued Qty.</th> 
+                        <th>Issued Qty.</th>
                         <th>Returned Qty.</th>
                         <th>Consumption</th>
                         <th>Available Stocks</th>
