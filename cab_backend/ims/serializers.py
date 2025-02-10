@@ -43,7 +43,7 @@ class TransactionSerializer(serializers.ModelSerializer):
 class RunningBalance(serializers.ModelSerializer):
     class Meta:
         model = RunningBalance
-        fields = ('runningBalID','classID','itemID','measureID','beginningBalance','purchasedFromSupp','returnToSupplier','transferFromWH','transferToWH','issuedQty','consumption','cost','totalCost',)
+        fields = ('runningBalID','classificationID','itemID','measurementID','beginningBalance','purchasedFromSupp','returnToSupplier','transferFromWH','transferToWH','issuedQty','consumption','cost','totalCost',)
 
 class MonthlyConsumptionSerializer(serializers.ModelSerializer):
     class Meta:

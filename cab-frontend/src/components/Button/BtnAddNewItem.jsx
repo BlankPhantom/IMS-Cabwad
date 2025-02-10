@@ -3,13 +3,8 @@ import { useState } from "react";
 import { API_ENDPOINTS } from "../../config";
 import { Button, Modal, Form } from "react-bootstrap";
 
-const BtnAddNewItem = () => {
+const BtnAddNewItem = ({fetchItems}) => {
     const [showModal, setShowModal] = useState(false);
-    const [formData, setFormData] = useState({
-        classification: 0,
-        measurement: 0,
-        itemName: "",   
-    });
     const [selectedClassification, setSelectedClassification] = useState('');
     const [classifications, setClassifications] = useState([]);
     const [selectedMeasurement, setSelectedMeasurement] = useState('');
@@ -51,58 +46,44 @@ const BtnAddNewItem = () => {
     const handleShow = () => setShowModal(true);
     const handleClose = () => {
         setShowModal(false);
-        setFormData({ classification: 0, measurement: 0 , itemName: "", }); // Reset form
     };
 
-    // Handle input changes
-    const handleChange = async(e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    }; 
-
     const handleMeasureChange = (e) => {
-        const selectedId = e.target.value;
+        const selectedId = parseInt(e.target.value, 10);
         setSelectedMeasurement(selectedId);
     };
     
     const handleClassificationChange = (e) => {
-        const selectedId = e.target.value;
+        const selectedId = parseInt(e.target.value, 10);
         setSelectedClassification(selectedId);
     };
 
     // Handle form submission
     const handleSubmit = async(e) => {
         e.preventDefault();
-        const formData = new FormData();
-        formData.append("itemName", e.target.itemName.value);
-        formData.append("classification", selectedClassification);
-        formData.append("measurement", selectedMeasurement);
-
-        // Log formData to console with value and type
-        for (let [key, value] of formData.entries()) {
-            console.log(`${key}: ${value} (type: ${typeof value})`);
-            // If you expect some values to be numbers, you can try to parse them
-            if (!isNaN(value)) {
-                console.log(`${key}: ${value} (parsed type: number)`);
-            } else {
-                console.log(`${key}: ${value} (parsed type: string)`);
-            }
-        }
+        const formData = {
+            itemName: e.target.itemName.value,
+            classificationID: selectedClassification,
+            measurementID: selectedMeasurement,
+        };
 
         try{
             const response = await fetch(API_ENDPOINTS.ADD_ITEM, {
                 method: "POST",
-                body: formData,
+                headers: {
+                    "Content-Type": "application/json", // Ensure the server knows it's JSON
+                },
+                body: JSON.stringify(formData), 
             });
 
             if (!response.ok) {
                 const errorData = await response.json();
                 alert("Failed to add item: " + errorData.detail);
-                console.log(errorData);
             }
             else {
                 handleClose(); // Close modal after submission
                 alert("Item added successfully!");
-                fetchItems(); // Fetch items again to display updated list
+                fetchItems();
             }
         } catch (e) {
             console.error("Error adding item:", e);
@@ -127,8 +108,6 @@ const BtnAddNewItem = () => {
                             <Form.Control
                                 type="text"
                                 name="itemName"
-                                value={formData.itemName}
-                                onChange={handleChange}
                                 required
                             />
                         </Form.Group>
