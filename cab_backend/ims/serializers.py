@@ -2,9 +2,18 @@ from rest_framework import serializers
 from ims.models import Item, Classification, Measurement, Section, Purpose, Transaction, RunningBalance, MonthlyConsumption
 
 class ItemSerializer(serializers.ModelSerializer):
+    classificationName = serializers.CharField(source='classificationID.classification', read_only=True)
+    measurementName = serializers.CharField(source='measurementID.measureName', read_only=True)
+    
     class Meta:
         model = Item
-        fields = ('itemID', 'classificationID','measurementID','itemName','itemQuantity','unitCost','totalCost')
+        fields = ('itemID', 'classificationID', 'classificationName','measurementID','measurementName','itemName','itemQuantity','unitCost','totalCost')
+
+    def validate(self, data):
+        itemName = data.get('itemName')
+        if Item.objects.filter(itemName=itemName).exists():
+            raise serializers.ValidationError("An item with this name already exists.")
+        return data
 
 class ClassificationSerializer(serializers.ModelSerializer):
     class Meta:

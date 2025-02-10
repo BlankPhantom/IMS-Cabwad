@@ -1,36 +1,80 @@
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
-from django.http.response import JsonResponse
-
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
 from ims.models import Item, Classification, Measurement, Section, Purpose, Transaction, RunningBalance, MonthlyConsumption
 from ims.serializers import ItemSerializer, ClassificationSerializer, MeasurementSerializer, SectionSerializer, PurposeSerializer, TransactionSerializer,RunningBalance, MonthlyConsumptionSerializer
 
 @csrf_exempt
-def itemApi(request,id=0):
-    if request.method=='GET':
-        items = Item.objects.all()
-        items_serializer=ItemSerializer(items,many=True)
-        return JsonResponse(items_serializer.data,safe=False)
+@api_view(['GET'])
+def classification_list_all(request):
+    classifications = Classification.objects.all()
+    serializer = ClassificationSerializer(classifications, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def measurement_list_all(request):
+    measurements = Measurement.objects.all()
+    serializer = MeasurementSerializer(measurements, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def section_list_all(request):
+    sections = Section.objects.all()
+    serializer = SectionSerializer(sections, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def purpose_list_all(request):
+    purposes = Purpose.objects.all()
+    serializer = PurposeSerializer(purposes, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def item_list_all(request):
+    items = Item.objects.all()
+    serializer = ItemSerializer(items, many=True, context={'request': request})
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def item_list_detail(request, id):
+    try:
+        items = Item.objects.get(itemID=id)
+    except Item.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
     
-    elif request.method=='POST':
-        item_data=JSONParser().parse(request)
-        items_serializer=ItemSerializer(data=item_data)
-        if items_serializer.is_valid():
-            items_serializer.save()
-            return JsonResponse("Added Successfully",safe=False)
-        return JsonResponse("Failed to Add",safe=False)
+    serializer = ItemSerializer(items, many=True, context={'request': request})
+    return Response(serializer.data)
+
+@api_view(['POST'])
+def item_create(request):
+    serializer = ItemSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['PUT'])
+def item_update(request, id):
+    try:
+        items = Item.objects.get(itemID=id)
+    except Item.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
     
-    elif request.method=='PUT':
-        item_data=JSONParser().parse(request)
-        item=Item.objects.get(ItemID=item_data['ItemID'])
-        items_serializer=ItemSerializer(item, data=item_data)
-        if items_serializer.is_valid():
-            items_serializer.save()
-            return JsonResponse("Update Successfully", safe=False)
-        return JsonResponse("Failed to Update")
+    serializer = ItemSerializer(items, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+def item_delete(request, id):    
+    try:
+        items = Item.objects.get(itemID=id)
+    except Item.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
     
-    elif request.method=='DELETE':
-        item=Item.objects.get(ItemID=id)
-        item.delete()
-        return JsonResponse("Deleted Successfully", safe=False)
+    items.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
