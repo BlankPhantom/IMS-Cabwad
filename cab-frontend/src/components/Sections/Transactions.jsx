@@ -6,6 +6,7 @@ import MonthYearPicker from "../MonthYearPicker";
 const Transactions = () => {
     const [showTransactionModal, setShowTransactionModal] = useState(false);
     const [showProductModal, setShowProductModal] = useState(false);
+    const [transactions, setTransactions] = useState([]); // State to store all transactions
     const [transactionData, setTransactionData] = useState({
         date: getCurrentDate(),
         week: getWeekNumber(getCurrentDate()),
@@ -15,8 +16,6 @@ const Transactions = () => {
         section: "",
         purpose: "",
         area: "",
-        productName: "",
-        itemID: "",
         products: [] // Stores added products
     });
 
@@ -38,7 +37,17 @@ const Transactions = () => {
     const handleShowTransactionModal = () => setShowTransactionModal(true);
     const handleCloseTransactionModal = () => {
         setShowTransactionModal(false);
-        setTransactionData({ ...transactionData, products: [] }); // Reset products on close
+        setTransactionData({
+            date: getCurrentDate(),
+            week: getWeekNumber(getCurrentDate()),
+            mris: "",
+            supplier: "",
+            requestedBy: "",
+            section: "",
+            purpose: "",
+            area: "",
+            products: [] // Reset products on close
+        });
     };
 
     const handleShowProductModal = () => setShowProductModal(true);
@@ -89,12 +98,13 @@ const Transactions = () => {
     // Submit transaction
     const handleSubmitTransaction = (e) => {
         e.preventDefault();
+        setTransactions([...transactions, transactionData]); // Add new transaction to the list
         console.log("New Transaction Data:", transactionData);
         handleCloseTransactionModal();
     };
 
     return (
-        <Container style={{ width: "90%" }} fluid className="d-flex flex-column justify-content-center mt-5">
+        <Container style={{ width: "100%", margin: '0', padding: '0' }} fluid className="d-flex flex-column justify-content-center mt-5">
             <Row>
                 <Col>
                     <MonthYearPicker />
@@ -134,7 +144,46 @@ const Transactions = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {/* Transactions Data */}
+                        {transactions.length > 0 ? (
+                            transactions.map((transaction, tIndex) => (
+                                <React.Fragment key={tIndex}>
+                                    <tr>
+                                        <td rowSpan={transaction.products.length + 1}>{transaction.date}</td>
+                                        <td rowSpan={transaction.products.length + 1}>{transaction.week}</td>
+                                        <td rowSpan={transaction.products.length + 1}>{transaction.mris}</td>
+                                        <td rowSpan={transaction.products.length + 1}>{transaction.supplier}</td>
+                                        <td rowSpan={transaction.products.length + 1}>{transaction.requestedBy}</td>
+                                        <td rowSpan={transaction.products.length + 1}>{transaction.section}</td>
+                                        <td rowSpan={transaction.products.length + 1}>{transaction.purpose}</td>
+                                        <td colSpan="12"></td>
+                                    </tr>
+                                    {transaction.products.map((product, pIndex) => (
+                                        <tr key={pIndex}>
+                                            <td>{product.itemID}</td>
+                                            <td>{product.productName}</td>
+                                            <td>{transaction.area}</td>
+                                            <td>{product.purchasedFromSupplier}</td>
+                                            <td>{product.returnToSupplier}</td>
+                                            <td>{product.transferFromWarehouse}</td>
+                                            <td>{product.transferToWarehouse}</td>
+                                            <td>{product.issuedQuantity}</td>
+                                            <td>{product.returnedQuantity}</td>
+                                            <td>{product.consumption}</td>
+                                            <td>{product.cost}</td>
+                                            <td>{product.total}</td>
+                                            <td>
+                                                <Button variant="warning" size="sm" className="me-2">Edit</Button>
+                                                <Button variant="danger" size="sm">Delete</Button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </React.Fragment>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="20" className="text-center">No transactions available</td>
+                            </tr>
+                        )}
                     </tbody>
                 </Table>
             </Row>
@@ -213,21 +262,6 @@ const Transactions = () => {
                             </Form.Select>
                         </Form.Group>
 
-                        <Form.Group className="mb-3">
-                            <Form.Label>Product Name</Form.Label>
-                            <Form.Select name="productName" value={transactionData.productName} onChange={handleTransactionChange} required>
-                                <option value="">Select Product</option>
-                                <option value="Product A">Product A</option>
-                                <option value="Product B">Product B</option>
-                                <option value="Product C">Product C</option>
-                            </Form.Select>
-                        </Form.Group>
-
-                        <Form.Group className="mb-3">
-                            <Form.Label>Item ID</Form.Label>
-                            <Form.Control type="text" name="itemID" value={transactionData.itemID} placeholder="nakukuha sa masterlist" disabled />
-                        </Form.Group>
-
                         <div className="d-flex justify-content-end">
                             <Button onClick={handleShowProductModal} variant="primary">
                                 Add Product
@@ -264,12 +298,12 @@ const Transactions = () => {
                     <Form onSubmit={handleAddProduct}>
                         <Form.Group className="mb-3">
                             <Form.Label>Product Name</Form.Label>
-                            <Form.Control type="text" name="productName" value={productData.productName} onChange={handleProductChange} disabled placeholder="kukuhanin doon sa unang modal" />
+                            <Form.Control type="text" name="productName" value={productData.productName} onChange={handleProductChange} />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Label>Item ID</Form.Label>
-                            <Form.Control type="number" name="itemID" value={productData.itemID} onChange={handleProductChange} disabled placeholder="partner ni product name" />
+                            <Form.Control type="number" name="itemID" value={productData.itemID} onChange={handleProductChange} />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
@@ -311,7 +345,7 @@ const Transactions = () => {
                             <Col>
                                 <Form.Group className="mb-3">
                                     <Form.Label>Consumption</Form.Label>
-                                    <Form.Control type="number" name="consumption" value={productData.consumption} onChange={handleProductChange} disabled placeholder="computed from issued and returned" />
+                                    <Form.Control type="number" name="consumption" value={productData.consumption} onChange={handleProductChange} />
                                 </Form.Group>
                             </Col>
                             <Col>
@@ -324,7 +358,7 @@ const Transactions = () => {
 
                         <Form.Group className="mb-3">
                             <Form.Label>Total</Form.Label>
-                            <Form.Control type="number" name="total" value={productData.total} onChange={handleProductChange} disabled placeholder="total" />
+                            <Form.Control type="number" name="total" value={productData.total} onChange={handleProductChange} />
                         </Form.Group>
 
                         <div className="d-flex justify-content-end gap-2">

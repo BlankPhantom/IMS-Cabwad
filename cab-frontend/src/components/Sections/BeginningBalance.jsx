@@ -6,7 +6,7 @@ import MonthYearPicker from "../MonthYearPicker";
 
 const BeginningBalance = () => {
     return (
-        <Container style={{ width: '90%' }} fluid className="d-flex flex-column justify-content-center mt-5">
+        <Container style={{ width: '100%' }} fluid className="d-flex flex-column justify-content-center mt-5">
             <Row>
                 <Col>
                     < MonthYearPicker />
