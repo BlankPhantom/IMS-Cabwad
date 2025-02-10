@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from django.db.models.signals import pre_save
 from django.dispatch import receiver    
 
@@ -19,8 +20,11 @@ class Item(models.Model):
     itemQuantity = models.IntegerField(default=0)
     unitCost = models.FloatField(default=0.0)
     totalCost = models.FloatField(default=0.0)
+    created_at = models.DateTimeField(default= timezone.now)
+    updated_at = models.DateTimeField(default= timezone.now)
 
     def save(self, *args, **kwargs):
+        # self.totalCost = self.itemQuantity * self.unitCost
         if not self.itemID:
             max_id = Item.objects.filter(classificationID=self.classificationID).count() + 1
             self.itemID = f'{self.classificationID.classificationID:02d}-{max_id:03d}'
@@ -39,7 +43,7 @@ class Section(models.Model):
 class Purpose(models.Model):
     purposeID = models.AutoField(primary_key=True)
     purposeName = models.CharField(max_length=500)
-
+   
 class Transaction(models.Model):
     transactionID = models.AutoField(primary_key=True)
     classificationID = models.ForeignKey(Classification, on_delete=models.CASCADE, default=1)
@@ -61,6 +65,8 @@ class Transaction(models.Model):
     consumption = models.IntegerField(blank=True, null=True)
     cost = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     totalCost = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    created_at = models.DateTimeField(default= timezone.now)
+    updated_at = models.DateTimeField(default= timezone.now)
 
 class RunningBalance(models.Model):
     runningBalID = models.AutoField(primary_key=True, default=1)
@@ -76,6 +82,8 @@ class RunningBalance(models.Model):
     consumption = models.IntegerField(blank=True, null=True)
     cost = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     totalCost = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    created_at = models.DateTimeField(default= timezone.now)
+    updated_at = models.DateTimeField(default= timezone.now)
 
 class MonthlyConsumption(models.Model):
     sectionID = models.ForeignKey(Section, on_delete=models.CASCADE, default=1)
@@ -84,7 +92,8 @@ class MonthlyConsumption(models.Model):
     classID = models.ForeignKey(Classification, on_delete=models.CASCADE, default=1)
     itemID = models.ForeignKey(Item, on_delete=models.CASCADE, default=1)
     transactionID = models.ForeignKey(Transaction, on_delete=models.CASCADE, default=1)
-
+    created_at = models.DateTimeField(default= timezone.now)
+    updated_at = models.DateTimeField(default= timezone.now)
 
 
     

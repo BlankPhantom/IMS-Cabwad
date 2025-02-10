@@ -4,10 +4,25 @@ from ims.models import Item, Classification, Measurement, Section, Purpose, Tran
 class ItemSerializer(serializers.ModelSerializer):
     classificationName = serializers.CharField(source='classificationID.classification', read_only=True)
     measurementName = serializers.CharField(source='measurementID.measureName', read_only=True)
-    
+    month = serializers.SerializerMethodField()
+    year = serializers.SerializerMethodField()
+
     class Meta:
         model = Item
-        fields = ('itemID', 'classificationID', 'classificationName','measurementID','measurementName','itemName','itemQuantity','unitCost','totalCost')
+        fields = ('itemID', 'classificationID', 'classificationName','measurementID','measurementName','itemName','itemQuantity','unitCost','totalCost','month','year','created_at','updated_at')
+
+    def to_representation(self, instance):
+        # Update totalCost before returning the representation
+        instance.totalCost = instance.itemQuantity * instance.unitCost
+        instance.save(update_fields=['totalCost'])
+        representation = super().to_representation(instance)
+        return representation
+
+    def get_month(self, instance):
+        return instance.created_at.strftime('%B')
+    
+    def get_year(self, instance):
+        return instance.created_at.strftime('%Y')
 
     def validate(self, data):
         itemName = data.get('itemName')
@@ -38,14 +53,14 @@ class PurposeSerializer(serializers.ModelSerializer):
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
-        fields = ('transactionID','classificationID','sectionID','purposeID','date','week','mris','supplier','requestedBy','Area','purchasedQty','returnToSupplier','transferFromWH','transferToWH','issuedQty','returnedQty','consumption','cost','totalCost')
+        fields = ('transactionID','classificationID','sectionID','purposeID','date','week','mris','supplier','requestedBy','Area','purchasedQty','returnToSupplier','transferFromWH','transferToWH','issuedQty','returnedQty','consumption','cost','totalCost', 'created_at','updated_at')
 
 class RunningBalance(serializers.ModelSerializer):
     class Meta:
         model = RunningBalance
-        fields = ('runningBalID','classificationID','itemID','measurementID','beginningBalance','purchasedFromSupp','returnToSupplier','transferFromWH','transferToWH','issuedQty','consumption','cost','totalCost',)
+        fields = ('runningBalID','classificationID','itemID','measurementID','beginningBalance','purchasedFromSupp','returnToSupplier','transferFromWH','transferToWH','issuedQty','consumption','cost','totalCost','created_at','updated_at')
 
 class MonthlyConsumptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = MonthlyConsumption
-        fields = ('sectionID','date','week','itemID','transactionID',)
+        fields = ('sectionID','date','week','itemID','transactionID','created_at','updated_at')

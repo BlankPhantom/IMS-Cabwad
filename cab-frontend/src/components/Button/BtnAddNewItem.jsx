@@ -65,6 +65,7 @@ const BtnAddNewItem = ({fetchItems}) => {
             itemName: e.target.itemName.value,
             classificationID: selectedClassification,
             measurementID: selectedMeasurement,
+            unitCost: e.target.unitCost.value,
         };
 
         try{
@@ -142,6 +143,15 @@ const BtnAddNewItem = ({fetchItems}) => {
                                     </option>
                                 ))}
                             </Form.Select>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Unit Cost</Form.Label>
+                            <Form.Control 
+                                name="unitCost" 
+                                type="number"
+                                >
+                            </Form.Control>
                         </Form.Group>
 
                         <div className="d-flex justify-content-end gap-2">
