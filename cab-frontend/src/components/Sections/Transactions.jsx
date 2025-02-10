@@ -4,6 +4,7 @@ import { Container, Table, Col, Row, Button } from "react-bootstrap";
 import MonthYearPicker from "../MonthYearPicker";
 import BtnAddTransaction from "../Button/BtnAddTransaction";
 import ModalTransaction from "../Modals/ModalTransaction";
+import BtnEditDeleteTransaction from "../Button/BtnEditDeleteTransaction,";
 
 const Transactions = () => {
     const [showTransactionModal, setShowTransactionModal] = useState(false);
@@ -105,8 +106,17 @@ const Transactions = () => {
         handleCloseTransactionModal();
     };
 
+    // Handle edit and delete actions
+    const handleEdit = (transactionId, productId) => {
+        // Implement edit logic here
+    };
+
+    const handleDelete = (transactionId, productId) => {
+        // Implement delete logic here
+    };
+
     return (
-        <Container style={{ width: "90%" }} fluid className="d-flex flex-column justify-content-center mt-5">
+        <Container style={{ width: "100%" }} fluid className="d-flex flex-column justify-content-center mt-5">
             <Row>
                 <Col>
                     <MonthYearPicker />
@@ -120,7 +130,7 @@ const Transactions = () => {
             </Row>
 
             <Row>
-                <Table responsive bordered striped hover className="tableStyle mt-3">
+                <Table responsive bordered striped hover id="TtableStyle" className="tableStyle mt-3">
                     <thead>
                         <tr>
                             <th>Date</th>
@@ -173,10 +183,10 @@ const Transactions = () => {
                                             <td>{product.consumption}</td>
                                             <td>{product.cost}</td>
                                             <td>{product.total}</td>
-                                            <td>
-                                                <Button variant="warning" size="sm" className="me-2">Edit</Button>
-                                                <Button variant="danger" size="sm">Delete</Button>
-                                            </td>
+                                            <BtnEditDeleteTransaction
+                                                onEdit={() => handleEdit(transaction.id, product.id)}
+                                                onDelete={() => handleDelete(transaction.id, product.id)}
+                                            />
                                         </tr>
                                     ))}
                                 </React.Fragment>
