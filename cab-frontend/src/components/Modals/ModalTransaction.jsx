@@ -1,3 +1,5 @@
+import { faPenToSquare, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import { Modal, Form, Button, Row, Col } from 'react-bootstrap';
 
@@ -14,6 +16,19 @@ const ModalTransaction = ({
     handleProductChange,
     handleShowProductModal
 }) => {
+    const calculateConsumption = () => {
+        const issued = parseInt(productData.issuedQuantity) || 0;
+        const returned = parseInt(productData.returnedQuantity) || 0;
+        return returned - issued;
+    };
+
+    const calculateTotal = () => {
+        const purchased = parseInt(productData.purchasedFromSupplier) || 0;
+        const issued = parseInt(productData.issuedQuantity) || 0;
+        const cost = parseFloat(productData.cost) || 0;
+        return (purchased || issued) * cost;
+    };
+
     return (
         <>
             <Modal show={showTransactionModal} size="lg" onHide={handleCloseTransactionModal} centered>
@@ -89,10 +104,13 @@ const ModalTransaction = ({
                         </div>
 
                         {/* Product List */}
+                        <h5 className="mt-3">Product List</h5>
+
                         <ul className="mt-3">
                             {transactionData.products.map((product, index) => (
                                 <li key={index}>
-                                    {product.productName} <span style={{ color: "red", cursor: "pointer" }}>🗑</span>
+                                    {product.productName} <span style={{ color: "#ffcc00", marginRight: '5px', marginLeft: '5px', cursor: "pointer" }}><FontAwesomeIcon icon={faPenToSquare} /></span>
+                                                          <span style={{ color: "red", cursor: "pointer" }}><FontAwesomeIcon icon={faTrashAlt} /></span>
                                 </li>
                             ))}
                         </ul>
@@ -128,35 +146,35 @@ const ModalTransaction = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Purchased from Supplier</Form.Label>
-                            <Form.Control type="number" name="purchasedFromSupplier" value={productData.purchasedFromSupplier} onChange={handleProductChange} required min="0" />
+                            <Form.Control type="number" name="purchasedFromSupplier" value={productData.purchasedFromSupplier} onChange={handleProductChange} min="0" />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Label>Return to Supplier</Form.Label>
-                            <Form.Control type="number" name="returnToSupplier" value={productData.returnToSupplier} onChange={handleProductChange} required min="0" />
+                            <Form.Control type="number" name="returnToSupplier" value={productData.returnToSupplier} onChange={handleProductChange} min="0" />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Label>Transfer from other Warehouse</Form.Label>
-                            <Form.Control type="text" name="transferFromWarehouse" value={productData.transferFromWarehouse} onChange={handleProductChange} required />
+                            <Form.Control type="text" name="transferFromWarehouse" value={productData.transferFromWarehouse} onChange={handleProductChange} />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Label>Transfer to other Warehouse</Form.Label>
-                            <Form.Control type="text" name="transferToWarehouse" value={productData.transferToWarehouse} onChange={handleProductChange} required />
+                            <Form.Control type="text" name="transferToWarehouse" value={productData.transferToWarehouse} onChange={handleProductChange} />
                         </Form.Group>
 
                         <Row>
                             <Col>
                                 <Form.Group className="mb-3">
                                     <Form.Label>Issued Quantity</Form.Label>
-                                    <Form.Control type="number" name="issuedQuantity" value={productData.issuedQuantity} onChange={handleProductChange} required min="0" />
+                                    <Form.Control type="number" name="issuedQuantity" value={productData.issuedQuantity} onChange={handleProductChange} min="0" />
                                 </Form.Group>
                             </Col>
                             <Col>
                                 <Form.Group className="mb-3">
                                     <Form.Label>Returned Quantity</Form.Label>
-                                    <Form.Control type="number" name="returnedQuantity" value={productData.returnedQuantity} onChange={handleProductChange} required min="0" />
+                                    <Form.Control type="number" name="returnedQuantity" value={productData.returnedQuantity} onChange={handleProductChange} min="0" />
                                 </Form.Group>
                             </Col>
                         </Row>
@@ -165,7 +183,7 @@ const ModalTransaction = ({
                             <Col>
                                 <Form.Group className="mb-3">
                                     <Form.Label>Consumption</Form.Label>
-                                    <Form.Control type="number" name="consumption" value={productData.consumption} onChange={handleProductChange} />
+                                    <Form.Control type="number" name="consumption" value={calculateConsumption()} readOnly />
                                 </Form.Group>
                             </Col>
                             <Col>
@@ -178,7 +196,7 @@ const ModalTransaction = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Total</Form.Label>
-                            <Form.Control type="number" name="total" value={productData.total} onChange={handleProductChange} />
+                            <Form.Control type="number" name="total" value={calculateTotal()} readOnly />
                         </Form.Group>
 
                         <div className="d-flex justify-content-end gap-2">
