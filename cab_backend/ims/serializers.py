@@ -11,8 +11,7 @@ class ItemSerializer(serializers.ModelSerializer):
         model = Item
         fields = ('itemID', 'classificationID', 'classificationName','measurementID','measurementName','itemName','itemQuantity','unitCost','totalCost','month','year','created_at','updated_at')
 
-    def to_representation(self, instance):
-        # Update totalCost before returning the representation
+    def get_totalCost(self, instance):
         instance.totalCost = instance.itemQuantity * instance.unitCost
         instance.save(update_fields=['totalCost'])
         representation = super().to_representation(instance)
