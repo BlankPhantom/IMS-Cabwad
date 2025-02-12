@@ -2,6 +2,12 @@ import React from "react";
 import { Button, Container, Form } from "react-bootstrap";
 
 const Login = () => {
+  const handleLogin = (e) => {
+    e.preventDefault();
+    // Redirect to Dashboard for testing
+    window.location.href = "/dashboard";
+  };
+
   return (
     <div style={{
       backgroundColor: '#005ce5'
@@ -13,7 +19,7 @@ const Login = () => {
         height: '100vh',
       }}>
         <div className="loginDiv shadow-lg">
-          <Form>
+          <Form onSubmit={handleLogin}>
             <Form.Label className="cabWad">
               Cabuyao Water District
             </Form.Label>
@@ -22,7 +28,7 @@ const Login = () => {
               <Form.Label className="justify-content-start mt-4 h6 loglbl">
                 Username:
               </Form.Label>
-              <Form.Control className="login" controlId="email"></Form.Control>
+              <Form.Control className="login" controlId="logins"></Form.Control>
             </Form.Group>
             <Form.Group
               className="mt-5 mb-5"
