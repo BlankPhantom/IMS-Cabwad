@@ -1,5 +1,5 @@
 .tableStyle {
-  background-color: #eaf3e8 !important;
+  background-color: hsl(109, 31%, 93%) !important;
   color: #333 !important;
   width: 100%; /* Ensure the table takes up the full width */
   overflow-x: auto; /* Add horizontal scroll for smaller screens */
@@ -17,6 +17,7 @@
 .tableStyle th {
   background-color: #f1e349 !important;
   font-weight: bold;
+  color: #333 !important;
 }
 
 /* Adjust column widths */
@@ -54,6 +55,7 @@
 #TtableStyle th{
   padding-left: 20px;
   padding-right: 20px;
+  color: #333 !important;
 }
 
 .tableStyle td {
