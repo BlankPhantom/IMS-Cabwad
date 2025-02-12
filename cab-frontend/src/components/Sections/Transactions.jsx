@@ -158,10 +158,10 @@ const Transactions = () => {
                             <th>Item ID</th>
                             <th>Product Name</th>
                             <th>Area</th>
-                            <th>Purchased From Supplier</th>
-                            <th>Return to Supplier</th>
-                            <th>Transfer from Other Warehouse</th>
-                            <th>Transfer to Other Warehouse</th>
+                            <th>Purchased From <br/> Supplier</th>
+                            <th>Return to <br/> Supplier</th>
+                            <th>Transfer from <br/> Other Warehouse</th>
+                            <th>Transfer to <br/> Other Warehouse</th>
                             <th>Issued Qty.</th>
                             <th>Returned Qty.</th>
                             <th>Consumption</th>

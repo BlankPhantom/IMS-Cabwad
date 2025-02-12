@@ -20,16 +20,16 @@ const RunningBalance = () => {
             </Row>
 
             <Row>
-                <Table responsive bordered striped hover className="tableStyle mt-3">
+                <Table responsive bordered striped hover id="TtableStyle" className="tableStyle mt-3">
                     <thead>
                         <th>Item ID</th>
                         <th>Product Name</th>
-                        <th>Unit of Measurement</th>
+                        <th>Unit of <br/> Measurement</th>
                         <th>Beginning Balance</th>
-                        <th>Purchased from Supplier</th>
+                        <th>Purchased from <br/> Supplier</th>
                         <th>Return to Supplier</th>
-                        <th>Transfer From Other Warehouse</th>
-                        <th>Transfer to Other Warehouse</th>
+                        <th>Transfer From <br/> Other Warehouse</th>
+                        <th>Transfer to <br/> Other Warehouse</th>
                         <th>Issued Qty.</th>
                         <th>Returned Qty.</th>
                         <th>Consumption</th>

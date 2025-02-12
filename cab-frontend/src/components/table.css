@@ -51,6 +51,11 @@
   width: 8%;
 } /* Area */
 
+#TtableStyle th{
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
 .tableStyle td {
   max-width: 120px; /* Set max width */
   overflow: hidden;
