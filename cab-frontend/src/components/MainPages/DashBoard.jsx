@@ -1,17 +1,23 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import { Container } from "react-bootstrap";
-import TopNav from "../TopNav";
+import { Container, Row, Col } from "react-bootstrap";
+import SideNav from "../SideNav";
 import CabFooter from "../CabFooter";
 
 const DashBoard = () => {
     return (
         <div>
-            <TopNav />
-            <Container>
-                <Outlet /> {/* This will render the current page based on the route */}
-            </Container>
-            <CabFooter />
+            <Row noGutters>
+                <Col xs={2}>
+                    <SideNav />
+                </Col>
+                <Col xs={10} style={{ marginLeft: "220px" }}>
+                    <Container>
+                        <Outlet /> {/* This will render the current page based on the route */}
+                    </Container>
+                    <CabFooter />
+                </Col>
+            </Row>
         </div>
     );
 };
