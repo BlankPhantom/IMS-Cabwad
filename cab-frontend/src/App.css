@@ -3,8 +3,6 @@ html {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
-  /* Disable horizontal scroll */
 }
 
 .loginDiv {
@@ -59,7 +57,7 @@ html {
 .active-link {
   color: #ffcc00 !important;
   font-weight: bold;
-  border-bottom: 3px solid #ffcc00; /* Optional underline */
+  border-bottom: 3px solid #ffcc00 !important; /* Optional underline */
 }
 
 /* Navbar on Small Screens */

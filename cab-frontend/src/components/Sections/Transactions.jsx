@@ -122,12 +122,24 @@ const Transactions = () => {
     };
 
     // Handle edit and delete actions
-    const handleEdit = (transactionId, productId) => {
-        // Implement edit logic here
+    const handleEdit = (updatedTransaction) => {
+        const updatedTransactions = transactions.map(transaction =>
+            transaction.id === updatedTransaction.id ? updatedTransaction : transaction
+        );
+        setTransactions(updatedTransactions);
     };
 
     const handleDelete = (transactionId, productId) => {
-        // Implement delete logic here
+        const updatedTransactions = transactions.map(transaction => {
+            if (transaction.id === transactionId) {
+                return {
+                    ...transaction,
+                    products: transaction.products.filter(product => product.id !== productId)
+                };
+            }
+            return transaction;
+        });
+        setTransactions(updatedTransactions);
     };
 
     return (
@@ -145,74 +157,79 @@ const Transactions = () => {
             </Row>
 
             <Row>
-                <Table responsive bordered striped hover id="TtableStyle" className="tableStyle mt-3">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Week</th>
-                            <th>MRIS/DR</th>
-                            <th>Supplier</th>
-                            <th>Requested By</th>
-                            <th>Section</th>
-                            <th>Purpose</th>
-                            <th>Item ID</th>
-                            <th>Product Name</th>
-                            <th>Area</th>
-                            <th>Purchased From <br/> Supplier</th>
-                            <th>Return to <br/> Supplier</th>
-                            <th>Transfer from <br/> Other Warehouse</th>
-                            <th>Transfer to <br/> Other Warehouse</th>
-                            <th>Issued Qty.</th>
-                            <th>Returned Qty.</th>
-                            <th>Consumption</th>
-                            <th>Cost</th>
-                            <th>Total</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {transactions.length > 0 ? (
-                            transactions.map((transaction, tIndex) => (
-                                <React.Fragment key={tIndex}>
-                                    <tr>
-                                        <td rowSpan={transaction.products.length + 1}>{transaction.date}</td>
-                                        <td rowSpan={transaction.products.length + 1}>{transaction.week}</td>
-                                        <td rowSpan={transaction.products.length + 1}>{transaction.mris}</td>
-                                        <td rowSpan={transaction.products.length + 1}>{transaction.supplier}</td>
-                                        <td rowSpan={transaction.products.length + 1}>{transaction.requestedBy}</td>
-                                        <td rowSpan={transaction.products.length + 1}>{transaction.section}</td>
-                                        <td rowSpan={transaction.products.length + 1}>{transaction.purpose}</td>
-                                        <td colSpan="12"></td>
-                                    </tr>
-                                    {transaction.products.map((product, pIndex) => (
-                                        <tr key={pIndex}>
-                                            <td>{product.itemID}</td>
-                                            <td>{product.productName}</td>
-                                            <td>{transaction.area}</td>
-                                            <td>{product.purchasedFromSupplier}</td>
-                                            <td>{product.returnToSupplier}</td>
-                                            <td>{product.transferFromWarehouse}</td>
-                                            <td>{product.transferToWarehouse}</td>
-                                            <td>{product.issuedQuantity}</td>
-                                            <td>{product.returnedQuantity}</td>
-                                            <td>{product.consumption}</td>
-                                            <td>{product.cost}</td>
-                                            <td>{product.total}</td>
-                                            <BtnEditDeleteTransaction
-                                                onEdit={() => handleEdit(transaction.id, product.id)}
-                                                onDelete={() => handleDelete(transaction.id, product.id)}
-                                            />
-                                        </tr>
-                                    ))}
-                                </React.Fragment>
-                            ))
-                        ) : (
+                <div style={{ maxHeight: "500px", overflowY: "auto", width: "100%", margiin: "0", padding: "0" }}>
+                    <Table responsive bordered striped hover id="TtableStyle" className="tableStyle mt-3">
+                        <thead>
                             <tr>
-                                <td colSpan="20" className="text-center">No transactions available</td>
+                                <th>Date</th>
+                                <th>Week</th>
+                                <th>MRIS/DR</th>
+                                <th>Supplier</th>
+                                <th>Requested By</th>
+                                <th>Section</th>
+                                <th>Purpose</th>
+                                <th>Item ID</th>
+                                <th>Product Name</th>
+                                <th>Area</th>
+                                <th>Purchased From <br /> Supplier</th>
+                                <th>Return to <br /> Supplier</th>
+                                <th>Transfer from <br /> Other Warehouse</th>
+                                <th>Transfer to <br /> Other Warehouse</th>
+                                <th>Issued Qty.</th>
+                                <th>Returned Qty.</th>
+                                <th>Consumption</th>
+                                <th>Cost</th>
+                                <th>Total</th>
+                                <th>Action</th>
                             </tr>
-                        )}
-                    </tbody>
-                </Table>
+                        </thead>
+                        <tbody>
+                            {transactions.length > 0 ? (
+                                transactions.map((transaction, tIndex) => (
+                                    <React.Fragment key={tIndex}>
+                                        <tr>
+                                            <td rowSpan={transaction.products.length + 1}>{transaction.date}</td>
+                                            <td rowSpan={transaction.products.length + 1}>{transaction.week}</td>
+                                            <td rowSpan={transaction.products.length + 1}>{transaction.mris}</td>
+                                            <td rowSpan={transaction.products.length + 1}>{transaction.supplier}</td>
+                                            <td rowSpan={transaction.products.length + 1}>{transaction.requestedBy}</td>
+                                            <td rowSpan={transaction.products.length + 1}>{transaction.section}</td>
+                                            <td rowSpan={transaction.products.length + 1}>{transaction.purpose}</td>
+                                            <td colSpan="12"></td>
+                                            <td rowSpan={transaction.products.length + 1}>
+                                                <BtnEditDeleteTransaction
+                                                    onEdit={() => handleEdit(transaction)}
+                                                    onDelete={() => handleDelete(transaction.id)}
+                                                    transaction={transaction}
+                                                />
+                                            </td>
+                                        </tr>
+                                        {transaction.products.map((product, pIndex) => (
+                                            <tr key={pIndex}>
+                                                <td>{product.itemID}</td>
+                                                <td>{product.productName}</td>
+                                                <td>{transaction.area}</td>
+                                                <td>{product.purchasedFromSupplier}</td>
+                                                <td>{product.returnToSupplier}</td>
+                                                <td>{product.transferFromWarehouse}</td>
+                                                <td>{product.transferToWarehouse}</td>
+                                                <td>{product.issuedQuantity}</td>
+                                                <td>{product.returnedQuantity}</td>
+                                                <td>{product.consumption}</td>
+                                                <td>{product.cost}</td>
+                                                <td>{product.total}</td>
+                                            </tr>
+                                        ))}
+                                    </React.Fragment>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan="20" className="text-center">No transactions available</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </Table>
+                </div>
             </Row>
 
             <BtnAddTransaction handleShowTransactionModal={handleShowTransactionModal} />

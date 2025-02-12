@@ -18,7 +18,7 @@ const TopNav = () => {
         <>
             <Navbar expand="lg" className="topNav py-2" style={{ backgroundColor: "#005ce5" }}>
                 <Navbar.Brand as={Link} to="/dashboard/masterlist" className="d-flex align-items-center">
-                    <img className="logo img-fluid" src={Logo} alt="Cabuyao Water District" style={{ height: "100px", marginLeft: '1em' }} />
+                    <img className="logo img-fluid" src={Logo} alt="Cabuyao Water District" style={{ height: "60px", marginLeft: '1em' }} />
                 </Navbar.Brand>
 
                 <Navbar.Toggle aria-controls="navbar-nav" className="border-0 bg-white" />

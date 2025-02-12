@@ -6,7 +6,7 @@ const CabFooter = () => {
         <footer 
             style={{ 
                 backgroundColor: "#FFB600", 
-                padding: "30px 0", 
+                padding: "15px 0", 
                 textAlign: "center",
                 position: "fixed",
                 bottom: 0,
