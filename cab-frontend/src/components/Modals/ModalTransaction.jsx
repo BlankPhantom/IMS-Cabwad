@@ -1,6 +1,6 @@
 import { faPenToSquare, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
+import React, { useState } from 'react';
 import { Modal, Form, Button, Row, Col } from 'react-bootstrap';
 
 const ModalTransaction = ({
@@ -16,6 +16,8 @@ const ModalTransaction = ({
     handleProductChange,
     handleShowProductModal
 }) => {
+    const [editProductIndex, setEditProductIndex] = useState(null);
+
     const calculateConsumption = () => {
         const issued = parseInt(productData.issuedQuantity) || 0;
         const returned = parseInt(productData.returnedQuantity) || 0;
@@ -27,6 +29,41 @@ const ModalTransaction = ({
         const issued = parseInt(productData.issuedQuantity) || 0;
         const cost = parseFloat(productData.cost) || 0;
         return (purchased || issued) * cost;
+    };
+
+    const handleEditProduct = (index) => {
+        const product = transactionData.products[index];
+        setEditProductIndex(index);
+        handleProductChange({ target: { name: 'productName', value: product.productName } });
+        handleProductChange({ target: { name: 'itemID', value: product.itemID } });
+        handleProductChange({ target: { name: 'purchasedFromSupplier', value: product.purchasedFromSupplier } });
+        handleProductChange({ target: { name: 'returnToSupplier', value: product.returnToSupplier } });
+        handleProductChange({ target: { name: 'transferFromWarehouse', value: product.transferFromWarehouse } });
+        handleProductChange({ target: { name: 'transferToWarehouse', value: product.transferToWarehouse } });
+        handleProductChange({ target: { name: 'issuedQuantity', value: product.issuedQuantity } });
+        handleProductChange({ target: { name: 'returnedQuantity', value: product.returnedQuantity } });
+        handleProductChange({ target: { name: 'consumption', value: product.consumption } });
+        handleProductChange({ target: { name: 'cost', value: product.cost } });
+        handleProductChange({ target: { name: 'total', value: product.total } });
+        handleShowProductModal();
+    };
+
+    const handleDeleteProduct = (index) => {
+        const updatedProducts = transactionData.products.filter((_, i) => i !== index);
+        handleTransactionChange({ target: { name: 'products', value: updatedProducts } });
+    };
+
+    const handleSaveProduct = (e) => {
+        e.preventDefault();
+        const updatedProducts = [...transactionData.products];
+        if (editProductIndex !== null) {
+            updatedProducts[editProductIndex] = productData;
+            setEditProductIndex(null);
+        } else {
+            updatedProducts.push(productData);
+        }
+        handleTransactionChange({ target: { name: 'products', value: updatedProducts } });
+        handleCloseProductModal();
     };
 
     return (
@@ -109,8 +146,19 @@ const ModalTransaction = ({
                         <ul className="mt-3">
                             {transactionData.products.map((product, index) => (
                                 <li key={index}>
-                                    {product.productName} <span style={{ color: "#ffcc00", marginRight: '5px', marginLeft: '5px', cursor: "pointer" }}><FontAwesomeIcon icon={faPenToSquare} /></span>
-                                                          <span style={{ color: "red", cursor: "pointer" }}><FontAwesomeIcon icon={faTrashAlt} /></span>
+                                    {product.productName} 
+                                    <span 
+                                        style={{ color: "#ffcc00", marginRight: '5px', marginLeft: '5px', cursor: "pointer" }} 
+                                        onClick={() => handleEditProduct(index)}
+                                    >
+                                        <FontAwesomeIcon icon={faPenToSquare} />
+                                    </span>
+                                    <span 
+                                        style={{ color: "red", cursor: "pointer" }} 
+                                        onClick={() => handleDeleteProduct(index)}
+                                    >
+                                        <FontAwesomeIcon icon={faTrashAlt} />
+                                    </span>
                                 </li>
                             ))}
                         </ul>
@@ -133,7 +181,7 @@ const ModalTransaction = ({
                     <Modal.Title>Individual Product Record</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Form onSubmit={handleAddProduct}>
+                    <Form onSubmit={handleSaveProduct}>
                         <Form.Group className="mb-3">
                             <Form.Label>Product Name</Form.Label>
                             <Form.Control type="text" name="productName" value={productData.productName} onChange={handleProductChange} />
@@ -204,7 +252,7 @@ const ModalTransaction = ({
                                 Cancel
                             </Button>
                             <Button type="submit" variant="primary">
-                                Add New Record
+                                {editProductIndex !== null ? 'Save Changes' : 'Add New Record'}
                             </Button>
                         </div>
                     </Form>
