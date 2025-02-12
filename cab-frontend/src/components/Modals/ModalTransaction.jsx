@@ -17,35 +17,27 @@ const ModalTransaction = ({
     handleShowProductModal
 }) => {
     const [editProductIndex, setEditProductIndex] = useState(null);
+    const [showEditProductModal, setShowEditProductModal] = useState(false);
+    const [editProductData, setEditProductData] = useState({});
 
-    const calculateConsumption = () => {
-        const issued = parseInt(productData.issuedQuantity) || 0;
-        const returned = parseInt(productData.returnedQuantity) || 0;
+    const calculateConsumption = (data) => {
+        const issued = parseInt(data.issuedQuantity) || 0;
+        const returned = parseInt(data.returnedQuantity) || 0;
         return returned - issued;
     };
 
-    const calculateTotal = () => {
-        const purchased = parseInt(productData.purchasedFromSupplier) || 0;
-        const issued = parseInt(productData.issuedQuantity) || 0;
-        const cost = parseFloat(productData.cost) || 0;
-        return (purchased || issued) * cost;
+    const calculateTotal = (data) => {
+        const purchased = parseInt(data.purchasedFromSupplier) || 0;
+        const consumption = calculateConsumption(data);
+        const cost = parseFloat(data.cost) || 0;
+        return Math.abs(purchased || consumption) * cost;
     };
 
     const handleEditProduct = (index) => {
         const product = transactionData.products[index];
         setEditProductIndex(index);
-        handleProductChange({ target: { name: 'productName', value: product.productName } });
-        handleProductChange({ target: { name: 'itemID', value: product.itemID } });
-        handleProductChange({ target: { name: 'purchasedFromSupplier', value: product.purchasedFromSupplier } });
-        handleProductChange({ target: { name: 'returnToSupplier', value: product.returnToSupplier } });
-        handleProductChange({ target: { name: 'transferFromWarehouse', value: product.transferFromWarehouse } });
-        handleProductChange({ target: { name: 'transferToWarehouse', value: product.transferToWarehouse } });
-        handleProductChange({ target: { name: 'issuedQuantity', value: product.issuedQuantity } });
-        handleProductChange({ target: { name: 'returnedQuantity', value: product.returnedQuantity } });
-        handleProductChange({ target: { name: 'consumption', value: product.consumption } });
-        handleProductChange({ target: { name: 'cost', value: product.cost } });
-        handleProductChange({ target: { name: 'total', value: product.total } });
-        handleShowProductModal();
+        setEditProductData(product);
+        setShowEditProductModal(true);
     };
 
     const handleDeleteProduct = (index) => {
@@ -57,13 +49,19 @@ const ModalTransaction = ({
         e.preventDefault();
         const updatedProducts = [...transactionData.products];
         if (editProductIndex !== null) {
-            updatedProducts[editProductIndex] = productData;
+            updatedProducts[editProductIndex] = editProductData;
             setEditProductIndex(null);
         } else {
             updatedProducts.push(productData);
         }
         handleTransactionChange({ target: { name: 'products', value: updatedProducts } });
+        setShowEditProductModal(false);
         handleCloseProductModal();
+    };
+
+    const handleEditProductChange = (e) => {
+        const { name, value } = e.target;
+        setEditProductData((prevData) => ({ ...prevData, [name]: value }));
     };
 
     return (
@@ -146,15 +144,15 @@ const ModalTransaction = ({
                         <ul className="mt-3">
                             {transactionData.products.map((product, index) => (
                                 <li key={index}>
-                                    {product.productName} 
-                                    <span 
-                                        style={{ color: "#ffcc00", marginRight: '5px', marginLeft: '5px', cursor: "pointer" }} 
+                                    {product.productName}
+                                    <span
+                                        style={{ color: "#ffcc00", marginRight: '5px', marginLeft: '5px', cursor: "pointer" }}
                                         onClick={() => handleEditProduct(index)}
                                     >
                                         <FontAwesomeIcon icon={faPenToSquare} />
                                     </span>
-                                    <span 
-                                        style={{ color: "red", cursor: "pointer" }} 
+                                    <span
+                                        style={{ color: "red", cursor: "pointer" }}
                                         onClick={() => handleDeleteProduct(index)}
                                     >
                                         <FontAwesomeIcon icon={faTrashAlt} />
@@ -175,13 +173,13 @@ const ModalTransaction = ({
                 </Modal.Body>
             </Modal>
 
-            {/* INDIVIDUAL PRODUCT RECORD MODAL */}
+            {/* ADD PRODUCT MODAL */}
             <Modal show={showProductModal} onHide={handleCloseProductModal} centered>
                 <Modal.Header closeButton>
-                    <Modal.Title>Individual Product Record</Modal.Title>
+                    <Modal.Title>Add New Product</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Form onSubmit={handleSaveProduct}>
+                    <Form onSubmit={handleAddProduct}>
                         <Form.Group className="mb-3">
                             <Form.Label>Product Name</Form.Label>
                             <Form.Control type="text" name="productName" value={productData.productName} onChange={handleProductChange} />
@@ -231,7 +229,7 @@ const ModalTransaction = ({
                             <Col>
                                 <Form.Group className="mb-3">
                                     <Form.Label>Consumption</Form.Label>
-                                    <Form.Control type="number" name="consumption" value={calculateConsumption()} readOnly />
+                                    <Form.Control type="number" name="consumption" value={calculateConsumption(productData)} readOnly />
                                 </Form.Group>
                             </Col>
                             <Col>
@@ -244,7 +242,7 @@ const ModalTransaction = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Total</Form.Label>
-                            <Form.Control type="number" name="total" value={calculateTotal()} readOnly />
+                            <Form.Control type="number" name="total" value={calculateTotal(productData)} readOnly />
                         </Form.Group>
 
                         <div className="d-flex justify-content-end gap-2">
@@ -252,7 +250,91 @@ const ModalTransaction = ({
                                 Cancel
                             </Button>
                             <Button type="submit" variant="primary">
-                                {editProductIndex !== null ? 'Save Changes' : 'Add New Record'}
+                                Add New Record
+                            </Button>
+                        </div>
+                    </Form>
+                </Modal.Body>
+            </Modal>
+
+            {/* EDIT PRODUCT MODAL */}
+            <Modal show={showEditProductModal} onHide={() => setShowEditProductModal(false)} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Edit Product</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form onSubmit={handleSaveProduct}>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Product Name</Form.Label>
+                            <Form.Control type="text" name="productName" value={editProductData.productName} onChange={handleEditProductChange} />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Item ID</Form.Label>
+                            <Form.Control type="number" name="itemID" value={editProductData.itemID} onChange={handleEditProductChange} />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Purchased from Supplier</Form.Label>
+                            <Form.Control type="number" name="purchasedFromSupplier" value={editProductData.purchasedFromSupplier} onChange={handleEditProductChange} min="0" />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Return to Supplier</Form.Label>
+                            <Form.Control type="number" name="returnToSupplier" value={editProductData.returnToSupplier} onChange={handleEditProductChange} min="0" />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Transfer from other Warehouse</Form.Label>
+                            <Form.Control type="text" name="transferFromWarehouse" value={editProductData.transferFromWarehouse} onChange={handleEditProductChange} />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Transfer to other Warehouse</Form.Label>
+                            <Form.Control type="text" name="transferToWarehouse" value={editProductData.transferToWarehouse} onChange={handleEditProductChange} />
+                        </Form.Group>
+
+                        <Row>
+                            <Col>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Issued Quantity</Form.Label>
+                                    <Form.Control type="number" name="issuedQuantity" value={editProductData.issuedQuantity} onChange={handleEditProductChange} min="0" />
+                                </Form.Group>
+                            </Col>
+                            <Col>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Returned Quantity</Form.Label>
+                                    <Form.Control type="number" name="returnedQuantity" value={editProductData.returnedQuantity} onChange={handleEditProductChange} min="0" />
+                                </Form.Group>
+                            </Col>
+                        </Row>
+
+                        <Row>
+                            <Col>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Consumption</Form.Label>
+                                    <Form.Control type="number" name="consumption" value={calculateConsumption(editProductData)} readOnly />
+                                </Form.Group>
+                            </Col>
+                            <Col>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Cost</Form.Label>
+                                    <Form.Control type="number" name="cost" value={editProductData.cost} onChange={handleEditProductChange} required min="0" />
+                                </Form.Group>
+                            </Col>
+                        </Row>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Total</Form.Label>
+                            <Form.Control type="number" name="total" value={calculateTotal(editProductData)} readOnly />
+                        </Form.Group>
+
+                        <div className="d-flex justify-content-end gap-2">
+                            <Button variant="danger" onClick={() => setShowEditProductModal(false)}>
+                                Cancel
+                            </Button>
+                            <Button type="submit" variant="primary">
+                                Save Changes
                             </Button>
                         </div>
                     </Form>

@@ -54,7 +54,22 @@ const Transactions = () => {
     };
 
     const handleShowProductModal = () => setShowProductModal(true);
-    const handleCloseProductModal = () => setShowProductModal(false);
+    const handleCloseProductModal = () => {
+        setShowProductModal(false);
+        setProductData({
+            productName: "",
+            itemID: "",
+            purchasedFromSupplier: "",
+            returnToSupplier: "",
+            transferFromWarehouse: "",
+            transferToWarehouse: "",
+            issuedQuantity: "",
+            returnedQuantity: "",
+            consumption: "",
+            cost: "",
+            total: ""
+        });
+    };
 
     // Handle input changes for transaction modal
     const handleTransactionChange = (e) => {
