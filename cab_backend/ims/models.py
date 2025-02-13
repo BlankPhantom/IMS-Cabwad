@@ -4,6 +4,14 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver    
 
 # Create your models here.
+class User(models.Model):  
+    userID = models.AutoField(primary_key=True)
+    username = models.CharField(max_length=500, unique=True)
+    password = models.CharField(max_length=500)
+    email = models.EmailField(max_length=500)
+    created_at = models.DateTimeField(default= timezone.now)
+    updated_at = models.DateTimeField(default= timezone.now, null=True)
+
 class Classification(models.Model):
     classificationID = models.AutoField(primary_key=True)
     classification = models.CharField(max_length=500)
