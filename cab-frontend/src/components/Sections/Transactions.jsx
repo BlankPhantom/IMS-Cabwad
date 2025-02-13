@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import "../table.css";
+import { v4 as uuidv4 } from 'uuid';
 import { Container, Table, Col, Row, Button } from "react-bootstrap";
 import MonthYearPicker from "../MonthYearPicker";
 import BtnAddTransaction from "../Button/BtnAddTransaction";
 import ModalTransaction from "../Modals/ModalTransaction";
-import BtnEditDeleteTransaction from "../Button/BtnEditDeleteTransaction,";
+import BtnEditDeleteTransaction from "../Button/BtnEditDeleteTransaction";
 
 const Transactions = () => {
     const [showTransactionModal, setShowTransactionModal] = useState(false);
@@ -38,6 +39,7 @@ const Transactions = () => {
 
     // Handle modal toggling
     const handleShowTransactionModal = () => setShowTransactionModal(true);
+
     const handleCloseTransactionModal = () => {
         setShowTransactionModal(false);
         setTransactionData({
@@ -70,6 +72,8 @@ const Transactions = () => {
             total: ""
         });
     };
+
+    const handleCloseTransactionModalND = () => { setShowTransactionModal(false); }
 
     // Handle input changes for transaction modal
     const handleTransactionChange = (e) => {
@@ -110,14 +114,16 @@ const Transactions = () => {
             total: ""
         });
 
-        handleCloseProductModal(); // Close product modal and return to transaction modal
+        handleCloseProductModal();
+        handleShowTransactionModal();
     };
 
     // Submit transaction
     const handleSubmitTransaction = (e) => {
         e.preventDefault();
-        setTransactions([...transactions, transactionData]); // Add new transaction to the list
-        console.log("New Transaction Data:", transactionData);
+        const newTransaction = { ...transactionData, id: uuidv4() }; // Add unique ID to transaction
+        setTransactions([...transactions, newTransaction]); // Add new transaction to the list
+        console.log("New Transaction Data:", newTransaction);
         handleCloseTransactionModal();
     };
 
@@ -129,16 +135,8 @@ const Transactions = () => {
         setTransactions(updatedTransactions);
     };
 
-    const handleDelete = (transactionId, productId) => {
-        const updatedTransactions = transactions.map(transaction => {
-            if (transaction.id === transactionId) {
-                return {
-                    ...transaction,
-                    products: transaction.products.filter(product => product.id !== productId)
-                };
-            }
-            return transaction;
-        });
+    const handleDelete = (mris) => {
+        const updatedTransactions = transactions.filter(transaction => transaction.mris !== mris);
         setTransactions(updatedTransactions);
     };
 
@@ -198,9 +196,13 @@ const Transactions = () => {
                                             <td colSpan="12"></td>
                                             <td rowSpan={transaction.products.length + 1}>
                                                 <BtnEditDeleteTransaction
-                                                    onEdit={() => handleEdit(transaction)}
-                                                    onDelete={() => handleDelete(transaction.id)}
+                                                    onEdit={handleEdit}
+                                                    onDelete={() => handleDelete(transaction.mris)}
                                                     transaction={transaction}
+                                                    handleTransactionChange={handleTransactionChange}
+                                                    handleShowProductModal={handleShowProductModal}
+                                                    handleCloseTransactionModalND={handleCloseTransactionModalND}
+                                                    handleShowTransactionModal={handleShowTransactionModal}
                                                 />
                                             </td>
                                         </tr>
@@ -236,12 +238,14 @@ const Transactions = () => {
 
             <ModalTransaction
                 showTransactionModal={showTransactionModal}
+                handleShowTransactionModal={handleShowTransactionModal}
                 handleCloseTransactionModal={handleCloseTransactionModal}
                 handleSubmitTransaction={handleSubmitTransaction}
                 transactionData={transactionData}
                 handleTransactionChange={handleTransactionChange}
                 showProductModal={showProductModal}
                 handleCloseProductModal={handleCloseProductModal}
+                handleCloseTransactionModalND={handleCloseTransactionModalND}
                 handleAddProduct={handleAddProduct}
                 productData={productData}
                 handleProductChange={handleProductChange}
