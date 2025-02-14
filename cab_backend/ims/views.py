@@ -97,18 +97,19 @@ def item_create(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['PUT'])
+@api_view(['PUT', 'PATCH'])
 def item_update(request, id):
     try:
-        items = Item.objects.get(itemID=id)
+        item = Item.objects.get(itemID=id)
     except Item.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     
-    serializer = ItemSerializer(items, data=request.data)
+    serializer = ItemSerializer(item, data=request.data, partial=True, context={'request': request})
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['DELETE'])
 def item_delete(id):    

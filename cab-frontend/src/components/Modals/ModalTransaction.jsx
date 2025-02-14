@@ -127,7 +127,7 @@ const ModalTransaction = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>MRIS/DR</Form.Label>
-                            <Form.Control type="text" name="mris" value={transactionData.mris} onChange={handleTransactionChange} required />
+                            <Form.Control type="number" name="mris" value={transactionData.mris} onChange={handleTransactionChange} required />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
