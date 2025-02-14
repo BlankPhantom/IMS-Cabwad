@@ -150,7 +150,11 @@ const Masterlist = () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Token ${token}`, 
                 },
-                body: JSON.stringify(currentItem),
+                body: JSON.stringify({
+                    ...currentItem,
+                    classificationID: currentItem.classificationID || selectedClassification,
+                    measurementID: currentItem.measurementID || selectedMeasurement
+                }),
             });
             if (!response.ok) {
                 throw new Error("Failed to update item");
@@ -195,7 +199,7 @@ const Masterlist = () => {
                                 <td>{item.itemID}</td>
                                 <td>{item.itemName}</td>
                                 <td>{item.classificationName}</td>
-                                <td>
+                                <td>  
                                     <BtnEditDeleteMaster
                                         onEdit={() => handleEdit(item.itemID)}
                                         onDelete={() => handleDelete(item.itemID)}

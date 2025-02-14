@@ -20,6 +20,7 @@ const EditMasterModal = ({ show, handleClose, itemData, handleInputChange, handl
         const selectedId = parseInt(e.target.value, 10);
         setSelectedClassification(selectedId);
     };
+
     return (
         <Modal show={show} onHide={handleClose} centered>
             <Modal.Header closeButton>
