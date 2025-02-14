@@ -6,7 +6,13 @@ import MonthYearPicker from "../MonthYearPicker";
 
 const MonthlyConsumption = () => {
     return (
-        <Container style={{ width: '90%' }} fluid className="d-flex flex-column justify-content-center mt-5">
+        <Container style={{ width: '100%' }} fluid className="d-flex flex-column justify-content-center mt-2">
+            <Row className="sectionTitle">
+                <Col>
+                    <h2 style={{fontWeight: '650'}}>Monthly Consumption</h2>
+                </Col>
+            </Row>
+
             <Row>
                 <Col>
                     < MonthYearPicker />

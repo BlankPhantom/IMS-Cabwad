@@ -1,19 +1,59 @@
-import React from "react";
-
-import { Button, Container, Col, Row, Card } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { Button, Container, Col, Row, Card, Form } from "react-bootstrap";
 import MonthYearPicker from "../MonthYearPicker";
+import { API_ENDPOINTS } from "../../config";
 
 const SummaryReport = () => {
+    const [selectedSection, setSelectedSection] = useState("");
+    const [sections, setSections] = useState([]);
+
+    useEffect(() => {
+        fetchSections();
+    }, []);
+
+    const fetchSections = async () => {
+        try {
+            const response = await fetch(API_ENDPOINTS.SECTION_LIST);
+            const data = await response.json();
+            setSections(data);
+        } catch (error) {
+            console.error("Error fetching sections:", error);
+        }
+    };
+
+    const handleSectionChange = (event) => {
+        setSelectedSection(event.target.value);
+    };
+
     return (
-        <Container>
-            <Row className="mt-3">
+        <Container style={{ width: '95%' }} fluid className="d-flex flex-column justify-content-center mt-2">
+            <Row className="sectionTitle">
                 <Col>
-                    < MonthYearPicker />
+                    <h2 style={{ fontWeight: '650' }}>Summary Report</h2>
+                </Col>
+            </Row>
+
+            {/* MonthYearPicker & Section Dropdown in one Row */}
+            <Row className="mt-3 d-flex align-items-center justify-content-between">
+                <Col md={6}>
+                    <MonthYearPicker />
+                </Col>
+                <Col md={4}>
+                    <Form.Group controlId="sectionSelect">
+                        <Form.Select value={selectedSection} onChange={handleSectionChange}>
+                            <option value="">-- Select Section --</option>
+                            {sections.map((section) => (
+                                <option key={section.id} value={section.id}>
+                                    {section.name}
+                                </option>
+                            ))}
+                        </Form.Select>
+                    </Form.Group>
                 </Col>
             </Row>
 
             <Row>
-                <Col className="d-flex justify-content-center mt-5">
+                <Col className="d-flex justify-content-center mt-3">
                     <Button className="shadow">
                         GENERATE MONTHLY REPORT
                     </Button>

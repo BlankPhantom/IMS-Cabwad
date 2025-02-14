@@ -3,10 +3,12 @@ import { Outlet } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
 import SideNav from "../SideNav";
 import CabFooter from "../CabFooter";
+import TopNav from "../TopNav";
 
 const DashBoard = () => {
     return (
         <div>
+            <TopNav />
             <Row noGutters>
                 <Col xs={2}>
                     <SideNav />

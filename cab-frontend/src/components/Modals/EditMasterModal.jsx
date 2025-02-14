@@ -76,8 +76,8 @@ const EditMasterModal = ({ show, handleClose, itemData, handleInputChange, handl
                             >
                         </Form.Control>
                     </Form.Group>
-                    <Form.Group>
-                        <Button variant="secondary" onClick={handleClose}>
+                    <Form.Group className='d-flex justify-content-end'> 
+                        <Button variant="danger" onClick={handleClose} className='me-2'>
                             Cancel
                         </Button>
                         <Button type="submit" variant="primary">

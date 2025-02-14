@@ -6,7 +6,13 @@ import MonthYearPicker from "../MonthYearPicker";
 
 const RunningBalance = () => {
     return (
-        <Container style={{ width: '100%' }} fluid className="d-flex flex-column justify-content-center mt-5">
+        <Container style={{ width: '100%' }} fluid className="d-flex flex-column justify-content-center mt-2">
+            <Row className="sectionTitle">
+                <Col>
+                    <h2 style={{fontWeight: '650'}}>Running Balance</h2>
+                </Col>
+            </Row>
+
             <Row>
                 <Col>
                     < MonthYearPicker />
@@ -24,12 +30,12 @@ const RunningBalance = () => {
                     <thead>
                         <th>Item ID</th>
                         <th>Product Name</th>
-                        <th>Unit of <br/> Measurement</th>
+                        <th>Unit of <br /> Measurement</th>
                         <th>Beginning Balance</th>
-                        <th>Purchased from <br/> Supplier</th>
+                        <th>Purchased from <br /> Supplier</th>
                         <th>Return to Supplier</th>
-                        <th>Transfer From <br/> Other Warehouse</th>
-                        <th>Transfer to <br/> Other Warehouse</th>
+                        <th>Transfer From <br /> Other Warehouse</th>
+                        <th>Transfer to <br /> Other Warehouse</th>
                         <th>Issued Qty.</th>
                         <th>Returned Qty.</th>
                         <th>Consumption</th>

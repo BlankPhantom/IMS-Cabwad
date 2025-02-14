@@ -41,6 +41,11 @@ html {
   color: rgb(71, 71, 71);
 }
 
+.sectionTitle{
+  color: rgb(71, 71, 71);
+  text-align: center;
+}
+
 .genReport {
   background-color: blanchedalmond !important;
 }
@@ -68,4 +73,14 @@ html {
     display: block;
     padding: 10px;
   }
+}
+
+.topNav {
+  width: 100%;
+  position: fixed;
+  top: 0;
+  z-index: -1;
+  height: 45px;
+  background-color: #0042a5 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import '../App.css';
 import { Nav, Modal, Button } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import Logo from "/src/assets/cabwadLogo.png";
 
 const SideNav = () => {
     const location = useLocation(); // Get current route
@@ -18,14 +17,11 @@ const SideNav = () => {
     return (
         <>
             <div className="sideNav" style={{ width: "200px", height: "100vh", backgroundColor: "#005ce5", position: "fixed" }}>
-                <div className="d-flex align-items-center p-3">
-                    <img className="logo img-fluid" src={Logo} alt="Cabuyao Water District" style={{ height: "60px" }} />
-                </div>
                 <Nav className="flex-column p-3">
                     {["Masterlist", "Beginning Balance", "Transactions", "Running Balance", "Monthly Consumption", "Summary Report"].map((item, index) => {
                         const path = `/dashboard/${item.toLowerCase().replace(/\s+/g, '-')}`;
                         return (
-                            <Nav.Link
+                            <Nav.Link style={{ fontWeight: "600", textShadow: "1px 1px 1px #000" }}
                                 as={Link}
                                 to={path}
                                 key={index}
@@ -37,7 +33,7 @@ const SideNav = () => {
                     })}
                 </Nav>
                 <Nav className="mt-auto p-3">
-                    <Nav.Link
+                    <Nav.Link style={{ fontWeight: "600", textShadow: "1px 1px 1px #000" }}
                         className="text-white"
                         onClick={() => setShowLogoutModal(true)}
                     >

@@ -6,7 +6,7 @@ const CabFooter = () => {
         <footer 
             style={{ 
                 backgroundColor: "#FFB600", 
-                padding: "15px 0", 
+                padding: "8px 0", 
                 textAlign: "center",
                 position: "fixed",
                 bottom: 0,
@@ -15,7 +15,7 @@ const CabFooter = () => {
             }}
         >
             <Container>
-                <p style={{ margin: 0, fontWeight: "bold", fontSize: "16px", marginRight: '5px' }}>
+                <p style={{ margin: 0, fontWeight: "bold", fontSize: "12px", marginRight: '5px' }}>
                      COPYRIGHT © 2025 |  
                     <a 
                         style={{ color: "blue", textDecoration: "none", fontWeight: "bold", marginRight: '5px', marginLeft: '5px'}}

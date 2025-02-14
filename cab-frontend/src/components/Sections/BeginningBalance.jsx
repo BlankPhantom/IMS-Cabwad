@@ -72,7 +72,12 @@ const BeginningBalance = () => {
     };
 
     return (
-        <Container style={{ width: '100%' }} fluid className="d-flex flex-column justify-content-center mt-5">
+        <Container style={{ width: '100%' }} fluid className="d-flex flex-column justify-content-center mt-2">
+            <Row className="sectionTitle">
+                <Col>
+                    <h2 style={{fontWeight: '650'}}>Beginning Balance</h2>
+                </Col>
+            </Row>
             <Row>
                 <Col>
                     <MonthYearPicker onMonthYearChange={handleMonthYearChange} />
@@ -94,7 +99,6 @@ const BeginningBalance = () => {
                         <th>Available Stocks</th>
                         <th>Average Unit <br/> Cost</th>
                         <th>Total Cost of <br/> Available Stocks</th>
-                        <th>Actions</th>
                     </thead>
                     <tbody>
                         {items.map((item) => (

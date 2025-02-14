@@ -150,11 +150,7 @@ const Masterlist = () => {
                     'Content-Type': 'application/json',
                     'Authorization': `Token ${token}`, 
                 },
-                body: JSON.stringify({
-                    ...currentItem,
-                    classificationID: currentItem.classificationID || selectedClassification,
-                    measurementID: currentItem.measurementID || selectedMeasurement
-                }),
+                body: JSON.stringify(currentItem),
             });
             if (!response.ok) {
                 throw new Error("Failed to update item");
@@ -176,7 +172,12 @@ const Masterlist = () => {
     };
 
     return (
-        <Container style={{ width: '90%' }} fluid className="d-flex flex-column justify-content-center mt-5">
+        <Container style={{ width: '100%' }} fluid className="d-flex flex-column justify-content-center mt-2">
+            <Row className="sectionTitle">
+                <Col>
+                    <h2 style={{fontWeight: '650'}}>Master List</h2>
+                </Col>
+            </Row>
             <Row>
                 <Col className="d-flex justify-content-end mt-3">
                     <input type="search" className="" placeholder="Search" style={{ width: '300px' }} />
