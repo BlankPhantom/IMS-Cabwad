@@ -6,3 +6,4 @@ whitenoise
 pymysql
 django-cors-headers
 django-seed
+cryptography
