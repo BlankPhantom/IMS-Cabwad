@@ -10,7 +10,8 @@ const SideNav = () => {
     const [showLogoutModal, setShowLogoutModal] = useState(false); // State to manage modal visibility
 
     const handleLogout = () => {
-        // Perform logout logic here
+        localStorage.removeItem("access_token"); // Remove token from local storage
+        localStorage.removeItem("user_id"); // Remove user ID from local storage
         navigate("/"); // Redirect to login page after logout
     };
 

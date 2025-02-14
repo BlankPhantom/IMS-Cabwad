@@ -1,5 +1,11 @@
 from rest_framework import serializers
+from django.contrib.auth.models import User
 from ims.models import Item, Classification, Measurement, Section, Purpose, Transaction, RunningBalance, MonthlyConsumption
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id','username','email')
 
 class ItemSerializer(serializers.ModelSerializer):
     classificationName = serializers.CharField(source='classificationID.classification', read_only=True)
@@ -26,7 +32,7 @@ class ItemSerializer(serializers.ModelSerializer):
     def validate(self, data):
         itemName = data.get('itemName')
         if Item.objects.filter(itemName=itemName).exists():
-            raise serializers.ValidationError("An item with this name already exists.")
+            raise serializers.ValidationError("An item with this name already exists")
         return data
 
 class ClassificationSerializer(serializers.ModelSerializer):

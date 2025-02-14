@@ -3,15 +3,6 @@ from django.utils import timezone
 from django.db.models.signals import pre_save
 from django.dispatch import receiver    
 
-# Create your models here.
-class User(models.Model):  
-    userID = models.AutoField(primary_key=True)
-    username = models.CharField(max_length=500, unique=True)
-    password = models.CharField(max_length=500)
-    email = models.EmailField(max_length=500)
-    created_at = models.DateTimeField(default= timezone.now)
-    updated_at = models.DateTimeField(default= timezone.now, null=True)
-
 class Classification(models.Model):
     classificationID = models.AutoField(primary_key=True)
     classification = models.CharField(max_length=500)
@@ -64,7 +55,7 @@ class Transaction(models.Model):
     supplier = models.CharField(max_length=500)
     requestedBy = models.CharField(max_length=500)
     Area = models.CharField(max_length=500)
-    purchasedQty = models.IntegerField(blank=True, null=True)
+    purchasedQty = models.IntegerField(blank=True, default=0)
     returnToSupplier = models.CharField(max_length=500)
     transferFromWH = models.CharField(max_length=500)
     transferToWH = models.CharField(max_length=500)
@@ -75,6 +66,35 @@ class Transaction(models.Model):
     totalCost = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     created_at = models.DateTimeField(default= timezone.now)
     updated_at = models.DateTimeField(default= timezone.now)
+
+# class Transaction(models.Model):
+#     transactionID = models.AutoField(primary_key=True)
+#     transactDetailsID = models.ForeignKey('TransactionDetails', on_delete=models.CASCADE)
+#     transactProductID = models.ForeignKey('TransactionProduct', on_delete=models.CASCADE)
+
+# class TransactionDetails(models.Model):
+#     transactDetailsID = models.AutoField(primary_key=True)
+#     date = models.DateField(default=timezone.now)
+#     week = models.CharField(max_length=25)
+#     mris = models.IntegerField(null=False)
+#     supplier = models.CharField(max_length=500)
+#     requestedBy = models.CharField(max_length=500)
+#     section = models.CharField(max_length=500)
+#     purpose = models.CharField(max_length=500)
+
+# class TransactionProduct(models.Model):
+#     transactionProductID = models.AutoField(primary_key=True)
+#     itemID = models.ForeignKey(Item, on_delete=models.CASCADE) 
+#     area = models.CharField(max_length=500)
+#     purchasedFromSupp = models.IntegerField()
+#     returnToSupplier = models.CharField(max_length=500)
+#     transferFromWH = models.CharField(max_length=500)
+#     transferToWH = models.CharField(max_length=500)
+#     issuedQty = models.IntegerField(blank=True, default=0)
+#     returnedQty = models.IntegerField(blank=True, default=0)
+#     consumption = models.IntegerField(blank=True, default=0, negative=True)
+
+
 
 class RunningBalance(models.Model):
     runningBalID = models.AutoField(primary_key=True, default=1)

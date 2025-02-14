@@ -3,50 +3,14 @@ import { useState } from "react";
 import { API_ENDPOINTS } from "../../config";
 import { Button, Modal, Form } from "react-bootstrap";
 
-const BtnAddNewItem = ({fetchItems}) => {
+const BtnAddNewItem = ({fetchItems, classifications, measurements}) => {
     const [showModal, setShowModal] = useState(false);
-    const [selectedClassification, setSelectedClassification] = useState('');
-    const [classifications, setClassifications] = useState([]);
     const [selectedMeasurement, setSelectedMeasurement] = useState('');
-    const [measurements, setMeasurements] = useState([]);
-
-    const fetchClassifications = async() => {
-        try {
-            const response = await fetch(API_ENDPOINTS.CLASSIFICATIONS_LIST);
-            if (!response.ok) {
-                throw new Error("Failed to fetch classifications");
-            }
-            const data = await response.json();
-            setClassifications(data);
-        } catch (e) {
-            console.error("Error fetching classifications:", e);
-        }
-    }
-
-    const fetchMeasurements = async() => {
-        try {
-            const response = await fetch(API_ENDPOINTS.MEASUREMENTS_LIST);
-            if (!response.ok) {
-                throw new Error("Failed to fetch measurements");
-            }
-            const data = await response.json();
-            setMeasurements(data);
-        }
-        catch{
-            console.error("Error fetching measurements:", e);
-        }
-    }
-
-    useEffect(() => {
-        fetchClassifications();
-        fetchMeasurements(); 
-    }, []);
+    const [selectedClassification, setSelectedClassification] = useState('');
 
     // Handle opening/closing modal
     const handleShow = () => setShowModal(true);
-    const handleClose = () => {
-        setShowModal(false);
-    };
+    const handleClose = () => setShowModal(false);
 
     const handleMeasureChange = (e) => {
         const selectedId = parseInt(e.target.value, 10);

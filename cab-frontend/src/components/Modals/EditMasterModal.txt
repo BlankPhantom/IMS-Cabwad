@@ -6,11 +6,6 @@ const EditMasterModal = ({ show, handleClose, itemData, handleInputChange, handl
     const [selectedMeasurement, setSelectedMeasurement] = useState('');
     const [selectedClassification, setSelectedClassification] = useState('');
 
-    useEffect(() => {
-        setSelectedMeasurement(itemData?.measurementID || '');
-        setSelectedClassification(itemData?.classificationID || '');
-    }, [itemData]);
-
     const handleMeasureChange = (e) => {
         const selectedId = parseInt(e.target.value, 10);
         setSelectedMeasurement(selectedId);

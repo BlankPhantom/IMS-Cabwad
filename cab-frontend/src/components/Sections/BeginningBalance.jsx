@@ -12,14 +12,37 @@ const BeginningBalance = () => {
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     
+    // fetchItems without token 
+    // const fetchItems = async() => {
+    //     try {
+    //         const response = await fetch(API_ENDPOINTS.ITEM_LIST); // Replace with your actual endpoint
+    //             if (!response.ok) {
+    //             throw new Error("Failed to fetch items");
+    //         }
+    //         const data = await response.json();
+    //         setItems(data);
+    //     } catch (e) {
+    //         console.error("Error fetching items:", e);
+    //     }
+    // }
+
+    // fetchItems with token
     const fetchItems = async() => {
+        const token = localStorage.getItem('access_token');
         try {
-            const response = await fetch(API_ENDPOINTS.ITEM_LIST); // Replace with your actual endpoint
-                if (!response.ok) {
+            const response = await fetch(API_ENDPOINTS.ITEM_LIST, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Token ${token}`,
+                },
+            }); // Replace with your actual endpoint
+            if (!response.ok) {
                 throw new Error("Failed to fetch items");
+            } else{
+                const data = await response.json();
+                setItems(data);
             }
-            const data = await response.json();
-            setItems(data);
         } catch (e) {
             console.error("Error fetching items:", e);
         }
