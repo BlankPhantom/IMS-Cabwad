@@ -11,6 +11,7 @@ const Transactions = () => {
     const [showTransactionModal, setShowTransactionModal] = useState(false);
     const [showProductModal, setShowProductModal] = useState(false);
     const [transactions, setTransactions] = useState([]); // State to store all transactions
+    const [transactionType, setTransactionType] = useState('');
     const [transactionData, setTransactionData] = useState({
         date: getCurrentDate(),
         week: getWeekNumber(getCurrentDate()),
@@ -24,6 +25,7 @@ const Transactions = () => {
     });
 
     const [productData, setProductData] = useState({
+        transactionType: "",
         productName: "",
         itemID: "",
         purchasedFromSupplier: "",
@@ -36,6 +38,7 @@ const Transactions = () => {
         cost: "",
         total: ""
     });
+
 
     // Handle modal toggling
     const handleShowTransactionModal = () => setShowTransactionModal(true);
@@ -50,17 +53,18 @@ const Transactions = () => {
             requestedBy: "",
             section: "",
             purpose: "",
-            area: "",
             products: [] // Reset products on close
         });
     };
 
     const handleShowProductModal = () => setShowProductModal(true);
+
     const handleCloseProductModal = () => {
         setShowProductModal(false);
         setProductData({
             productName: "",
             itemID: "",
+            area: "",
             purchasedFromSupplier: "",
             returnToSupplier: "",
             transferFromWarehouse: "",
@@ -71,6 +75,7 @@ const Transactions = () => {
             cost: "",
             total: ""
         });
+        setTransactionType('');
     };
 
     const handleCloseTransactionModalND = () => { setShowTransactionModal(false); }
@@ -92,17 +97,53 @@ const Transactions = () => {
         setProductData({ ...productData, [e.target.name]: e.target.value });
     };
 
+    const handleTransactionTypeChange = (e) => {
+        const { value } = e.target;
+        setTransactionType(value);
+
+        if (showEditProductModal) {
+            setEditProductData((prevData) => ({
+                ...prevData,
+                transactionType: value,
+                purchasedFromSupplier: "",
+                returnToSupplier: "",
+                issuedQuantity: "",
+                returnedQuantity: "",
+                consumption: "",
+            }));
+        } else {
+            setProductData((prevData) => ({
+                ...prevData,
+                transactionType: value,
+                productName: "",
+                itemID: "",
+                area: "",
+                purchasedFromSupplier: "",
+                returnToSupplier: "",
+                transferFromWarehouse: "",
+                transferToWarehouse: "",
+                issuedQuantity: "",
+                returnedQuantity: "",
+                consumption: "",
+                cost: "",
+                total: ""
+            }));
+        }
+    };
+
     // Add product to the list
     const handleAddProduct = (e) => {
         e.preventDefault();
         setTransactionData({
             ...transactionData,
-            products: [...transactionData.products, productData] // Append new product
+            products: [...transactionData.products, { ...productData, transactionType }] // Append new product with transactionType
         });
 
         setProductData({ // Reset product fields
+            transactionType: "",
             productName: "",
             itemID: "",
+            area: "",
             purchasedFromSupplier: "",
             returnToSupplier: "",
             transferFromWarehouse: "",
@@ -114,6 +155,7 @@ const Transactions = () => {
             total: ""
         });
 
+        setTransactionType('');
         handleCloseProductModal();
         handleShowTransactionModal();
     };
@@ -244,12 +286,16 @@ const Transactions = () => {
                 transactionData={transactionData}
                 handleTransactionChange={handleTransactionChange}
                 showProductModal={showProductModal}
-                handleCloseProductModal={handleCloseProductModal}
+                handleCloseProductModal={handleCloseProductModal} // Ensure this is passed correctly
                 handleCloseTransactionModalND={handleCloseTransactionModalND}
                 handleAddProduct={handleAddProduct}
                 productData={productData}
                 handleProductChange={handleProductChange}
                 handleShowProductModal={handleShowProductModal}
+                transactionType={transactionType}
+                setTransactionType={setTransactionType}
+                handleTransactionTypeChange={handleTransactionTypeChange}
+                setProductData={setProductData}
             />
         </Container>
     );

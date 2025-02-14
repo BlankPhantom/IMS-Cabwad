@@ -1,29 +1,95 @@
-import { faPenToSquare, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
 import { Modal, Form, Button, Row, Col } from 'react-bootstrap';
+import { faPenToSquare, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-const ModalTransaction = ({
-    showTransactionModal,
-    handleShowTransactionModal,
-    handleCloseTransactionModal,
-    handleCloseTransactionModalND,
-    handleSubmitTransaction,
+const EditTransactionModal = ({
+    show,
+    handleClose,
+    handleSubmit,
     transactionData,
-    handleTransactionChange,
-    showProductModal,
-    handleCloseProductModal,
-    handleAddProduct,
-    transactionType,
-    setTransactionType,
-    productData,
-    handleProductChange,
-    handleShowProductModal,
-    setProductData
+    handleChange,
+    setEditTransactionData
 }) => {
+    const [productData, setProductData] = useState({
+        transactionType: "",
+        productName: "",
+        itemID: "",
+        purchasedFromSupplier: "",
+        returnToSupplier: "",
+        transferFromWarehouse: "",
+        transferToWarehouse: "",
+        issuedQuantity: "",
+        returnedQuantity: "",
+        consumption: "",
+        cost: "",
+        total: ""
+    });
+
     const [editProductIndex, setEditProductIndex] = useState(null);
     const [showEditProductModal, setShowEditProductModal] = useState(false);
+    const [showProductModal, setShowProductModal] = useState(false);
     const [editProductData, setEditProductData] = useState({});
+    const [transactionType, setTransactionType] = useState("");
+
+    const handleProductChange = (e) => {
+        const { name, value } = e.target;
+        setProductData({ ...productData, [name]: value });
+    };
+
+    const handleAddProduct = (e) => {
+        e.preventDefault();
+        setEditTransactionData({
+            ...transactionData,
+            products: [...transactionData.products, productData]
+        });
+        setProductData({
+            transactionType: "",
+            productName: "",
+            itemID: "",
+            purchasedFromSupplier: "",
+            returnToSupplier: "",
+            transferFromWarehouse: "",
+            transferToWarehouse: "",
+            issuedQuantity: "",
+            returnedQuantity: "",
+            consumption: "",
+            cost: "",
+            total: ""
+        });
+        setShowProductModal(false);
+    };
+
+    const handleEditProduct = (index) => {
+        const product = transactionData.products[index];
+        setEditProductIndex(index);
+        setEditProductData(product);
+        setTransactionType(product.transactionType || ''); // Set the transaction type based on the product being edited
+        setShowEditProductModal(true);
+    };
+
+    const handleDeleteProduct = (index) => {
+        const updatedProducts = transactionData.products.filter((_, i) => i !== index);
+        setEditTransactionData({ ...transactionData, products: updatedProducts });
+    };
+
+    const handleSaveProduct = (e) => {
+        e.preventDefault();
+        const updatedProducts = [...transactionData.products];
+        if (editProductIndex !== null) {
+            updatedProducts[editProductIndex] = editProductData;
+            setEditProductIndex(null);
+        } else {
+            updatedProducts.push(productData);
+        }
+        setEditTransactionData({ ...transactionData, products: updatedProducts });
+        setShowEditProductModal(false);
+    };
+
+    const handleEditProductChange = (e) => {
+        const { name, value } = e.target;
+        setEditProductData((prevData) => ({ ...prevData, [name]: value }));
+    };
 
     const handleTransactionTypeChange = (e) => {
         const { value } = e.target;
@@ -43,7 +109,6 @@ const ModalTransaction = ({
             setProductData((prevData) => ({
                 ...prevData,
                 transactionType: value,
-                area: "",
                 purchasedFromSupplier: "",
                 returnToSupplier: "",
                 transferFromWarehouse: "",
@@ -70,79 +135,47 @@ const ModalTransaction = ({
         return Math.abs(purchased || consumption) * cost;
     };
 
-    const handleEditProduct = (index) => {
-        const product = transactionData.products[index];
-        setEditProductIndex(index);
-        setEditProductData(product);
-        setTransactionType(product.transactionType || ''); // Set the transaction type based on the product being edited
-        setShowEditProductModal(true);
-    };
-
-    const handleDeleteProduct = (index) => {
-        const updatedProducts = transactionData.products.filter((_, i) => i !== index);
-        handleTransactionChange({ target: { name: 'products', value: updatedProducts } });
-    };
-
-    const handleSaveProduct = (e) => {
-        e.preventDefault();
-        const updatedProducts = [...transactionData.products];
-        if (editProductIndex !== null) {
-            updatedProducts[editProductIndex] = editProductData;
-            setEditProductIndex(null);
-        } else {
-            updatedProducts.push(productData);
-        }
-        handleTransactionChange({ target: { name: 'products', value: updatedProducts } });
-        setShowEditProductModal(false);
-        handleCloseProductModal();
-    };
-
-    const handleEditProductChange = (e) => {
-        const { name, value } = e.target;
-        setEditProductData((prevData) => ({ ...prevData, [name]: value }));
-    };
-
     return (
         <>
-            <Modal show={showTransactionModal} size="lg" onHide={handleCloseTransactionModal} centered>
+            <Modal show={show} size="lg" onHide={handleClose} centered>
                 <Modal.Header closeButton>
-                    <Modal.Title>Record New Transaction</Modal.Title>
+                    <Modal.Title>Edit Transaction</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Form onSubmit={handleSubmitTransaction}>
+                    <Form onSubmit={handleSubmit}>
                         <Row>
                             <Col>
                                 <Form.Group className="mb-3">
                                     <Form.Label>Date</Form.Label>
-                                    <Form.Control type="date" name="date" value={transactionData.date} onChange={handleTransactionChange} disabled />
+                                    <Form.Control type="date" name="date" value={transactionData.date} onChange={handleChange} disabled />
                                 </Form.Group>
                             </Col>
                             <Col>
                                 <Form.Group className="mb-3">
                                     <Form.Label>Week</Form.Label>
-                                    <Form.Control type="text" name="week" value={"Week " + transactionData.week} onChange={handleTransactionChange} disabled />
+                                    <Form.Control type="text" name="week" value={"Week " + transactionData.week} onChange={handleChange} disabled />
                                 </Form.Group>
                             </Col>
                         </Row>
 
                         <Form.Group className="mb-3">
                             <Form.Label>MRIS/DR</Form.Label>
-                            <Form.Control type="text" name="mris" value={transactionData.mris} onChange={handleTransactionChange} required />
+                            <Form.Control type="text" name="mris" value={transactionData.mris} onChange={handleChange} required />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Label>Supplier</Form.Label>
-                            <Form.Control type="text" name="supplier" value={transactionData.supplier} onChange={handleTransactionChange} required />
+                            <Form.Control type="text" name="supplier" value={transactionData.supplier} onChange={handleChange} required />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Label>Requested By</Form.Label>
-                            <Form.Control type="text" name="requestedBy" value={transactionData.requestedBy} onChange={handleTransactionChange} required />
+                            <Form.Control type="text" name="requestedBy" value={transactionData.requestedBy} onChange={handleChange} required />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Label>Section</Form.Label>
-                            <Form.Select name="section" value={transactionData.section} onChange={handleTransactionChange} required>
+                            <Form.Select name="section" value={transactionData.section} onChange={handleChange} required>
                                 <option value="">Select Section</option>
                                 <option value="Section A">Section A</option>
                                 <option value="Section B">Section B</option>
@@ -152,7 +185,7 @@ const ModalTransaction = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Purpose</Form.Label>
-                            <Form.Select name="purpose" value={transactionData.purpose} onChange={handleTransactionChange} required>
+                            <Form.Select name="purpose" value={transactionData.purpose} onChange={handleChange} required>
                                 <option value="">Select Purpose</option>
                                 <option value="Purpose A">Purpose A</option>
                                 <option value="Purpose B">Purpose B</option>
@@ -161,7 +194,7 @@ const ModalTransaction = ({
                         </Form.Group>
 
                         <div className="d-flex justify-content-end">
-                            <Button onClick={() => { handleShowProductModal(); handleCloseTransactionModalND(); }} variant="primary">
+                            <Button onClick={() => setShowProductModal(true)} variant="primary">
                                 Add Product
                             </Button>
                         </div>
@@ -175,7 +208,7 @@ const ModalTransaction = ({
                                     {product.productName}
                                     <span
                                         style={{ color: "#ffcc00", marginRight: '5px', marginLeft: '5px', cursor: "pointer" }}
-                                        onClick={() => { handleEditProduct(index); handleCloseTransactionModalND(); }}
+                                        onClick={() => handleEditProduct(index)}
                                     >
                                         <FontAwesomeIcon icon={faPenToSquare} />
                                     </span>
@@ -189,12 +222,12 @@ const ModalTransaction = ({
                             ))}
                         </ul>
 
-                        <div className="d-flex justify-content-end gap-2">
-                            <Button variant="danger" onClick={handleCloseTransactionModal}>
+                        <div className="d-flex justify-content-end gap-2 mt-3">
+                            <Button variant="danger" onClick={handleClose}>
                                 Cancel
                             </Button>
                             <Button type="submit" variant="primary">
-                                Record New Transaction
+                                Save Changes
                             </Button>
                         </div>
                     </Form>
@@ -202,7 +235,7 @@ const ModalTransaction = ({
             </Modal>
 
             {/* ADD PRODUCT MODAL */}
-            <Modal show={showProductModal} onHide={handleCloseProductModal} centered>
+            <Modal show={showProductModal} onHide={() => setShowProductModal(false)} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>Add New Product</Modal.Title>
                 </Modal.Header>
@@ -225,16 +258,6 @@ const ModalTransaction = ({
                         <Form.Group className="mb-3">
                             <Form.Label>Item ID</Form.Label>
                             <Form.Control type="number" name="itemID" value={productData.itemID} onChange={handleProductChange} />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3">
-                            <Form.Label>Area</Form.Label>
-                            <Form.Select name="area" value={productData.area} onChange={handleProductChange} required>
-                                <option value="">Select Area</option>
-                                <option value="Area A">Area A</option>
-                                <option value="Area B">Area B</option>
-                                <option value="Area C">Area C</option>
-                            </Form.Select>
                         </Form.Group>
 
                         {transactionType === 'Purchase/Return' && (
@@ -276,12 +299,12 @@ const ModalTransaction = ({
                         )}
 
                         <Form.Group className="mb-3">
-                            <Form.Label>Transfer from other Warehouse</Form.Label>
+                            <Form.Label>Transfer from Warehouse</Form.Label>
                             <Form.Control type="text" name="transferFromWarehouse" value={productData.transferFromWarehouse} onChange={handleProductChange} />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
-                            <Form.Label>Transfer to other Warehouse</Form.Label>
+                            <Form.Label>Transfer to Warehouse</Form.Label>
                             <Form.Control type="text" name="transferToWarehouse" value={productData.transferToWarehouse} onChange={handleProductChange} />
                         </Form.Group>
 
@@ -296,7 +319,7 @@ const ModalTransaction = ({
                         </Form.Group>
 
                         <div className="d-flex justify-content-end gap-2">
-                            <Button variant="danger" onClick={() => { handleCloseProductModal(); handleShowTransactionModal(); }}>
+                            <Button variant="danger" onClick={() => setShowProductModal(false)}>
                                 Cancel
                             </Button>
                             <Button type="submit" variant="primary">
@@ -310,13 +333,13 @@ const ModalTransaction = ({
             {/* EDIT PRODUCT MODAL */}
             <Modal show={showEditProductModal} onHide={() => setShowEditProductModal(false)} centered>
                 <Modal.Header closeButton>
-                    <Modal.Title>Edit Product</Modal.Title>
+                    <Modal.Title>{editProductIndex !== null ? "Edit Product" : "Add Product"}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form onSubmit={handleSaveProduct}>
                         <Form.Group className="mb-3">
                             <Form.Label>Transaction Type</Form.Label>
-                            <Form.Select name="transactionType" value={editProductData.transactionType} onChange={handleTransactionTypeChange} required>
+                            <Form.Select name="transactionType" value={editProductData.transactionType || productData.transactionType} onChange={handleTransactionTypeChange} required>
                                 <option value="">Select Transaction Type</option>
                                 <option value="Purchase/Return">Purchase/Return</option>
                                 <option value="Issue/Return">Issue/Return</option>
@@ -325,34 +348,24 @@ const ModalTransaction = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Product Name</Form.Label>
-                            <Form.Control type="text" name="productName" value={editProductData.productName} onChange={handleEditProductChange} />
+                            <Form.Control type="text" name="productName" value={editProductData.productName || productData.productName} onChange={handleEditProductChange} required />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Label>Item ID</Form.Label>
-                            <Form.Control type="number" name="itemID" value={editProductData.itemID} onChange={handleEditProductChange} />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3">
-                            <Form.Label>Area</Form.Label>
-                            <Form.Select name="area" value={editProductData.area} onChange={handleEditProductChange} required>
-                                <option value="">Select Area</option>
-                                <option value="Area A">Area A</option>
-                                <option value="Area B">Area B</option>
-                                <option value="Area C">Area C</option>
-                            </Form.Select>
+                            <Form.Control type="text" name="itemID" value={editProductData.itemID || productData.itemID} onChange={handleEditProductChange} required />
                         </Form.Group>
 
                         {transactionType === 'Purchase/Return' && (
                             <>
                                 <Form.Group className="mb-3">
                                     <Form.Label>Purchased from Supplier</Form.Label>
-                                    <Form.Control type="number" name="purchasedFromSupplier" value={editProductData.purchasedFromSupplier} onChange={handleEditProductChange} min="0" />
+                                    <Form.Control type="number" name="purchasedFromSupplier" value={editProductData.purchasedFromSupplier || productData.purchasedFromSupplier} onChange={handleEditProductChange} min="0" />
                                 </Form.Group>
 
                                 <Form.Group className="mb-3">
                                     <Form.Label>Return to Supplier</Form.Label>
-                                    <Form.Control type="number" name="returnToSupplier" value={editProductData.returnToSupplier} onChange={handleEditProductChange} min="0" />
+                                    <Form.Control type="number" name="returnToSupplier" value={editProductData.returnToSupplier || productData.returnToSupplier} onChange={handleEditProductChange} min="0" />
                                 </Form.Group>
                             </>
                         )}
@@ -363,13 +376,13 @@ const ModalTransaction = ({
                                     <Col>
                                         <Form.Group className="mb-3">
                                             <Form.Label>Issued Quantity</Form.Label>
-                                            <Form.Control type="number" name="issuedQuantity" value={editProductData.issuedQuantity} onChange={handleEditProductChange} min="0" />
+                                            <Form.Control type="number" name="issuedQuantity" value={editProductData.issuedQuantity || productData.issuedQuantity} onChange={handleEditProductChange} min="0" />
                                         </Form.Group>
                                     </Col>
                                     <Col>
                                         <Form.Group className="mb-3">
                                             <Form.Label>Returned Quantity</Form.Label>
-                                            <Form.Control type="number" name="returnedQuantity" value={editProductData.returnedQuantity} onChange={handleEditProductChange} min="0" />
+                                            <Form.Control type="number" name="returnedQuantity" value={editProductData.returnedQuantity || productData.returnedQuantity} onChange={handleEditProductChange} min="0" />
                                         </Form.Group>
                                     </Col>
                                 </Row>
@@ -382,20 +395,19 @@ const ModalTransaction = ({
                         )}
 
                         <Form.Group className="mb-3">
-                            <Form.Label>Transfer from other Warehouse</Form.Label>
-                            <Form.Control type="text" name="transferFromWarehouse" value={editProductData.transferFromWarehouse} onChange={handleEditProductChange} />
+                            <Form.Label>Transfer from Warehouse</Form.Label>
+                            <Form.Control type="text" name="transferFromWarehouse" value={editProductData.transferFromWarehouse || productData.transferFromWarehouse} onChange={handleEditProductChange} />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
-                            <Form.Label>Transfer to other Warehouse</Form.Label>
-                            <Form.Control type="text" name="transferToWarehouse" value={editProductData.transferToWarehouse} onChange={handleEditProductChange} />
+                            <Form.Label>Transfer to Warehouse</Form.Label>
+                            <Form.Control type="text" name="transferToWarehouse" value={editProductData.transferToWarehouse || productData.transferToWarehouse} onChange={handleEditProductChange} />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Label>Cost</Form.Label>
-                            <Form.Control type="number" name="cost" value={editProductData.cost} onChange={handleEditProductChange} required min="0" />
+                            <Form.Control type="number" name="cost" value={editProductData.cost || productData.cost} onChange={handleEditProductChange} />
                         </Form.Group>
-
 
                         <Form.Group className="mb-3">
                             <Form.Label>Total</Form.Label>
@@ -403,11 +415,11 @@ const ModalTransaction = ({
                         </Form.Group>
 
                         <div className="d-flex justify-content-end gap-2">
-                            <Button variant="danger" onClick={() => { setShowEditProductModal(false); handleShowTransactionModal(); }}>
+                            <Button variant="danger" onClick={() => setShowEditProductModal(false)}>
                                 Cancel
                             </Button>
-                            <Button type="submit" onClick={() => { handleShowTransactionModal() }} variant="primary">
-                                Save Changes
+                            <Button type="submit" variant="primary">
+                                {editProductIndex !== null ? "Save Changes" : "Add Product"}
                             </Button>
                         </div>
                     </Form>
@@ -417,4 +429,4 @@ const ModalTransaction = ({
     );
 };
 
-export default ModalTransaction;
+export default EditTransactionModal;
