@@ -1,2 +1,4 @@
 venv/
 db.sqlite3
+/cab_backend/venv
+*.pyc
