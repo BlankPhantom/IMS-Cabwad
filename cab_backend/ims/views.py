@@ -82,11 +82,11 @@ def item_list_all(request):
 @api_view(['GET'])
 def item_list_detail(request, id):
     try:
-        items = Item.objects.get(itemID=id)
+        item = Item.objects.get(itemID=id)
     except Item.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     
-    serializer = ItemSerializer(items, many=True, context={'request': request})
+    serializer = ItemSerializer(item, context={'request': request})
     return Response(serializer.data)
 
 @api_view(['POST'])

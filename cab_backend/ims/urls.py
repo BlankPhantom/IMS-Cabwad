@@ -9,9 +9,10 @@ urlpatterns = [
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
 
     path('item/', views.item_list_all, name='get-item'),
+    path('item/<str:id>/', views.item_list_detail, name='get-item-detail'),
     path('item/create/', views.item_create, name='create-item'),
-    path('item/update/<str:id>/', views.item_update, name='update-delete-item'),
-    path('item/delete/<str:id>/', views.item_delete, name='update-delete-item'),
+    path('item/update/<str:id>/', views.item_update, name='update-item'),
+    path('item/delete/<str:id>/', views.item_delete, name='delete-item'),
 
     path('section/', views.section_list_all, name='get-section'),
     path('purpose/', views.purpose_list_all, name='get-purpose'),
