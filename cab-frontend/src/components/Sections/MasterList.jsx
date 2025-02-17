@@ -141,16 +141,16 @@ const Masterlist = () => {
         setCurrentItem();
     };
 
-    const handleSaveChanges = async () => {
+    const handleSaveChanges = async (updatedItemData) => {
         const token = localStorage.getItem('access_token');  
         try {
-            const response = await fetch(API_ENDPOINTS.UPDATE_ITEM(currentItem.itemID), {
+            const response = await fetch(API_ENDPOINTS.UPDATE_ITEM(updatedItemData.itemID), {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Token ${token}`, 
                 },
-                body: JSON.stringify(currentItem),
+                body: JSON.stringify(updatedItemData),
             });
             if (!response.ok) {
                 throw new Error("Failed to update item");

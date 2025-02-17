@@ -6,7 +6,7 @@ const TopNav = () => {
     return (
         <Navbar className="topNav d-flex justify-content-center">
             <div className="d-flex align-items-center" style={{ color: "white", marginLeft: "170px"  }}>    
-                <img className="logo img-fluid" src={Logo} alt="Cabuyao Water District" style={{ height: "35px"}} />
+                <img className="logo img-fluid" src={Logo} alt="Cabuyao Water District" style={{ height: "35px", marginRight: '5px'}} />
                 <span className="fw-bold text-center">Cabuyao Water District Inventory Management System</span>
             </div>
         </Navbar>

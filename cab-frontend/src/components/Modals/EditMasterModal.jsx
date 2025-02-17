@@ -21,13 +21,23 @@ const EditMasterModal = ({ show, handleClose, itemData, handleInputChange, handl
         setSelectedClassification(selectedId);
     };
 
+    const onSave = (e) => {
+        e.preventDefault();
+        const updatedItemData = {
+            ...itemData,
+            classificationID: selectedClassification,
+            measurementID: selectedMeasurement
+        };
+        handleSave(updatedItemData);
+    };
+
     return (
         <Modal show={show} onHide={handleClose} centered>
             <Modal.Header closeButton>
                 <Modal.Title>Edit Item</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <Form onSubmit={handleSave}>
+                <Form onSubmit={onSave}>
                     <Form.Group className="mb-3">
                         <Form.Label>Item ID</Form.Label>
                         <Form.Control type="text" name="itemID" value={itemData?.itemID} readOnly />
@@ -39,7 +49,7 @@ const EditMasterModal = ({ show, handleClose, itemData, handleInputChange, handl
                     <Form.Group className="mb-3">
                         <Form.Label>Classification</Form.Label>
                         <Form.Select 
-                            name="classification" 
+                            name="classificationID" 
                             value={selectedClassification}
                             onChange={handleClassificationChange} 
                             required>
@@ -54,7 +64,7 @@ const EditMasterModal = ({ show, handleClose, itemData, handleInputChange, handl
                     <Form.Group className="mb-3">
                         <Form.Label>Unit of Measurement</Form.Label>
                         <Form.Select 
-                            name="measurement" 
+                            name="measurementID" 
                             value={selectedMeasurement}
                             onChange={handleMeasureChange} 
                             required>

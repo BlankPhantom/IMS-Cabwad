@@ -21,7 +21,7 @@ const SideNav = () => {
                     {["Masterlist", "Beginning Balance", "Transactions", "Running Balance", "Monthly Consumption", "Summary Report"].map((item, index) => {
                         const path = `/dashboard/${item.toLowerCase().replace(/\s+/g, '-')}`;
                         return (
-                            <Nav.Link style={{ fontWeight: "600", textShadow: "1px 1px 1px #000" }}
+                            <Nav.Link style={{ fontWeight: "600", textShadow: "0.5px 0.5px 0.5px #000" }}
                                 as={Link}
                                 to={path}
                                 key={index}
@@ -33,7 +33,7 @@ const SideNav = () => {
                     })}
                 </Nav>
                 <Nav className="mt-auto p-3">
-                    <Nav.Link style={{ fontWeight: "600", textShadow: "1px 1px 1px #000" }}
+                    <Nav.Link style={{ fontWeight: "600", textShadow: "0.5px 0.5px 0.5px #000" }}
                         className="text-white"
                         onClick={() => setShowLogoutModal(true)}
                     >
