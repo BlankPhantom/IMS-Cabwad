@@ -8,7 +8,7 @@
 .tableStyle th,
 .tableStyle td {
   white-space: nowrap; /* Prevent text wrapping */
-  padding: 8px;
+  padding: 5px;
   text-align: center !important;
   border: 2px solid #7e7e7e !important;
   vertical-align: middle;

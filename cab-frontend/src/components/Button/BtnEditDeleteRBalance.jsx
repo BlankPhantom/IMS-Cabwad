@@ -6,8 +6,8 @@ import { Button } from 'react-bootstrap';
 const BtnEditDeleteRBalance = ({ onEdit, onDelete }) => {
     return (
         <td>
-            <Button variant="warning" size="sm"style={{fontSize:"9px", margin: '10px'}} onClick={onEdit}><FontAwesomeIcon icon={faPenToSquare}/></Button>
-            <Button variant="danger" size="sm" onClick={onDelete} style={{fontSize:"10px"}}  ><FontAwesomeIcon icon={faTrashAlt}/></Button>
+            <Button variant="warning" size="sm" style={{ fontSize: "9px", margin: '5px' }} onClick={onEdit}><FontAwesomeIcon icon={faPenToSquare} /></Button>
+                            <Button variant="danger" size="sm" onClick={onDelete} style={{ fontSize: "9px", marginRight: '5px' }}><FontAwesomeIcon icon={faTrashAlt} /></Button>
         </td>
     );
 };

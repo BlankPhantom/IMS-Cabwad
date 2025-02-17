@@ -25,12 +25,8 @@ const BtnEditDeleteTransaction = ({ onEdit, onDelete, transaction }) => {
     return (
         <>
             <td>
-                <Button variant="warning" size="sm" style={{ fontSize: "9px", margin: '10px' }} onClick={handleShowEditTransactionModal}>
-                    <FontAwesomeIcon icon={faPenToSquare} />
-                </Button>
-                <Button variant="danger" size="sm" onClick={onDelete} style={{ fontSize: "10px" }}>
-                    <FontAwesomeIcon icon={faTrashAlt} />
-                </Button>
+                <Button variant="warning" size="sm" style={{ fontSize: "9px", margin: '5px' }} onClick={handleShowEditTransactionModal}><FontAwesomeIcon icon={faPenToSquare} /></Button>
+                <Button variant="danger" size="sm" onClick={onDelete} style={{ fontSize: "9px", marginRight: '5px' }}><FontAwesomeIcon icon={faTrashAlt} /></Button>
             </td>
 
             <EditTransactionModal
