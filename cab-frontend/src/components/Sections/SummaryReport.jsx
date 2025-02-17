@@ -14,7 +14,11 @@ const SummaryReport = () => {
     const fetchSections = async () => {
         try {
             const response = await fetch(API_ENDPOINTS.SECTION_LIST);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
             const data = await response.json();
+            console.log("Fetched sections data:", data); // Debugging line
             setSections(data);
         } catch (error) {
             console.error("Error fetching sections:", error);
@@ -40,11 +44,11 @@ const SummaryReport = () => {
                 </Col>
                 <Col md={4}>
                     <Form.Group controlId="sectionSelect">
-                        <Form.Select value={selectedSection} onChange={handleSectionChange}>
-                            <option value="">-- Select Section --</option>
+                        <Form.Select name="section" value={selectedSection} onChange={handleSectionChange}>
+                            <option value="">Select Section</option>
                             {sections.map((section) => (
-                                <option key={section.id} value={section.id}>
-                                    {section.name}
+                                <option key={section.id} value={section.sectionID}>
+                                    {section.section}
                                 </option>
                             ))}
                         </Form.Select>
