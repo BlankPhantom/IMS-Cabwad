@@ -14,11 +14,23 @@ const EditMasterModal = ({ show, handleClose, itemData, handleInputChange, handl
     const handleMeasureChange = (e) => {
         const selectedId = parseInt(e.target.value, 10);
         setSelectedMeasurement(selectedId);
+        handleInputChange({
+            target: {
+                name: 'measurementID',
+                value: selectedId,
+            }
+        });
     };
     
     const handleClassificationChange = (e) => {
         const selectedId = parseInt(e.target.value, 10);
         setSelectedClassification(selectedId);
+        handleInputChange({
+            target: {
+                name: 'classificationID',
+                value: selectedId,
+            }
+        });
     };
 
     const onSave = (e) => {
@@ -53,7 +65,7 @@ const EditMasterModal = ({ show, handleClose, itemData, handleInputChange, handl
                             value={selectedClassification}
                             onChange={handleClassificationChange} 
                             required>
-                            <option value={itemData?.classificationID}>{itemData?.classificationName}</option>
+                            <option value="">{itemData?.classificationName}</option>
                                 {classifications.map((classification) => (
                                 <option key={classification.id} value={classification.classificationID}>
                                     {classification.classification}
@@ -68,7 +80,7 @@ const EditMasterModal = ({ show, handleClose, itemData, handleInputChange, handl
                             value={selectedMeasurement}
                             onChange={handleMeasureChange} 
                             required>
-                            <option value={itemData?.measurementID}>{itemData?.measurementName}</option>
+                            <option value="">{itemData?.measurementName}</option>
                                 {measurements.map((measurement) => (
                                 <option key={measurement.id} value={measurement.measurementID}>
                                     {measurement.measureName}

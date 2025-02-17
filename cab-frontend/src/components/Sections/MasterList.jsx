@@ -12,6 +12,7 @@ const Masterlist = () => {
     const [measurements, setMeasurements] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [currentItem, setCurrentItem] = useState([]);
+    const [successMessage, setSuccessMessage] = useState('');
 
     const fetchClassifications = async() => {
         const token = localStorage.getItem('access_token');  
@@ -157,6 +158,8 @@ const Masterlist = () => {
             }
             fetchItems();
             handleCloseModal();
+            setSuccessMessage('Item updated successfully!');
+            setTimeout(() => setSuccessMessage(''), 3000); // Clear message after 3 seconds
         } catch (e) {
             console.error("Error updating item:", e);
         }
@@ -166,9 +169,8 @@ const Masterlist = () => {
         const { name, value } = e.target;
         setCurrentItem(prevState => ({
             ...prevState,
-            [name]: value,
+            [name]: name === 'classificationID' || name === 'measurementID' ? parseInt(value, 10) : value,
         }));
-        
     };
 
     return (
@@ -183,6 +185,16 @@ const Masterlist = () => {
                     <input type="search" className="" placeholder="Search" style={{ width: '300px' }} />
                 </Col>
             </Row>
+
+            {successMessage && (
+                <Row>
+                    <Col>
+                        <div className="alert alert-success" role="alert">
+                            {successMessage}
+                        </div>
+                    </Col>
+                </Row>
+            )}
 
             <Row>
                 <Table responsive bordered striped hover className="tableStyle mt-3">
