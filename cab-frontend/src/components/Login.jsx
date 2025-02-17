@@ -13,7 +13,7 @@ const Login = () => {
   const [errors, setErrors] = useState(false);
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
-  
+
   useEffect(() => {
     const rememberedUsername = localStorage.getItem('rememberedUsername');
     if (rememberedUsername) {
@@ -21,17 +21,17 @@ const Login = () => {
       setRememberMe(true);
     }
   }, []);
-  
+
   const validateLogin = () => {
     const newErrors = {};
-    
+
     if (!username) newErrors.txtUsername = "Enter your username";
     if (!password) newErrors.txtPassword = "Enter your password";
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   }
-  
+
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!validateLogin()) return;
@@ -39,7 +39,7 @@ const Login = () => {
     const loginData = { username, password };
 
     try {
-      const response = await fetch(API_ENDPOINTS.LOGIN, {  
+      const response = await fetch(API_ENDPOINTS.LOGIN, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(loginData),
@@ -47,10 +47,10 @@ const Login = () => {
 
       if (response.ok) {
         const data = await response.json();
-        
+
         localStorage.setItem('access_token', data.token);
         localStorage.setItem('user_id', data.user_id);
-        
+
         window.location.href = "/dashboard";
       } else {
         setErrors({
@@ -65,7 +65,7 @@ const Login = () => {
     }
   };
 
-  
+
   return (
     <div style={{
       backgroundColor: '#005ce5'
@@ -76,38 +76,44 @@ const Login = () => {
         alignItems: 'center',
         height: '100vh',
       }}>
-      <div className="loginDiv shadow-lg">
-        <Form onSubmit={handleLogin}>
-          <Form.Label className="cabWad">
-          Cabuyao Water District
-          </Form.Label>
-          <p className="ims">Inventory Management System</p>
+        <div className="loginDiv">
+          <Form onSubmit={handleLogin}>
+            <Form.Label className="cabWad" style={{ fontSize: '2rem', fontWeight: 'bold' }}>
+              Cabuyao Water District
+            </Form.Label>
+            <p className="ims" style={{ fontSize: '1.2rem', marginBottom: '2rem' }}>Inventory Management System</p>
             <Form.Group style={{ alignContent: "start", textAlign: "start" }}>
               <Form.Label className="justify-content-start mt-4 h6 loglbl"> Username: </Form.Label>
-              <Form.Control 
-                className="login" 
-                controlId="txtUsername" 
-                type="text" 
-                placeholder='Enter your username here' 
-                value={username} 
-                onChange={(e) => setUsername(e.target.value)}>
-              </Form.Control>
+              <Form.Control
+                className="login"
+                controlId="txtUsername"
+                type="text"
+                placeholder='Enter your username here'
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                style={{ width: '93%', padding: '0.75rem', borderRadius: '5px' }}
+              />
+              {errors.txtUsername && <p style={{ color: 'red' }}>{errors.txtUsername}</p>}
             </Form.Group>
             <Form.Group className="mt-5 mb-5" style={{ alignContent: "start", textAlign: "start" }}>
               <Form.Label className="justify-content-start h6 loglbl">
-              Password:
+                Password:
               </Form.Label>
-              <Form.Control
-                type={showPassword ? 'text' : 'password'}
-                placeholder='Insert your Password here'
-                value={password}
-                className="password"
-                contolId="txtPassword"
-                onChange={(e) => setPassword(e.target.value)}
-              ></Form.Control>
-              <Button variant='success' onClick={togglePasswordVisibility}>
-                <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
-              </Button>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <Form.Control
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder='Insert your Password here'
+                  value={password}
+                  className="password"
+                  contolId="txtPassword"
+                  onChange={(e) => setPassword(e.target.value)}
+                  style={{ marginRight: '10px', padding: '0.75rem', borderRadius: '5px' }}
+                />
+                <Button variant='primary' onClick={togglePasswordVisibility} style={{ padding: '0.5rem 1rem' }}>
+                  <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                </Button>
+              </div>
+              {errors.txtPassword && <p style={{ color: 'red' }}>{errors.txtPassword}</p>}
             </Form.Group>
             {/* <Form.Group as={Col} className="mb-3 ps-5" controlId="CheckBox">
                 <Form.Check
@@ -117,11 +123,11 @@ const Login = () => {
                     onChange={(e) => setRememberMe(e.target.checked)}
                 />
             </Form.Group> */}
-          <div className="loginbtn">
-            <Button variant="warning" className="text-white shadow" style={{ fontWeight: "bold", width: "10em" }} type="submit"> Login </Button>
-          </div>
-        </Form>
-      </div>
+            <div className="loginbtn">
+              <Button variant="warning" className="text-white shadow" style={{ fontWeight: "bold", width: "10em" }} type="submit"> Login </Button>
+            </div>
+          </Form>
+        </div>
       </Container>
     </div>
   );
