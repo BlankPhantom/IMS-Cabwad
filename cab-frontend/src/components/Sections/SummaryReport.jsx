@@ -47,8 +47,8 @@ const SummaryReport = () => {
                         <Form.Select name="section" value={selectedSection} onChange={handleSectionChange}>
                             <option value="">Select Section</option>
                             {sections.map((section) => (
-                                <option key={section.id} value={section.sectionID}>
-                                    {section.section}
+                                <option key={section.sectionID} value={section.sectionID}>
+                                    {section.sectionName}
                                 </option>
                             ))}
                         </Form.Select>
