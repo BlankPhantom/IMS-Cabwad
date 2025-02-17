@@ -37,22 +37,9 @@ const SummaryReport = () => {
                 </Col>
             </Row>
 
-            {/* MonthYearPicker & Section Dropdown in one Row */}
             <Row className="mt-3 d-flex align-items-center justify-content-between">
                 <Col md={6}>
                     <MonthYearPicker />
-                </Col>
-                <Col md={4}>
-                    <Form.Group controlId="sectionSelect">
-                        <Form.Select name="section" value={selectedSection} onChange={handleSectionChange}>
-                            <option value="">Select Section</option>
-                            {sections.map((section) => (
-                                <option key={section.sectionID} value={section.sectionID}>
-                                    {section.sectionName}
-                                </option>
-                            ))}
-                        </Form.Select>
-                    </Form.Group>
                 </Col>
             </Row>
 
