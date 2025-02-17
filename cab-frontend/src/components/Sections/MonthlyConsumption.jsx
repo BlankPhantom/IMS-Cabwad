@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import "../table.css";
-
 import { Button, Container, Table, Col, Row, Form } from "react-bootstrap";
 import MonthYearPicker from "../MonthYearPicker";
 import { API_ENDPOINTS } from "../../config";
@@ -59,7 +58,7 @@ const MonthlyConsumption = () => {
             </Row>
 
             <Row>
-                <Col className="d-flex justify-content-end mt-4">
+                <Col className="d-flex justify-content-end mt-4 ">
                     <input type="search" className="" placeholder="Search" style={{ width: '300px' }} />
                 </Col>
             </Row>
