@@ -1,4 +1,5 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from ims import views
 from rest_framework.authtoken.views import obtain_auth_token 
 
@@ -18,4 +19,8 @@ urlpatterns = [
     path('purpose/', views.purpose_list_all, name='get-purpose'),
     path('measurement/', views.measurement_list_all, name='get-measurement'),
     path('classification/', views.classification_list_all, name='get-classification'),
+    
+    path('transaction-detail/create/', views.transaction_detail_create, name='create-transaction-detail'),
+    path('transaction-product/create/', views.transaction_product_create, name='create-transaction-product'),
+
 ]

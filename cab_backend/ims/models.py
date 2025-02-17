@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.utils.timezone import now
 from django.db.models.signals import pre_save
 from django.dispatch import receiver    
 
@@ -43,38 +44,38 @@ class Purpose(models.Model):
     purposeID = models.AutoField(primary_key=True)
     purposeName = models.CharField(max_length=500)
 
-# class TransactionDetails(models.Model):
-#     transactionDetailsID = models.AutoField(primary_key=True)
-#     date = models.DateField(default=timezone.now)
-#     week = models.CharField(max_length=25)
-#     mris = models.IntegerField(null=False)
-#     supplier = models.CharField(max_length=500)
-#     requestedBy = models.CharField(max_length=500)
-#     sectionID = models.ForeignKey('Section', on_delete=models.CASCADE)
-#     purposeID = models.ForeignKey('Purpose', on_delete=models.CASCADE)
+class TransactionDetails(models.Model):
+    transactionDetailsID = models.AutoField(primary_key=True)
+    date = models.DateField(default=now().date())
+    week = models.CharField(max_length=25)
+    mris = models.IntegerField(null=False)
+    supplier = models.CharField(max_length=500, blank=True)
+    requestedBy = models.CharField(max_length=500, blank=True)
+    sectionID = models.ForeignKey('Section', on_delete=models.CASCADE)
+    purposeID = models.ForeignKey('Purpose', on_delete=models.CASCADE)
 
-# class TransactionProduct(models.Model):
-#     transactionProductID = models.AutoField(primary_key=True)
-#     transactionDetailsID = models.ForeignKey(TransactionDetails, on_delete=models.CASCADE)
-#     itemID = models.ForeignKey(Item, on_delete=models.CASCADE) 
-#     area = models.CharField(max_length=500)
-#     purchasedFromSupp = models.IntegerField(blank=True, default=0)
-#     returnToSupplier = models.IntegerField(blank=True, default=0)
-#     transferFromWH = models.IntegerField(blank=True, default=0)
-#     transferToWH = models.IntegerField(blank=True, default=0)
-#     issuedQty = models.IntegerField(blank=True, default=0)
-#     returnedQty = models.IntegerField(blank=True, default=0)
+class TransactionProduct(models.Model):
+    transactionProductID = models.AutoField(primary_key=True)
+    transactionDetailsID = models.ForeignKey(TransactionDetails, on_delete=models.CASCADE)
+    itemID = models.ForeignKey(Item, on_delete=models.CASCADE) 
+    area = models.CharField(max_length=500, blank=True)
+    purchasedFromSupp = models.IntegerField(blank=True, default=0)
+    returnToSupplier = models.IntegerField(blank=True, default=0)
+    transferFromWH = models.IntegerField(blank=True, default=0)
+    transferToWH = models.IntegerField(blank=True, default=0)
+    issuedQty = models.IntegerField(blank=True, default=0)
+    returnedQty = models.IntegerField(blank=True, default=0)
     
-#     @property
-#     def consumption(self): 
-#         return self.returnedQty - self.issuedQty
+    @property
+    def consumption(self): 
+        return self.returnedQty - self.issuedQty
     
-# class Transaction(models.Model):
-#     transactionID = models.AutoField(primary_key=True)
-#     transactionDetailsID = models.ForeignKey(TransactionDetails, on_delete=models.CASCADE, default=1)
-#     TransactionProductID = models.ForeignKey(TransactionProduct, on_delete=models.CASCADE, default=1)
-#     created_at = models.DateTimeField(default= timezone.now)
-#     updated_at = models.DateTimeField(default= timezone.now)
+class Transaction(models.Model):    
+    transactionID = models.AutoField(primary_key=True)
+    transactionDetailsID = models.ForeignKey(TransactionDetails, on_delete=models.CASCADE, default=1)
+    TransactionProductID = models.ForeignKey(TransactionProduct, on_delete=models.CASCADE, default=1)
+    created_at = models.DateTimeField(default= timezone.now)
+    updated_at = models.DateTimeField(default= timezone.now)
 
 # class RunningBalance(models.Model):
 #     runningBalID = models.AutoField(primary_key=True, default=1)
