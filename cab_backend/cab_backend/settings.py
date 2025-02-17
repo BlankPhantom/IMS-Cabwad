@@ -30,8 +30,29 @@ ALLOWED_HOSTS = []
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "http://127.0.0.1:8000"
 ]
 CORS_ALLOW_ALL_ORIGINS = True
+
+# Allow all HTTP methods (GET, POST, PUT, PATCH, DELETE, etc.)
+CORS_ALLOW_METHODS = [
+    'GET',
+    'POST',
+    'PUT',
+    'PATCH',
+    'DELETE',
+    'OPTIONS',
+]
+
+# Allow specific headers
+CORS_ALLOW_HEADERS = [
+    'authorization',
+    'content-type',
+    'x-requested-with',
+]
+
+# Allow credentials (e.g., cookies for authentication)
+CORS_ALLOW_CREDENTIALS = True
 
 # Application definition
 
@@ -48,6 +69,13 @@ INSTALLED_APPS = [
     'ims.apps.ImsConfig',
     'django_seed',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',

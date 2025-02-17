@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
-from ims.models import Item, Classification, Measurement, Section, Purpose, Transaction, RunningBalance, MonthlyConsumption
+from ims.models import Item, Classification, Measurement, Section, Purpose
+# Transaction, RunningBalance, MonthlyConsumption
 
 class Command(BaseCommand):
     help = 'Seed the database with initial data'

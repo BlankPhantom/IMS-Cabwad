@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from ims.models import Item, Classification, Measurement, Section, Purpose, Transaction, RunningBalance, MonthlyConsumption
+from ims.models import (Item, Classification, Measurement, Section, Purpose, )
+                        # Transaction, TransactionDetails, TransactionProduct, RunningBalance, MonthlyConsumption)
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -56,17 +57,57 @@ class PurposeSerializer(serializers.ModelSerializer):
         model = Purpose
         fields = ('purposeID','purposeName')
 
-class TransactionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Transaction
-        fields = ('transactionID','classificationID','sectionID','purposeID','date','week','mris','supplier','requestedBy','Area','purchasedQty','returnToSupplier','transferFromWH','transferToWH','issuedQty','returnedQty','consumption','cost','totalCost', 'created_at','updated_at')
+# class TransactionSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Transaction
+#         fields = ('transactionID','transactionDetailsID','transactionProductID')
 
-class RunningBalance(serializers.ModelSerializer):
-    class Meta:
-        model = RunningBalance
-        fields = ('runningBalID','classificationID','itemID','measurementID','beginningBalance','purchasedFromSupp','returnToSupplier','transferFromWH','transferToWH','issuedQty','consumption','cost','totalCost','created_at','updated_at')
+# class TransactionDetailsSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = TransactionDetails
+#         fields = ('transactionDetailsID','date','week','mris','supplier','requestedBy','sectionID','sectionName','purposeID','purposeName',)  
 
-class MonthlyConsumptionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = MonthlyConsumption
-        fields = ('sectionID','date','week','itemID','transactionID','created_at','updated_at')
+# class TransactionProductSerializer(serializers.ModelSerializer):
+#     itemQuantity = serializers.SerializerMethodField()
+
+#     class Meta:
+#         model = TransactionProduct
+#         fields = ('transactionDetailsID', 'transactionProductID', 'itemID', 'itemName', 'itemQuantity', 'area', 'purchasedFromSupp', 'returnToSupplier', 'transferFromWH', 'transferToWH', 'issuedQty', 'returnedQty', 'consumption',)  
+
+#     def get_itemQuantity(self, instance):
+#         item = Item.objects.get(pk=instance.itemID.pk)
+#         return item.itemQuantity
+
+#     def create(self, validated_data):
+#         instance = super().create(validated_data)
+#         self.update_item_quantity(instance)
+#         return instance
+
+#     def update(self, instance, validated_data):
+#         instance = super().update(instance, validated_data)
+#         self.update_item_quantity(instance)
+#         return instance
+
+#     def update_item_quantity(self, instance):
+#         item = Item.objects.get(pk=instance.itemID.pk)
+#         item.itemQuantity += instance.purchasedFromSupp - instance.issuedQty
+#         item.save(update_fields=['itemQuantity'])
+    
+#     def validate(self, data):
+#         issuedQty = data.get('issuedQty')
+#         item = Item.objects.get(pk=data['itemID'].pk)
+        
+#         if issuedQty and issuedQty > item.itemQuantity:
+#             raise serializers.ValidationError("Insufficient itemQuantity to issue the requested quantity.")
+        
+#         return data
+
+# class RunningBalance(serializers.ModelSerializer):
+#     class Meta:
+#         model = RunningBalance
+#         fields = ('runningBalID','classificationID','itemID','measurementID','beginningBalance','purchasedFromSupp','returnToSupplier','transferFromWH','transferToWH','issuedQty','consumption','cost','totalCost','created_at','updated_at')
+
+# class MonthlyConsumptionSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = MonthlyConsumption
+#         fields = ('sectionID','date','week','itemID','transactionID','created_at','updated_at')

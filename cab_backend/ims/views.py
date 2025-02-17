@@ -4,17 +4,66 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.parsers import JSONParser
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from ims.models import Item, Classification, Measurement, Section, Purpose, Transaction, RunningBalance, MonthlyConsumption
-from ims.serializers import UserSerializer,ItemSerializer, ClassificationSerializer, MeasurementSerializer, SectionSerializer, PurposeSerializer, TransactionSerializer,RunningBalance, MonthlyConsumptionSerializer
+from ims.models import (Item, Classification, Measurement, Section, Purpose,)
+                        # Transaction, TransactionProduct, TransactionDetails, RunningBalance, MonthlyConsumption)
+from ims.serializers import (UserSerializer,ItemSerializer, ClassificationSerializer, MeasurementSerializer, SectionSerializer, PurposeSerializer,) 
+            # TransactionSerializer, TransactionProductSerializer, TransactionDetailsSerializer,RunningBalance, MonthlyConsumptionSerializer
+import logging
 
 from django.shortcuts import get_object_or_404
 
-@csrf_exempt
+@api_view(['GET'])
+def item_list_all(request):
+    items = Item.objects.all()
+    serializer = ItemSerializer(items, many=True, context={'request': request})
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def item_list_detail(request, id):
+    try:
+        item = Item.objects.get(itemID=id)
+    except Item.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    serializer = ItemSerializer(item, context={'request': request})
+    return Response(serializer.data)
+
+
+@api_view(['POST'])
+def item_create(request):
+    serializer = ItemSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['PUT'])
+def item_update(request, id):
+    try:
+        item = Item.objects.get(itemID=id)
+    except Item.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    serializer = ItemSerializer(item, data=request.data, partial=True, context={'request': request})
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+def item_delete(request, id):    
+    try:
+        items = Item.objects.get(itemID=id)
+    except Item.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    items.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
 @api_view(['POST'])
 def login(request):
     username = request.data.get("username")
@@ -33,14 +82,17 @@ def login(request):
 def create_user(request):
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
-        user = serializer.save(commit=False)  
-        user.set_password(request.data['password'])  
-        user.save()  
+        user = User(
+            username=serializer.validated_data['username'],
+            email=serializer.validated_data['email'],
+            # Add other fields if necessary
+        )
+        user.set_password(request.data['password'])
+        user.save()
 
         token, created = Token.objects.get_or_create(user=user)
         return Response({'token': token.key, 'user': serializer.data}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 #test authentication token
 @api_view(['GET'])
@@ -73,50 +125,16 @@ def purpose_list_all(request):
     serializer = PurposeSerializer(purposes, many=True)
     return Response(serializer.data)
 
-@api_view(['GET'])
-def item_list_all(request):
-    items = Item.objects.all()
-    serializer = ItemSerializer(items, many=True, context={'request': request})
-    return Response(serializer.data)
+# @api_view(['GET'])
+# def get_all_transaction_prod(request):
+#     transactionProd = TransactionProduct.objects.all()
+#     serializer = TransactionProductSerializer(transactionProd, many=True, context={'request': request})
+#     return Response(serializer.data)
 
-@api_view(['GET'])
-def item_list_detail(request, id):
-    try:
-        item = Item.objects.get(itemID=id)
-    except Item.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-    
-    serializer = ItemSerializer(item, context={'request': request})
-    return Response(serializer.data)
-
-@api_view(['POST'])
-def item_create(request):
-    serializer = ItemSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['PUT', 'PATCH'])
-def item_update(request, id):
-    try:
-        item = Item.objects.get(itemID=id)
-    except Item.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-    
-    serializer = ItemSerializer(item, data=request.data, partial=True, context={'request': request})
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['DELETE'])
-def item_delete(id):    
-    try:
-        items = Item.objects.get(itemID=id)
-    except Item.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-    
-    items.delete()
-    return Response(status=status.HTTP_204_NO_CONTENT)
+# @api_view(['POST'])
+# def add_transaction_prod(request):
+#     serializer = TransactionProductSerializer(data=request.data)
+#     if serializer.is_valid():
+#         serializer.save()
+#         return Response(serializer.data, status=status.HTTP_201_CREATED)
+#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

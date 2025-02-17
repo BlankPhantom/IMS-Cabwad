@@ -32,11 +32,14 @@ const BtnAddNewItem = ({fetchItems, classifications, measurements}) => {
             unitCost: e.target.unitCost.value,
         };
 
+        const token = localStorage.getItem('access_token');  
+        
         try{
             const response = await fetch(API_ENDPOINTS.ADD_ITEM, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json", // Ensure the server knows it's JSON
+                    'Content-Type': 'application/json', // Ensure the server knows it's JSON
+                    'Authorization': `Token ${token}`,  
                 },
                 body: JSON.stringify(formData), 
             });
