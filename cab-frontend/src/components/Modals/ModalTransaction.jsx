@@ -37,6 +37,7 @@ const ModalTransaction = ({
     const [purpose, setPurpose] = useState([]);
     const [products, setProducts] = useState([]);
     const [area, setArea] = useState([]);
+    const [filteredProducts, setFilteredProducts] = useState([]);
 
     useEffect(() => {
         fetchSections();
@@ -97,6 +98,21 @@ const ModalTransaction = ({
         }
     };
 
+    const handleProductNameChange = (e) => {
+        const { value } = e.target;
+        setProductData(prevData => ({
+            ...prevData,
+            productName: value
+        }));
+
+        if (value) {
+            const filtered = products.filter(product => product.itemName.toLowerCase().includes(value.toLowerCase()));
+            setFilteredProducts(filtered);
+        } else {
+            setFilteredProducts([]);
+        }
+    };
+
     const handleAreaChange = (event) => {
         setSelectedArea(event.target.value);
     };
@@ -109,20 +125,16 @@ const ModalTransaction = ({
         setSelectedSection(event.target.value);
     };
 
-    const handleProductSelect = (e) => {
-        const selectedProductID = e.target.value;
-        setSelectedProduct(selectedProductID);
-
-        const selectedProduct = products.find(product => product.itemID === selectedProductID);
-        if (selectedProduct) {
-            setProductData(prevData => ({
-                ...prevData,
-                itemID: selectedProduct.itemID,
-                productName: selectedProduct.itemName,
-                cost: selectedProduct.unitCost
-            }));
-        }
+    const handleProductSelect = (product) => {
+        setSelectedProduct(product.itemID);
+        setProductData({
+            itemID: product.itemID,
+            productName: product.itemName,
+            cost: product.unitCost
+        });
+        setFilteredProducts([]);
     };
+
 
     const handleTransactionTypeChange = (e) => {
         const { value } = e.target;
@@ -310,14 +322,26 @@ const ModalTransaction = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Product Name</Form.Label>
-                            <Form.Select name="productName" value={selectedProduct} onChange={handleProductSelect} required>
-                                <option value="">Select Product</option>
-                                {products.map((product) => (
-                                    <option key={product.id} value={product.itemID}>
-                                        {product.itemName}
-                                    </option>
-                                ))}
-                            </Form.Select>
+                            <Form.Control
+                                type="text"
+                                name="productName"
+                                value={productData.productName}
+                                onChange={handleProductNameChange}
+                                required
+                            />
+                            {filteredProducts.length > 0 && (
+                                <div className="dropdown-menu show">
+                                    {filteredProducts.map((product) => (
+                                        <div
+                                            key={product.itemID}
+                                            className="dropdown-item"
+                                            onClick={() => handleProductSelect(product)}
+                                        >
+                                            {product.itemName} ({product.itemID})
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </Form.Group>
 
                         <Form.Group className="mb-3">
@@ -344,15 +368,15 @@ const ModalTransaction = ({
                                     <Form.Control type="number" name="purchasedFromSupplier" value={productData.purchasedFromSupplier} onChange={handleProductChange} min="0" />
                                 </Form.Group>
 
-                                
+
                             </>
                         )}
 
                         {transactionType === 'ReturnSupply' && (
                             <Form.Group className="mb-3">
-                                    <Form.Label>Return to Supplier</Form.Label>
-                                    <Form.Control type="number" name="returnToSupplier" value={productData.returnToSupplier} onChange={handleProductChange} min="0" />
-                                </Form.Group>
+                                <Form.Label>Return to Supplier</Form.Label>
+                                <Form.Control type="number" name="returnToSupplier" value={productData.returnToSupplier} onChange={handleProductChange} min="0" />
+                            </Form.Group>
                         )}
 
                         {transactionType === 'Issue/Return' && (
@@ -413,7 +437,8 @@ const ModalTransaction = ({
                             <Form.Label>Transaction Type</Form.Label>
                             <Form.Select name="transactionType" value={editProductData.transactionType} onChange={handleTransactionTypeChange} required>
                                 <option value="">Select Transaction Type</option>
-                                <option value="Purchase/Return">Purchase/Return</option>
+                                <option value="PurchaseSupply">Purchased from Supplier</option>
+                                <option value="ReturnSupply">Return to Supplier</option>
                                 <option value="Issue/Return">Issue/Return</option>
                             </Form.Select>
                         </Form.Group>
