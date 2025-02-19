@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../table.css";
 import { v4 as uuidv4 } from 'uuid';
 import { Container, Table, Col, Row, Button } from "react-bootstrap";
@@ -6,6 +6,7 @@ import MonthYearPicker from "../MonthYearPicker";
 import BtnAddTransaction from "../Button/BtnAddTransaction";
 import ModalTransaction from "../Modals/ModalTransaction";
 import BtnEditDeleteTransaction from "../Button/BtnEditDeleteTransaction";
+import { API_ENDPOINTS } from "../../config";
 
 const Transactions = () => {
     const [showTransactionModal, setShowTransactionModal] = useState(false);
@@ -39,6 +40,28 @@ const Transactions = () => {
         total: ""
     });
 
+    const [selectedSection, setSelectedSection] = useState("");
+    const [selectedPurpose, setSelectedPurpose] = useState("");
+    const [selectedProduct, setSelectedProduct] = useState("");
+    const [selectedArea, setSelectedArea] = useState("");
+    const [products, setProducts] = useState([]);
+
+    useEffect(() => {
+        fetchProducts();
+    }, []);
+
+    const fetchProducts = async () => {
+        try {
+            const response = await fetch(API_ENDPOINTS.ITEM_LIST);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            setProducts(data);
+        } catch (error) {
+            console.error("Error fetching products:", error);
+        }
+    };
 
     // Handle modal toggling
     const handleShowTransactionModal = () => setShowTransactionModal(true);
@@ -55,6 +78,8 @@ const Transactions = () => {
             purpose: "",
             products: [] // Reset products on close
         });
+        setSelectedSection('');
+        setSelectedPurpose('');
     };
 
     const handleShowProductModal = () => setShowProductModal(true);
@@ -62,6 +87,7 @@ const Transactions = () => {
     const handleCloseProductModal = () => {
         setShowProductModal(false);
         setProductData({
+            transactionType: "",
             productName: "",
             itemID: "",
             area: "",
@@ -76,6 +102,8 @@ const Transactions = () => {
             total: ""
         });
         setTransactionType('');
+        setSelectedProduct('');
+        setSelectedArea('');
     };
 
     const handleCloseTransactionModalND = () => { setShowTransactionModal(false); }
@@ -302,6 +330,14 @@ const Transactions = () => {
                 setTransactionType={setTransactionType}
                 handleTransactionTypeChange={handleTransactionTypeChange}
                 setProductData={setProductData}
+                selectedSection={selectedSection}
+                setSelectedSection={setSelectedSection}
+                selectedPurpose={selectedPurpose}
+                setSelectedPurpose={setSelectedPurpose}
+                selectedProduct={selectedProduct}
+                setSelectedProduct={setSelectedProduct}
+                selectedArea={selectedArea}
+                setSelectedArea={setSelectedArea}
             />
         </Container>
     );
