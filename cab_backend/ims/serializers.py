@@ -1,7 +1,9 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from ims.models import (Item, Classification, Measurement, Section, Purpose, )
-                        # Transaction, TransactionDetails, TransactionProduct, RunningBalance, MonthlyConsumption)
+import math
+from datetime import datetime
+from ims.models import (Item, Classification, Measurement, Section, Purpose, Transaction, TransactionDetails, TransactionProduct,) 
+                        # RunningBalance, MonthlyConsumption)
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -57,50 +59,62 @@ class PurposeSerializer(serializers.ModelSerializer):
         model = Purpose
         fields = ('purposeID','purposeName')
 
-# class TransactionSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Transaction
-#         fields = ('transactionID','transactionDetailsID','transactionProductID')
+class TransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = '__all__'
 
-# class TransactionDetailsSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = TransactionDetails
-#         fields = ('transactionDetailsID','date','week','mris','supplier','requestedBy','sectionID','sectionName','purposeID','purposeName',)  
+class TransactionDetailsSerializer(serializers.ModelSerializer):
+    sectionName = serializers.CharField(source='sectionID.sectionName', read_only=True)
+    purposeName = serializers.CharField(source='purposeID.purposeName', read_only=True)
+    week = serializers.SerializerMethodField()
 
-# class TransactionProductSerializer(serializers.ModelSerializer):
-#     itemQuantity = serializers.SerializerMethodField()
+    class Meta:
+        model = TransactionDetails
+        fields = ('transactionDetailsID', 'date', 'week', 'mris', 'supplier', 'requestedBy', 'sectionID', 'sectionName', 'purposeID', 'purposeName')  
 
-#     class Meta:
-#         model = TransactionProduct
-#         fields = ('transactionDetailsID', 'transactionProductID', 'itemID', 'itemName', 'itemQuantity', 'area', 'purchasedFromSupp', 'returnToSupplier', 'transferFromWH', 'transferToWH', 'issuedQty', 'returnedQty', 'consumption',)  
+    def get_week(self, obj):
+        date_obj = datetime.strptime(obj.date, '%Y-%m-%d')
+        first_day = date_obj.replace(day=1)
+        week_number = (date_obj.day + first_day.weekday()) // 7 + 1
+        return f"Week {week_number}"
+        
 
-#     def get_itemQuantity(self, instance):
-#         item = Item.objects.get(pk=instance.itemID.pk)
-#         return item.itemQuantity
+class TransactionProductSerializer(serializers.ModelSerializer):
+    itemQuantity = serializers.SerializerMethodField()
+    itemName = serializers.CharField(source='itemID.itemName', read_only=True)
 
-#     def create(self, validated_data):
-#         instance = super().create(validated_data)
-#         self.update_item_quantity(instance)
-#         return instance
+    class Meta:
+        model = TransactionProduct
+        fields = ('transactionDetailsID','transactionProductID', 'itemID', 'itemName', 'itemQuantity', 'area', 'purchasedFromSupp', 'returnToSupplier', 'transferFromWH', 'transferToWH', 'issuedQty', 'returnedQty', 'consumption',)  
 
-#     def update(self, instance, validated_data):
-#         instance = super().update(instance, validated_data)
-#         self.update_item_quantity(instance)
-#         return instance
+    def get_itemQuantity(self, instance):
+        item = Item.objects.get(pk=instance.itemID.pk)
+        return item.itemQuantity
 
-#     def update_item_quantity(self, instance):
-#         item = Item.objects.get(pk=instance.itemID.pk)
-#         item.itemQuantity += instance.purchasedFromSupp - instance.issuedQty
-#         item.save(update_fields=['itemQuantity'])
+    def create(self, validated_data):
+        instance = super().create(validated_data)
+        self.update_item_quantity(instance)
+        return instance
+
+    def update(self, instance, validated_data):
+        instance = super().update(instance, validated_data)
+        self.update_item_quantity(instance)
+        return instance
+
+    def update_item_quantity(self, instance):
+        item = Item.objects.get(pk=instance.itemID.pk)
+        item.itemQuantity += instance.purchasedFromSupp - instance.issuedQty + instance.returnedQty
+        item.save(update_fields=['itemQuantity'])
     
-#     def validate(self, data):
-#         issuedQty = data.get('issuedQty')
-#         item = Item.objects.get(pk=data['itemID'].pk)
+    def validate(self, data):
+        issuedQty = data.get('issuedQty')
+        item = Item.objects.get(pk=data['itemID'].pk)
         
-#         if issuedQty and issuedQty > item.itemQuantity:
-#             raise serializers.ValidationError("Insufficient itemQuantity to issue the requested quantity.")
+        if issuedQty and issuedQty > item.itemQuantity:
+            raise serializers.ValidationError("Insufficient itemQuantity to issue the requested quantity.")
         
-#         return data
+        return data
 
 # class RunningBalance(serializers.ModelSerializer):
 #     class Meta:
