@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 import math
 from datetime import datetime
-from ims.models import (Item, Classification, Measurement, Section, Purpose, TransactionDetails, TransactionProduct, RunningBalance,) 
+from ims.models import (Item, BeginningBalance, Classification, Measurement, Section, Purpose, TransactionDetails, TransactionProduct, RunningBalance, Area) 
                         # , MonthlyConsumption)
 from django.db.models import Sum
 
@@ -39,6 +39,16 @@ class ItemSerializer(serializers.ModelSerializer):
         if Item.objects.filter(itemName=itemName).exclude(itemID=itemID).exists():
             raise serializers.ValidationError("An item with this name already exists")
         return data
+    
+class BeginningBalanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BeginningBalance
+        fields = '__all__'
+
+class RunningBalanceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RunningBalance
+        fields = '__all__'
 
 class ClassificationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -59,6 +69,11 @@ class PurposeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Purpose
         fields = ('purposeID','purposeName')
+
+class AreaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Area
+        fields = '__all__'
 
 class TransactionDetailsSerializer(serializers.ModelSerializer):
     sectionName = serializers.CharField(source='sectionID.sectionName', read_only=True)
@@ -135,7 +150,7 @@ def compute_sums_by_itemID(item_id):
 #     returnedQty_total = serializers.SerializerMethodField()
 #     consumption_total = serializers.SerializerMethodField()
 #     beginningBalance = serializers.SerializerMethodField()
-
+    
 #     class Meta:
 #         model = RunningBalance
 #         fields = ('runningBalID','itemID','measureName','beginningBalance',

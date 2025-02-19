@@ -1,4 +1,5 @@
-from datetime import timezone
+from django.utils import timezone
+from django.utils.timezone import now
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
@@ -10,10 +11,10 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from ims.models import (Item,  Classification, Measurement, Section, Purpose, TransactionProduct, TransactionDetails, RunningBalance )
-                        # BeginningBalance, Transaction, TransactionProduct, TransactionDetails, RunningBalance, MonthlyConsumption)
-from ims.serializers import (UserSerializer,ItemSerializer, ClassificationSerializer, MeasurementSerializer, SectionSerializer, PurposeSerializer, TransactionProductSerializer, TransactionDetailsSerializer,) 
-            # TransactionSerializer, TransactionProductSerializer, TransactionDetailsSerializer,RunningBalanceSerializer, MonthlyConsumptionSerializer,  RunningBalanceSerializer
+from ims.models import (Item, BeginningBalance, Classification, Measurement, Section, Purpose, TransactionProduct, TransactionDetails,RunningBalance, Area )
+                        # Transaction, TransactionProduct, TransactionDetails, RunningBalance, MonthlyConsumption)
+from ims.serializers import (UserSerializer,ItemSerializer, BeginningBalanceSerializer, ClassificationSerializer, MeasurementSerializer, SectionSerializer, PurposeSerializer, TransactionProductSerializer, TransactionDetailsSerializer, RunningBalanceSerializer, AreaSerializer) 
+            # TransactionSerializer, TransactionProductSerializer, TransactionDetailsSerializer,RunningBalanceSerializer, MonthlyConsumptionSerializer
 import logging
 
 from django.shortcuts import get_object_or_404
@@ -66,27 +67,45 @@ def item_delete(request, id):
     items.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
 
-# def copy_items_to_balance(request):
-#     if request.method == 'POST':
-#         # Get all items
-#         items = Item.objects.all()
+@api_view(['GET'])
+def get_beginning_bal(request):
+    beginning_bal = BeginningBalance.objects.all()
+    serializer = BeginningBalanceSerializer(beginning_bal, many=True, context={'request': request})
+    return Response(serializer.data)
 
-#         # Create BeginningBalance entries in bulk
-#         beginning_balances = [
-#             BeginningBalance(
-#                 itemID=item.itemID,
-#                 itemName=item.itemName,
-#                 measurementID=item.measurementID,
-#                 itemQuantity=item.itemQuantity,
-#                 unitCost=item.unitCost,
-#                 totalCost=item.totalCost,
-#                 created_at=timezone.now()
-#             ) for item in items
-#         ]
-#         # Bulk insert for efficiency
-#         BeginningBalance.objects.bulk_create(beginning_balances)
-#         return JsonResponse({'message': 'Items copied successfully!'}, status=201)
-#     return JsonResponse({'error': 'Invalid request method'}, status=400)
+def create_update_runbal(request):
+    if request.method == 'POST':
+        items = Item.objects.all()
+        transaction = TransactionProduct.objects.all()
+
+
+@csrf_exempt
+def copy_items_to_balance(request):
+    if request.method == 'POST':
+        items = Item.objects.all()
+
+        # Create BeginningBalance entries in bulk
+        beginning_balances = [
+            BeginningBalance(
+                itemID=item.itemID,
+                itemName=item.itemName,
+                measurementID=item.measurementID,
+                itemQuantity=item.itemQuantity,
+                unitCost=item.unitCost,
+                totalCost=item.totalCost,
+                created_at=timezone.now()
+            ) for item in items
+        ]
+        # Bulk insert for efficiency
+        BeginningBalance.objects.bulk_create(beginning_balances)
+        return JsonResponse({'message': 'Items copied successfully!'}, status=201)
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+@api_view(['GET'])
+def get_running_balance(request):
+    running_bal = RunningBalance.objects.all()
+    serializer = RunningBalanceSerializer(running_bal, many=True)
+    return Response(serializer.data)
 
 @api_view(['POST'])
 def login(request):
@@ -147,6 +166,12 @@ def section_list_all(request):
 def purpose_list_all(request):
     purposes = Purpose.objects.all()
     serializer = PurposeSerializer(purposes, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def area_list_all(request):
+    area = Area.objects.all()
+    serializer = AreaSerializer(area, many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
@@ -244,10 +269,10 @@ def transaction_product_delete(request, id, detailID):
     transactionProd.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
 
-# @api_view(['GET'])
-# def get_running_balance(request):
-#     running_balances = RunningBalance.objects.all()
-#     serializer = RunningBalanceSerializer(running_balances, many=True)
-#     return Response(serializer.data)
+@api_view(['GET'])
+def get_running_balance(request):
+    running_balances = RunningBalance.objects.all()
+    serializer = RunningBalanceSerializer(running_balances, many=True)
+    return Response(serializer.data)
 
 # end of transaction
