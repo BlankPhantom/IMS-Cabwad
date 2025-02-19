@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from ims.models import Item, Classification, Measurement, Section, Purpose
+from ims.models import Classification, Measurement, Section, Purpose, Area
 # Transaction, RunningBalance, MonthlyConsumption
 
 class Command(BaseCommand):
@@ -17,13 +17,19 @@ class Command(BaseCommand):
             Measurement.objects.get_or_create(measureName=name)
 
         #seed data for section
-        section = ["Commercial","Construction","NSC","Meter Maintenance","Production","Special Project","Sales","Gen.Services",]
+        section = ['N/A',"Commercial","Construction","NSC","Meter Maintenance","Production","Special Project","Sales","Gen.Services",]
         for name in section:
             Section.objects.get_or_create(sectionName=name)
         
-        purpose = ["Construction","Disconnection","New Service Connection","Project","Repairs and Maintenance","Transfer,""Defective","Re-connect","Physical Count Adjustment","Sales","Repair of Service Vehicle",]
+        #seed data for purpose
+        purpose = ["N/A","Construction","Disconnection","New Service Connection","Project","Repairs and Maintenance","Transfer,""Defective","Re-connect","Physical Count Adjustment","Sales","Repair of Service Vehicle",]
         for name in purpose:
             Purpose.objects.get_or_create(purposeName=name)
+
+        #seed data for Area
+        area = ["N/A","Casile","Diezmo","PS1","PS2","PS3"]
+        for name in area:
+            Area.objects.get_or_create(areaName=name)
 
         
 

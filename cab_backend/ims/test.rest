@@ -6,7 +6,6 @@ Content-Type: application/json
 
 ###
 # signup API
-
 POST http://127.0.0.1:8000/ims/create_user/
 Content-Type: application/json
 

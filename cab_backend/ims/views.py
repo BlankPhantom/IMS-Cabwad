@@ -1,3 +1,5 @@
+from datetime import timezone
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -8,10 +10,10 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from ims.models import (Item, Classification, Measurement, Section, Purpose,Transaction, TransactionProduct, TransactionDetails, )
-                        # Transaction, TransactionProduct, TransactionDetails, RunningBalance, MonthlyConsumption)
-from ims.serializers import (UserSerializer,ItemSerializer, ClassificationSerializer, MeasurementSerializer, SectionSerializer, PurposeSerializer,TransactionSerializer, TransactionProductSerializer, TransactionDetailsSerializer) 
-            # TransactionSerializer, TransactionProductSerializer, TransactionDetailsSerializer,RunningBalance, MonthlyConsumptionSerializer
+from ims.models import (Item,  Classification, Measurement, Section, Purpose, TransactionProduct, TransactionDetails, RunningBalance )
+                        # BeginningBalance, Transaction, TransactionProduct, TransactionDetails, RunningBalance, MonthlyConsumption)
+from ims.serializers import (UserSerializer,ItemSerializer, ClassificationSerializer, MeasurementSerializer, SectionSerializer, PurposeSerializer, TransactionProductSerializer, TransactionDetailsSerializer,) 
+            # TransactionSerializer, TransactionProductSerializer, TransactionDetailsSerializer,RunningBalanceSerializer, MonthlyConsumptionSerializer,  RunningBalanceSerializer
 import logging
 
 from django.shortcuts import get_object_or_404
@@ -63,6 +65,28 @@ def item_delete(request, id):
     
     items.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+# def copy_items_to_balance(request):
+#     if request.method == 'POST':
+#         # Get all items
+#         items = Item.objects.all()
+
+#         # Create BeginningBalance entries in bulk
+#         beginning_balances = [
+#             BeginningBalance(
+#                 itemID=item.itemID,
+#                 itemName=item.itemName,
+#                 measurementID=item.measurementID,
+#                 itemQuantity=item.itemQuantity,
+#                 unitCost=item.unitCost,
+#                 totalCost=item.totalCost,
+#                 created_at=timezone.now()
+#             ) for item in items
+#         ]
+#         # Bulk insert for efficiency
+#         BeginningBalance.objects.bulk_create(beginning_balances)
+#         return JsonResponse({'message': 'Items copied successfully!'}, status=201)
+#     return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 @api_view(['POST'])
 def login(request):
@@ -125,13 +149,6 @@ def purpose_list_all(request):
     serializer = PurposeSerializer(purposes, many=True)
     return Response(serializer.data)
 
-# start of transaction
-@api_view(['GET'])
-def get_all_transaction(request):
-    transaction = Transaction.objects.all()
-    serializer = TransactionSerializer(transaction, many=True)
-    return Response(serializer.data)
-
 @api_view(['GET'])
 def get_all_transaction_details(request):
     transactionDet = TransactionDetails.objects.all()
@@ -163,27 +180,6 @@ def get_transaction_product(request, id, detailID):
     
     serializer = TransactionProductSerializer(transactionProd, context={'request': request})
     return Response(serializer.data)
-
-@api_view(['POST'])
-def transaction_create(request):
-    serializer = TransactionSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['PUT'])
-def transaction_update(request, id):
-    try:
-        transaction = Transaction.objects.get(transaction_id=id)
-    except Transaction.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    serializer = TransactionSerializer(transaction, data=request.data, partial=True, context={'request': request})
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 def transaction_detail_create(request):
@@ -248,22 +244,10 @@ def transaction_product_delete(request, id, detailID):
     transactionProd.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
 
-@api_view(['POST', 'PUT'])
-def combined_transaction_view(request, model_name, id=None):
-    if model_name == 'transaction':
-        if request.method == 'POST':
-            return transaction_create(request)
-        elif request.method == 'PUT' and id is not None:
-            return transaction_update(request, id)
-    elif model_name == 'transaction_detail':
-        if request.method == 'POST':
-            return transaction_detail_create(request)
-        elif request.method == 'PUT' and id is not None:
-            return transaction_detail_update(request, id)
-    elif model_name == 'transactionProd':
-        if request.method == 'POST':
-            return transactionProd_create(request)
-        elif request.method == 'PUT' and id is not None:
-            return transactionProd_update(request, id)
-    return Response(status=status.HTTP_400_BAD_REQUEST)
+# @api_view(['GET'])
+# def get_running_balance(request):
+#     running_balances = RunningBalance.objects.all()
+#     serializer = RunningBalanceSerializer(running_balances, many=True)
+#     return Response(serializer.data)
+
 # end of transaction

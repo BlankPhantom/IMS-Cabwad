@@ -15,6 +15,8 @@ urlpatterns = [
     path('item/', views.item_list_all, name='get-item'),
     path('item/<str:id>/', views.item_list_detail, name='get-item-detail'),
 
+    # path('copy-items/', views.copy_items_to_balance, name='copy-items'),
+
     path('section/', views.section_list_all, name='get-section'),
     path('purpose/', views.purpose_list_all, name='get-purpose'),
     path('measurement/', views.measurement_list_all, name='get-measurement'),
@@ -23,7 +25,7 @@ urlpatterns = [
     path('transaction-detail/', views.get_all_transaction_details, name='create-transaction-detail'),
     path('transaction-product/', views.get_all_transaction_product, name='create-transaction-product'),
 
-    path('transaction-detail/<int:id>', views.get_transaction_details, name='create-transaction-detail'),
+    path('transaction-detail/<int:id>/', views.get_transaction_details, name='create-transaction-detail'),
     path('transaction-product/<int:detailID>/<int:id>/', views.get_transaction_product, name='get-transaction-product'),
     
     path('transaction-detail/create/', views.transaction_detail_create, name='create-transaction-detail'),
@@ -35,5 +37,5 @@ urlpatterns = [
     path('transaction-detail/delete/<int:id>/', views.transaction_detail_delete, name='delete-transaction-detail'),
     path('transaction-product/delete/<int:detailID>/<int:id>/', views.transaction_product_delete, name='delete-transaction-product'),
 
-
+    # path('run-bal/', views.get_running_balance, name='get-running-balance')
 ]
