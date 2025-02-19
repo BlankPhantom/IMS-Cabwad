@@ -20,7 +20,20 @@ urlpatterns = [
     path('measurement/', views.measurement_list_all, name='get-measurement'),
     path('classification/', views.classification_list_all, name='get-classification'),
     
+    path('transaction-detail/', views.get_all_transaction_details, name='create-transaction-detail'),
+    path('transaction-product/', views.get_all_transaction_product, name='create-transaction-product'),
+
+    path('transaction-detail/<int:id>', views.get_transaction_details, name='create-transaction-detail'),
+    path('transaction-product/<int:detailID>/<int:id>/', views.get_transaction_product, name='get-transaction-product'),
+    
     path('transaction-detail/create/', views.transaction_detail_create, name='create-transaction-detail'),
     path('transaction-product/create/', views.transaction_product_create, name='create-transaction-product'),
+
+    path('transaction-detail/update/<int:id>/', views.transaction_detail_update, name='update-transaction-detail'),
+    path('transaction-product/update/<int:detailID>/<int:id>/', views.transaction_product_update, name='update-transaction-product'),
+
+    path('transaction-detail/delete/<int:id>/', views.transaction_detail_delete, name='delete-transaction-detail'),
+    path('transaction-product/delete/<int:detailID>/<int:id>/', views.transaction_product_delete, name='delete-transaction-product'),
+
 
 ]

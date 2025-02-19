@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
+import math
+from datetime import datetime
 from ims.models import (Item, Classification, Measurement, Section, Purpose, Transaction, TransactionDetails, TransactionProduct,) 
                         # RunningBalance, MonthlyConsumption)
 
@@ -65,9 +67,18 @@ class TransactionSerializer(serializers.ModelSerializer):
 class TransactionDetailsSerializer(serializers.ModelSerializer):
     sectionName = serializers.CharField(source='sectionID.sectionName', read_only=True)
     purposeName = serializers.CharField(source='purposeID.purposeName', read_only=True)
+    week = serializers.SerializerMethodField()
+
     class Meta:
         model = TransactionDetails
         fields = ('transactionDetailsID', 'date', 'week', 'mris', 'supplier', 'requestedBy', 'sectionID', 'sectionName', 'purposeID', 'purposeName')  
+
+    def get_week(self, obj):
+        date_obj = datetime.strptime(obj.date, '%Y-%m-%d')
+        first_day = date_obj.replace(day=1)
+        week_number = (date_obj.day + first_day.weekday()) // 7 + 1
+        return f"Week {week_number}"
+        
 
 class TransactionProductSerializer(serializers.ModelSerializer):
     itemQuantity = serializers.SerializerMethodField()

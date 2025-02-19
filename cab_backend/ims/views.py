@@ -135,13 +135,33 @@ def get_all_transaction(request):
 @api_view(['GET'])
 def get_all_transaction_details(request):
     transactionDet = TransactionDetails.objects.all()
-    serializer = TransactionSerializer(transactionDet, many=True)
+    serializer = TransactionDetailsSerializer(transactionDet, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def get_transaction_details(request,id):
+    try:
+        transactionDet = TransactionDetails.objects.get(transactionDetailsID=id)
+    except TransactionDetails.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    serializer = TransactionDetailsSerializer(transactionDet, context={'request': request})
     return Response(serializer.data)
 
 @api_view(['GET'])
 def get_all_transaction_product(request):
     transactionProd = TransactionProduct.objects.all()
-    serializer = TransactionSerializer(transactionProd, many=True)
+    serializer = TransactionProductSerializer(transactionProd, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def get_transaction_product(request, id, detailID):
+    try:
+        transactionProd = TransactionProduct.objects.get(transactionDetailsID_id=detailID, transactionProductID = id)
+    except TransactionProduct.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    serializer = TransactionProductSerializer(transactionProd, context={'request': request})
     return Response(serializer.data)
 
 @api_view(['POST'])
@@ -176,15 +196,25 @@ def transaction_detail_create(request):
 @api_view(['PUT'])
 def transaction_detail_update(request, id):
     try:
-        transaction_detail = TransactionDetails.objects.get(transaction_detail_id=id)
+        transactionDet = TransactionDetails.objects.get(transactionDetailsID=id)
     except TransactionDetails.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    serializer = TransactionDetailsSerializer(transaction_detail, data=request.data, partial=True, context={'request': request})
+    serializer = TransactionDetailsSerializer(transactionDet, data=request.data, partial=True, context={'request': request})
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+def transaction_detail_delete(request, id):
+    try:
+        transactionDet = TransactionDetails.objects.get(transactionDetailsID=id)
+    except TransactionDetails.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    transactionDet.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['POST'])
 def transaction_product_create(request):
@@ -195,17 +225,28 @@ def transaction_product_create(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])
-def transaction_product_update(request, id):
+def transaction_product_update(request, id, detailID):
     try:
-        transaction_product = TransactionProduct.objects.get(transaction_product_id=id)
+        transactionProd = TransactionProduct.objects.get(transactionProductID=id, transactionDetailsID_id = detailID)
+        
     except TransactionProduct.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    serializer = TransactionProductSerializer(transaction_product, data=request.data, partial=True, context={'request': request})
+    serializer = TransactionProductSerializer(transactionProd, data=request.data, partial=True, context={'request': request})
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+def transaction_product_delete(request, id, detailID):
+    try:
+        transactionProd = TransactionProduct.objects.get(transactionProductID=id, transactionDetailsID_id = detailID)
+    except TransactionDetails.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    transactionProd.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['POST', 'PUT'])
 def combined_transaction_view(request, model_name, id=None):
@@ -219,10 +260,10 @@ def combined_transaction_view(request, model_name, id=None):
             return transaction_detail_create(request)
         elif request.method == 'PUT' and id is not None:
             return transaction_detail_update(request, id)
-    elif model_name == 'transaction_product':
+    elif model_name == 'transactionProd':
         if request.method == 'POST':
-            return transaction_product_create(request)
+            return transactionProd_create(request)
         elif request.method == 'PUT' and id is not None:
-            return transaction_product_update(request, id)
+            return transactionProd_update(request, id)
     return Response(status=status.HTTP_400_BAD_REQUEST)
 # end of transaction

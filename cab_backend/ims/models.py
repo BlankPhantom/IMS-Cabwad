@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.utils.timezone import now
 from django.db.models.signals import pre_save
 from django.dispatch import receiver    
+from django.utils import dateformat
 
 class Classification(models.Model):
     classificationID = models.AutoField(primary_key=True)
@@ -45,8 +46,10 @@ class Purpose(models.Model):
     purposeName = models.CharField(max_length=500)
 
 class TransactionDetails(models.Model):
+    formattedDate = dateformat.format(timezone.now(), 'Y-m-d')
+
     transactionDetailsID = models.AutoField(primary_key=True)
-    date = models.DateField(default=now().date())
+    date = models.DateField(default=formattedDate)
     week = models.CharField(max_length=25)
     mris = models.IntegerField(null=False)
     supplier = models.CharField(max_length=500, blank=True)
@@ -65,10 +68,18 @@ class TransactionProduct(models.Model):
     transferToWH = models.IntegerField(blank=True, default=0)
     issuedQty = models.IntegerField(blank=True, default=0)
     returnedQty = models.IntegerField(blank=True, default=0)
-    
+    consumption = models.IntegerField(default=0)
+
+    def save(self, *args, **kwargs):
+        if self.issuedQty == 0 and self.returnedQty == self.issuedQty and self.returnedQty > 0:
+            self.consumption = 0
+        else:
+            self.consumption = self.returnedQty - self.issuedQty
+        super(TransactionProduct, self).save(*args, **kwargs)
+
     @property
-    def consumption(self): 
-        return self.returnedQty - self.issuedQty
+    def computed_consumption(self): 
+        return self.returnedQty - self
     
 class Transaction(models.Model):    
     transactionID = models.AutoField(primary_key=True)
@@ -77,21 +88,14 @@ class Transaction(models.Model):
     created_at = models.DateTimeField(default= timezone.now)
     updated_at = models.DateTimeField(default= timezone.now)
 
-# class RunningBalance(models.Model):
-#     runningBalID = models.AutoField(primary_key=True, default=1)
-#     classID = models.ForeignKey(Classification, on_delete=models.CASCADE, default=1)
-#     itemID = models.ForeignKey(Item, on_delete=models.CASCADE, default=1)
-#     measureID = models.ForeignKey(Measurement, on_delete=models.CASCADE, default=1)
-#     beginningBalance = models.IntegerField(null=True)
-#     purchasedFromSupp = models.IntegerField()
-#     returnToSupplier = models.CharField(max_length=500)
-#     transferFromWH = models.CharField(max_length=500)
-#     transferToWH = models.CharField(max_length=500)
-#     issuedQty = models.IntegerField(blank=True, null=True)
-#     cost = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-#     totalCost = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-#     created_at = models.DateTimeField(default= timezone.now)
-#     updated_at = models.DateTimeField(default= timezone.now)
+class RunningBalance(models.Model):
+    runningBalID = models.AutoField(primary_key=True, default=1)
+    itemID = models.ForeignKey(Item, on_delete=models.CASCADE)
+    beginningBalance = models.IntegerField(null=True)
+    TransactionProductID = models.ForeignKey(TransactionProduct, on_delete=models.CASCADE)
+    totalCost = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    created_at = models.DateTimeField(default= timezone.now)
+    updated_at = models.DateTimeField(default= timezone.now)
 
 # class MonthlyConsumption(models.Model):
 #     sectionID = models.ForeignKey(Section, on_delete=models.CASCADE, default=1)
