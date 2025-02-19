@@ -10,7 +10,11 @@ const BtnAddNewItem = ({fetchItems, classifications, measurements}) => {
 
     // Handle opening/closing modal
     const handleShow = () => setShowModal(true);
-    const handleClose = () => setShowModal(false);
+    const handleClose = () => {
+        setShowModal(false);
+        setSelectedMeasurement('');
+        setSelectedClassification('');
+    };
 
     const handleMeasureChange = (e) => {
         const selectedId = parseInt(e.target.value, 10);
