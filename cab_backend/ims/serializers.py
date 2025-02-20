@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 import math
 from datetime import datetime
-from ims.models import (Item, BeginningBalance, Classification, Measurement, Section, Purpose, TransactionDetails, TransactionProduct, RunningBalance, Area) 
+from ims.models import (Item, BeginningBalance, Classification, Measurement, Section, Purpose, TransactionDetails, TransactionProduct, RunningBalance, Area, MonthlyConsumption, MonthlyConsumptionTotal) 
                         # , MonthlyConsumption)
 from django.db.models import Sum
 
@@ -78,20 +78,20 @@ class AreaSerializer(serializers.ModelSerializer):
 class TransactionDetailsSerializer(serializers.ModelSerializer):
     sectionName = serializers.CharField(source='sectionID.sectionName', read_only=True)
     purposeName = serializers.CharField(source='purposeID.purposeName', read_only=True)
-    week = serializers.SerializerMethodField()
 
     class Meta:
         model = TransactionDetails
         fields = ('transactionDetailsID', 'date', 'week', 'mris', 'supplier', 'requestedBy', 'sectionID', 'sectionName', 'purposeID', 'purposeName')  
-
-    def get_week(self, obj):      
-        date_format = '%Y-%m-%d'
-        date_obj = datetime.strptime(obj.date, date_format).date()        
-        date_combined = datetime.combine(date_obj, datetime.min.time())
-        first_day = date_combined.replace(day=1)
-        week_number = (date_combined.day + first_day.weekday()) // 7 + 1
-        return f"Week {week_number}"
         
+class MonthlyConsumptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MonthlyConsumption
+        fields = '__all__'
+
+class MonthlyConsumptionTotalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MonthlyConsumptionTotal
+        fields = '__all__'
 
 class TransactionProductSerializer(serializers.ModelSerializer):
     itemQuantity = serializers.SerializerMethodField()

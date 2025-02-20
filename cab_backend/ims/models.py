@@ -36,15 +36,15 @@ def create_custom_id(sender, instance, **kwargs):
         max_id = Item.objects.filter(classificationID=instance.classificationID).count() + 1
         instance.itemID = f'{instance.classificationID.classificationID:02d}-{max_id:03d}'
 
-# class BeginningBalance(models.Model):
-#     id = models.AutoField(primary_key=True)
-#     itemID = models.CharField(max_length=20)  # Copy from Item
-#     itemName = models.CharField(max_length=500)
-#     measurementID = models.ForeignKey(Measurement, on_delete=models.CASCADE)
-#     itemQuantity = models.IntegerField(default=0)
-#     unitCost = models.FloatField(default=0.0)
-#     totalCost = models.FloatField(default=0.0)
-#     created_at = models.DateTimeField(default=timezone.now)
+class BeginningBalance(models.Model):
+    id = models.AutoField(primary_key=True)
+    itemID = models.CharField(max_length=20)  # Copy from Item
+    itemName = models.CharField(max_length=500)
+    measurementID = models.ForeignKey(Measurement, on_delete=models.CASCADE)
+    itemQuantity = models.IntegerField(default=0)
+    unitCost = models.FloatField(default=0.0)
+    totalCost = models.FloatField(default=0.0)
+    created_at = models.DateTimeField(default=timezone.now)
 
 class Section(models.Model):
     sectionID = models.AutoField(primary_key=True)
@@ -60,10 +60,9 @@ class Area(models.Model):
 
 class TransactionDetails(models.Model):
     formattedDate = dateformat.format(timezone.now(), 'Y-m-d')
-
     transactionDetailsID = models.AutoField(primary_key=True)
     date = models.DateField(default=formattedDate)
-    week = models.CharField(max_length=25)
+    week = models.IntegerField(default=0)
     mris = models.IntegerField(null=False)
     supplier = models.CharField(max_length=500, blank=True)
     requestedBy = models.CharField(max_length=500, blank=True)
@@ -82,6 +81,7 @@ class TransactionProduct(models.Model):
     issuedQty = models.IntegerField(blank=True, default=0)
     returnedQty = models.IntegerField(blank=True, default=0)
     consumption = models.IntegerField(default=0)
+    created_at = models.DateTimeField(default=timezone.now)
 
     def save(self, *args, **kwargs):
         if self.issuedQty == 0 and self.returnedQty > 0:
@@ -95,23 +95,51 @@ class TransactionProduct(models.Model):
         return self.returnedQty - self
 
 class RunningBalance(models.Model):
-    runningBalID = models.AutoField(primary_key=True, default=1)
-    itemID = models.ForeignKey(Item, on_delete=models.CASCADE)
-    beginningBalance = models.IntegerField(null=True)
-    TransactionProductID = models.ForeignKey(TransactionProduct, on_delete=models.CASCADE)
+    runningBalID = models.AutoField(primary_key=True)
+    itemID =  models.ForeignKey(Item, on_delete=models.CASCADE) 
+    itemName = models.CharField(max_length=500, default="")
+    measurementID = models.ForeignKey(Measurement, on_delete=models.CASCADE, default=1)
+    itemQuantity = models.IntegerField(default=0)
+    unitCost = models.FloatField(default=0.0)
+    beginningBalance = models.IntegerField(default=0)
+    purchasedFromSupp = models.IntegerField(blank=True, default=0)
+    returnToSupplier = models.IntegerField(blank=True, default=0)
+    transferFromWH = models.IntegerField(blank=True, default=0)
+    transferToWH = models.IntegerField(blank=True, default=0)
+    issuedQty = models.IntegerField(blank=True, default=0)
+    returnedQty = models.IntegerField(blank=True, default=0)
+    consumption = models.IntegerField(default=0)
+    unitCost = models.FloatField(default=0.0)
     totalCost = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     created_at = models.DateTimeField(default= timezone.now)
     updated_at = models.DateTimeField(default= timezone.now)
 
-# class MonthlyConsumption(models.Model):
-#     sectionID = models.ForeignKey(Section, on_delete=models.CASCADE, default=1)
-#     date = models.DateField(blank=True, null=True)
-#     week = models.CharField(max_length=500)
-#     classID = models.ForeignKey(Classification, on_delete=models.CASCADE, default=1)
-#     itemID = models.ForeignKey(Item, on_delete=models.CASCADE, default=1)
-#     transactionID = models.ForeignKey(Transaction, on_delete=models.CASCADE, default=1)
-#     created_at = models.DateTimeField(default= timezone.now)
-#     updated_at = models.DateTimeField(default= timezone.now)
+class MonthlyConsumption(models.Model):
+    monthlyConsumptionID = models.AutoField(primary_key=True)
+    sectionID = models.ForeignKey(Section, null=True, blank=True, on_delete=models.CASCADE)
+    date = models.DateField(blank=True, null=True)
+    week = models.IntegerField(default=0)
+    itemID = models.ForeignKey(Item, on_delete=models.CASCADE)
+    itemName = models.CharField(max_length=255)
+    consumption = models.FloatField()
+    cost = models.FloatField()
+    total = models.FloatField()
+    created_at = models.DateTimeField(default= timezone.now)
+
+class MonthlyConsumptionTotal(models.Model):
+    id = models.AutoField(primary_key=True)
+    week = models.IntegerField(default=0)
+    totalNSC = models.IntegerField(default=0)
+    totalProd = models.IntegerField(default=0)
+    totalMeterMaintenance = models.IntegerField(default=0)
+    totalSpecialProj = models.IntegerField(default=0)
+    totalConstruction = models.IntegerField(default=0)
+    totalCommercial = models.IntegerField(default=0)
+    totalSales = models.IntegerField(default=0)
+    totalGenService = models.IntegerField(default=0)
+    totalConsumption = models.IntegerField(default=0)
+    created_at = models.DateTimeField(default= timezone.now)
+    updated_at = models.DateTimeField(default= timezone.now)
 
 
     

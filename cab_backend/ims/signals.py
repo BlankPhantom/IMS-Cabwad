@@ -1,0 +1,115 @@
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.utils.timezone import now
+from django.db.models import Sum
+from django.utils import timezone
+from .models import TransactionProduct, MonthlyConsumption, MonthlyConsumptionTotal, Item
+
+@receiver(post_save, sender=TransactionProduct)
+def create_monthly_consumption(sender, instance, created, **kwargs):
+    if created:
+        try:
+            # Get the related item
+            item = Item.objects.get(itemID=instance.itemID.itemID)
+
+            # Check if the MonthlyConsumption already exists
+            if MonthlyConsumption.objects.filter(
+                sectionID=instance.transactionDetailsID.sectionID,
+                date=instance.transactionDetailsID.date,
+                week=instance.transactionDetailsID.week,
+                itemID=instance.itemID,
+                created_at=instance.created_at
+            ).exists():
+                print(f"Skipping: MonthlyConsumption already exists for ItemID={instance.itemID}")
+                return
+
+            # Create a new MonthlyConsumption entry
+            MonthlyConsumption.objects.create(
+                sectionID=instance.transactionDetailsID.sectionID if instance.transactionDetailsID.sectionID else None,
+                date=instance.transactionDetailsID.date,
+                week=instance.transactionDetailsID.week if instance.transactionDetailsID.week else 0,
+                itemID=instance.itemID,
+                itemName=item.itemName,
+                consumption=instance.consumption,
+                cost=item.unitCost,
+                total=instance.consumption * item.unitCost,
+                created_at=instance.created_at  # Use TransactionProduct's timestamp
+            )
+
+            print(f"MonthlyConsumption created for ItemID={instance.itemID}")
+
+        except Item.DoesNotExist:
+            print(f"Error: Item with itemID={instance.itemID} not found")
+        except Exception as e:
+            print(f"Error creating MonthlyConsumption: {e}")
+            
+# Helper function to get the current week (1-5), month, and year
+def get_current_week_month_year():
+    today = now().date()
+    week_number = (today.day - 1) // 7 + 1  # Week in a month (1 to 5)
+    month = today.month
+    year = today.year
+    return week_number, month, year
+
+# Helper function to calculate totals by sectionID for the current week and month
+def calculate_totals_for_week_and_month():
+    current_week, current_month, current_year = get_current_week_month_year()
+
+    # Get consumption totals for each sectionID for the current week and month
+    totals = MonthlyConsumption.objects.filter(
+        created_at__year=current_year,
+        created_at__month=current_month,
+        created_at__day__gte=(current_week - 1) * 7 + 1,
+        created_at__day__lte=current_week * 7
+    ).values('sectionID').annotate(total=Sum('total'))
+
+    # Map sectionID to model fields
+    section_mapping = {
+        2: 'totalNSC',
+        3: 'totalProd',
+        4: 'totalMeterMaintenance',
+        5: 'totalSpecialProj',
+        6: 'totalConstruction',
+        7: 'totalCommercial',
+        8: 'totalSales',
+        9: 'totalGenService',
+    }
+
+    # Initialize totals with 0
+    section_totals = {field: 0 for field in section_mapping.values()}
+
+    # Update section totals based on query results
+    for item in totals:
+        section_id = item['sectionID']
+        if section_id in section_mapping:
+            field_name = section_mapping[section_id]
+            section_totals[field_name] = item['total']
+
+    # ✅ Ensure totalConsumption sums all the other fields
+    section_totals['totalConsumption'] = sum(section_totals.values())
+
+    # Ensure unique check uses week, month, and year
+    weekly_total, created = MonthlyConsumptionTotal.objects.get_or_create(
+        week=current_week,
+        created_at__year=current_year,
+        created_at__month=current_month,
+        defaults=section_totals
+    )
+
+    # Debugging information
+    print(f"Created: {created}, Week: {current_week}, Month: {current_month}, Year: {current_year}")
+    print(f"Before Update: {weekly_total}")
+
+    # ✅ If record already exists, update ALL fields (including totalConsumption)
+    if not created:
+        for field, value in section_totals.items():
+            setattr(weekly_total, field, value)
+        weekly_total.updated_at = now()
+        weekly_total.save()
+
+        print(f"Updated Weekly Total: {weekly_total}")
+
+# Signal to update or create MonthlyConsumptionTotal when MonthlyConsumption is created
+@receiver(post_save, sender=MonthlyConsumption)
+def update_weekly_total(sender, instance, **kwargs):
+    calculate_totals_for_week_and_month()
