@@ -1,6 +1,8 @@
+from datetime import datetime
 from django.utils import timezone
 from django.utils.timezone import now
 from django.http import JsonResponse
+from django.db.models import Sum
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -11,9 +13,9 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from ims.models import (Item, BeginningBalance, Classification, Measurement, Section, Purpose, TransactionProduct, TransactionDetails,RunningBalance, Area )
+from ims.models import (Item, BeginningBalance, Classification, Measurement, Section, Purpose, TransactionProduct, TransactionDetails,RunningBalance, Area, MonthlyConsumption, MonthlyConsumptionTotal )
                         # Transaction, TransactionProduct, TransactionDetails, RunningBalance, MonthlyConsumption)
-from ims.serializers import (UserSerializer,ItemSerializer, BeginningBalanceSerializer, ClassificationSerializer, MeasurementSerializer, SectionSerializer, PurposeSerializer, TransactionProductSerializer, TransactionDetailsSerializer, RunningBalanceSerializer, AreaSerializer) 
+from ims.serializers import (UserSerializer,ItemSerializer, BeginningBalanceSerializer, ClassificationSerializer, MeasurementSerializer, SectionSerializer, PurposeSerializer, TransactionProductSerializer, TransactionDetailsSerializer, RunningBalanceSerializer, AreaSerializer, MonthlyConsumptionTotalSerializer, MonthlyConsumptionSerializer) 
             # TransactionSerializer, TransactionProductSerializer, TransactionDetailsSerializer,RunningBalanceSerializer, MonthlyConsumptionSerializer
 import logging
 
@@ -72,16 +74,97 @@ def get_beginning_bal(request):
     beginning_bal = BeginningBalance.objects.all()
     serializer = BeginningBalanceSerializer(beginning_bal, many=True, context={'request': request})
     return Response(serializer.data)
-
+            
+@csrf_exempt
+@api_view(['POST'])
 def create_update_runbal(request):
     if request.method == 'POST':
-        items = Item.objects.all()
-        transaction = TransactionProduct.objects.all()
+        current_month = timezone.now().month
+        current_year = timezone.now().year
 
+        # Get all items
+        items = Item.objects.all()
+
+        for item in items:
+            transactions = TransactionProduct.objects.filter(itemID=item.itemID)
+            sums = transactions.aggregate(
+                purchasedFromSupp_sum=Sum('purchasedFromSupp'),
+                returnToSupplier_sum=Sum('returnToSupplier'),
+                transferFromWH_sum=Sum('transferFromWH'),
+                transferToWH_sum=Sum('transferToWH'),
+                issuedQty_sum=Sum('issuedQty'),
+                returnedQty_sum=Sum('returnedQty'),
+                consumption_sum=Sum('consumption'),
+            )
+
+            # Check if there is an existing RunningBalance entry for the current month and year
+            running_balance, created = RunningBalance.objects.get_or_create(
+                itemID=item,
+                created_at__month=current_month,
+                created_at__year=current_year,
+                defaults={
+                    'itemName': item.itemName,
+                    'measurementID': item.measurementID,
+                    'itemQuantity': item.itemQuantity,
+                    'unitCost': item.unitCost,
+                    'beginningBalance': 0,  # This will be updated below if it is a new month
+                    'purchasedFromSupp': 0,
+                    'returnToSupplier': 0,
+                    'transferFromWH': 0,
+                    'transferToWH': 0,
+                    'issuedQty': 0,
+                    'returnedQty': 0,
+                    'consumption': 0,
+                    'totalCost': 0,
+                }
+            )
+
+            if created:
+                # Calculate the previous month and year
+                if current_month == 1:
+                    last_month = 12
+                    last_year = current_year - 1
+                else:
+                    last_month = current_month - 1
+                    last_year = current_year
+
+                # Fetch the itemQuantity from the previous month in the BeginningBalance model
+                last_month_bb = BeginningBalance.objects.filter(
+                    itemID=item.itemID,  # Ensure correct itemID field
+                    created_at__month=last_month,
+                    created_at__year=last_year
+                ).order_by('-created_at').first()
+
+                if last_month_bb:
+                    running_balance.beginningBalance = last_month_bb.itemQuantity
+                else:
+                    running_balance.beginningBalance = 0
+            else:
+                # If updating an existing entry, set the aggregated sums
+                running_balance.purchasedFromSupp = sums['purchasedFromSupp_sum'] or 0
+                running_balance.returnToSupplier = sums['returnToSupplier_sum'] or 0
+                running_balance.transferFromWH = sums['transferFromWH_sum'] or 0
+                running_balance.transferToWH = sums['transferToWH_sum'] or 0
+                running_balance.issuedQty = sums['issuedQty_sum'] or 0
+                running_balance.returnedQty = sums['returnedQty_sum'] or 0
+                running_balance.consumption = sums['consumption_sum'] or 0
+
+            # Update the totalCost based on unitCost and itemQuantity
+            running_balance.totalCost = running_balance.unitCost * running_balance.itemQuantity
+            running_balance.save()
+
+        return Response({"detail": "Running balance processed successfully."})
 
 @csrf_exempt
 def copy_items_to_balance(request):
     if request.method == 'POST':
+        current_month = timezone.now().month
+        current_year = timezone.now().year
+
+        # Check if there are any BeginningBalance entries for the current month and year
+        if BeginningBalance.objects.filter(created_at__month=current_month, created_at__year=current_year).exists():
+            return JsonResponse({'error': 'Items have already been copied for this month'}, status=400)
+
         items = Item.objects.all()
 
         # Create BeginningBalance entries in bulk
@@ -206,13 +289,21 @@ def get_transaction_product(request, id, detailID):
     serializer = TransactionProductSerializer(transactionProd, context={'request': request})
     return Response(serializer.data)
 
+def calculate_week(date_str):
+    today = now().date()
+    week_number = (today.day - 1) // 7 + 1 
+    return int(week_number)
+
 @api_view(['POST'])
 def transaction_detail_create(request):
-    serializer = TransactionDetailsSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    if request.method == 'POST':
+        serializer = TransactionDetailsSerializer(data=request.data)
+        if serializer.is_valid():
+            transaction_details = serializer.save()
+            transaction_details.week = calculate_week(transaction_details.date)
+            transaction_details.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])
 def transaction_detail_update(request, id):
@@ -273,6 +364,12 @@ def transaction_product_delete(request, id, detailID):
 def get_running_balance(request):
     running_balances = RunningBalance.objects.all()
     serializer = RunningBalanceSerializer(running_balances, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def get_monthly_total(request):
+    monthly_total = MonthlyConsumptionTotal.objects.all()
+    serializer = MonthlyConsumptionTotalSerializer(monthly_total, many=True)
     return Response(serializer.data)
 
 # end of transaction

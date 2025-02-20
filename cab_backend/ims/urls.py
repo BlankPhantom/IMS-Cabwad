@@ -40,5 +40,8 @@ urlpatterns = [
     path('transaction-product/delete/<int:detailID>/<int:id>/', views.transaction_product_delete, name='delete-transaction-product'),
 
     path('run-bal/', views.get_running_balance, name='get-running-balance'),
-    path('run-bal/create/', views.create_running_balance, name='create-running-balance')
+    path('run-bal/create/', views.create_update_runbal, name='create-running-balance'),
+
+    path('monthly-consumption-total/', views.get_monthly_total, name="get-monthly-total")
+    # path('monthly-consumption/create/', views.create_monthly_consumption, name="create-monthly-consumption")
 ]
