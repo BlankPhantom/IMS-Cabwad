@@ -15,6 +15,7 @@ const EditTransactionModal = ({
         transactionType: "",
         productName: "",
         itemID: "",
+        area: "",
         purchasedFromSupplier: "",
         returnToSupplier: "",
         transferFromWarehouse: "",
@@ -203,23 +204,27 @@ const EditTransactionModal = ({
                         <h5 className="mt-3">Product List</h5>
 
                         <ul className="mt-3">
-                            {transactionData.products.map((product, index) => (
-                                <li key={index}>
-                                    {product.productName}
-                                    <span
-                                        style={{ color: "#ffcc00", marginRight: '5px', marginLeft: '5px', cursor: "pointer" }}
-                                        onClick={() => handleEditProduct(index)}
-                                    >
-                                        <FontAwesomeIcon icon={faPenToSquare} />
-                                    </span>
-                                    <span
-                                        style={{ color: "red", cursor: "pointer" }}
-                                        onClick={() => handleDeleteProduct(index)}
-                                    >
-                                        <FontAwesomeIcon icon={faTrashAlt} />
-                                    </span>
-                                </li>
-                            ))}
+                            {transactionData?.products?.length > 0 ? (
+                                transactionData.products.map((product, index) => (
+                                    <li key={index}>
+                                        {product.productName}
+                                        <span
+                                            style={{ color: "#ffcc00", marginRight: '5px', marginLeft: '5px', cursor: "pointer" }}
+                                            onClick={() => handleEditProduct(index)}
+                                        >
+                                            <FontAwesomeIcon icon={faPenToSquare} />
+                                        </span>
+                                        <span
+                                            style={{ color: "red", cursor: "pointer" }}
+                                            onClick={() => handleDeleteProduct(index)}
+                                        >
+                                            <FontAwesomeIcon icon={faTrashAlt} />
+                                        </span>
+                                    </li>
+                                ))
+                            ) : (
+                                <p>No products added yet.</p>
+                            )}
                         </ul>
 
                         <div className="d-flex justify-content-end gap-2 mt-3">

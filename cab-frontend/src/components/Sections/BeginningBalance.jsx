@@ -1,9 +1,7 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import {API_ENDPOINTS} from "../../config.js";
+import React, { useState, useEffect } from "react";
+import { API_ENDPOINTS } from "../../config.js";
 import "../table.css";
-
-import { Button, Container, Table, Col, Row } from "react-bootstrap";
+import { Container, Table, Col, Row } from "react-bootstrap";
 import MonthYearPicker from "../MonthYearPicker";
 
 const BeginningBalance = () => {
@@ -11,53 +9,45 @@ const BeginningBalance = () => {
     const [filteredItems, setFilteredItems] = useState([]);
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-    
-    // fetchItems without token 
-    // const fetchItems = async() => {
-    //     try {
-    //         const response = await fetch(API_ENDPOINTS.ITEM_LIST); // Replace with your actual endpoint
-    //             if (!response.ok) {
-    //             throw new Error("Failed to fetch items");
-    //         }
-    //         const data = await response.json();
-    //         setItems(data);
-    //     } catch (e) {
-    //         console.error("Error fetching items:", e);
-    //     }
-    // }
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    // fetchItems with token
-    const fetchItems = async() => {
-        const token = localStorage.getItem('access_token');
+    // Fetch Beginning Balance Data with Token
+    const fetchBeginningBalance = async () => {
+        const token = localStorage.getItem("access_token");
         try {
-            const response = await fetch(API_ENDPOINTS.ITEM_LIST, {
-                method: 'GET',
+            const response = await fetch(API_ENDPOINTS.BEGINNING_BAL_LIST, {
+                method: "GET",
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`,
+                    "Content-Type": "application/json",
+                    Authorization: `Token ${token}`,
                 },
-            }); // Replace with your actual endpoint
+            });
+
             if (!response.ok) {
-                throw new Error("Failed to fetch items");
-            } else{
-                const data = await response.json();
-                setItems(data);
+                throw new Error("Failed to fetch beginning balance data");
             }
+
+            const data = await response.json();
+            setItems(data);
         } catch (e) {
-            console.error("Error fetching items:", e);
+            console.error("Error fetching beginning balance:", e);
+            setError("Failed to load beginning balance data.");
+        } finally {
+            setLoading(false);
         }
-    }
+    };
 
     useEffect(() => {
-        fetchItems();
-    }, []); 
+        fetchBeginningBalance();
+    }, []);
 
     useEffect(() => {
         filterAndSortItems();
     }, [items, selectedMonth, selectedYear]);
 
     const filterAndSortItems = () => {
-        const filtered = items.filter(item => {
+        const filtered = items.filter((item) => {
             const updatedAt = new Date(item.updated_at);
             return updatedAt.getMonth() === selectedMonth && updatedAt.getFullYear() === selectedYear;
         });
@@ -72,12 +62,13 @@ const BeginningBalance = () => {
     };
 
     return (
-        <Container style={{ width: '100%' }} fluid className="d-flex flex-column justify-content-center mt-2">
+        <Container style={{ width: "100%" }} fluid className="d-flex flex-column justify-content-center mt-2">
             <Row className="sectionTitle">
                 <Col>
-                    <h2 style={{fontWeight: '650'}}>Beginning Balance</h2>
+                    <h2 style={{ fontWeight: "650" }}>Beginning Balance</h2>
                 </Col>
             </Row>
+
             <Row>
                 <Col>
                     <MonthYearPicker onMonthYearChange={handleMonthYearChange} />
@@ -86,31 +77,47 @@ const BeginningBalance = () => {
 
             <Row>
                 <Col className="d-flex justify-content-end mt-3">
-                    <input type="search" className="" placeholder="Search" style={{ width: '300px' }} />
+                    <input type="search" className="" placeholder="Search" style={{ width: "300px" }} />
                 </Col>
             </Row>
 
             <Row>
                 <Table responsive bordered striped hover className="tableStyle mt-3">
                     <thead>
-                        <th>Item ID</th>
-                        <th>Product <br/> Name</th>
-                        <th>Unit of <br/> Measurement</th>
-                        <th>Available Stocks</th>
-                        <th>Average Unit <br/> Cost</th>
-                        <th>Total Cost of <br/> Available Stocks</th>
+                        <tr>
+                            <th>Item ID</th>
+                            <th>Product <br /> Name</th>
+                            <th>Unit of <br /> Measurement</th>
+                            <th>Available Stocks</th>
+                            <th>Average Unit <br /> Cost</th>
+                            <th>Total Cost of <br /> Available Stocks</th>
+                        </tr>
                     </thead>
                     <tbody>
-                        {items.map((item) => (
-                            <tr key={item.id}>
-                                <td>{item.itemID}</td>
-                                <td>{item.itemName}</td>
-                                <td>{item.measurementName}</td>
-                                <td>{item.itemQuantity}</td>
-                                <td>₱{item.unitCost}</td>
-                                <td>₱{item.totalCost}</td>
+                        {loading ? (
+                            <tr>
+                                <td colSpan="6" className="text-center">Loading data...</td>
                             </tr>
-                        ))}
+                        ) : error ? (
+                            <tr>
+                                <td colSpan="6" className="text-center text-danger">{error}</td>
+                            </tr>
+                        ) : filteredItems.length > 0 ? (
+                            filteredItems.map((item) => (
+                                <tr key={item.id}>
+                                    <td>{item.itemID}</td>
+                                    <td>{item.itemName}</td>
+                                    <td>{item.measurementName}</td>
+                                    <td>{item.itemQuantity}</td>
+                                    <td>₱{item.unitCost}</td>
+                                    <td>₱{item.totalCost}</td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="6" className="text-center">No records found.</td>
+                            </tr>
+                        )}
                     </tbody>
                 </Table>
             </Row>

@@ -48,7 +48,19 @@ const Transactions = () => {
 
     useEffect(() => {
         fetchProducts();
+        fetchTransactions();
     }, []);
+
+    const fetchTransactions = async () => {
+        try {
+            const response = await fetch(API_ENDPOINTS.TRANSACTION_LIST);
+            const data = await response.json();
+            setTransactions(Array.isArray(data) ? data : []); // Ensure it's always an array
+        } catch (error) {
+            console.error("Error fetching transactions:", error);
+            setTransactions([]); // Fallback to empty array
+        }
+    };
 
     const fetchProducts = async () => {
         try {
@@ -189,12 +201,51 @@ const Transactions = () => {
     };
 
     // Submit transaction
-    const handleSubmitTransaction = (e) => {
+    const handleSubmitTransaction = async (e) => {
         e.preventDefault();
-        const newTransaction = { ...transactionData, id: uuidv4() }; // Add unique ID to transaction
-        setTransactions([...transactions, newTransaction]); // Add new transaction to the list
-        console.log("New Transaction Data:", newTransaction);
-        handleCloseTransactionModal();
+
+        const formData = {
+            date: transactionData.date,
+            week: transactionData.week,
+            mris: transactionData.mris,
+            supplier: transactionData.supplier,
+            requestedBy: transactionData.requestedBy,
+            sectionID: selectedSection,
+            purposeID: selectedPurpose,
+            products: transactionData.products, // Include all products in the transaction
+        };
+
+        const token = localStorage.getItem('access_token');
+
+        try {
+            const response = await fetch(API_ENDPOINTS.ADD_TRANSACTION, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(transactionData),
+            });
+
+            const result = await response.json();
+
+            if (result.id) {
+                // Add products separately
+                await Promise.all(transactionData.products.map(product =>
+                    fetch(API_ENDPOINTS.ADD_TRANSACTION_PRODUCT, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ ...product, transactionDetailID: result.id }),
+                    })
+                ));
+            }
+
+            console.log("Transaction saved:", result);
+            fetchTransactions(); // Refresh data
+        } catch (error) {
+            console.error("Error saving transaction:", error);
+        }
     };
 
     // Handle edit and delete actions
@@ -214,7 +265,7 @@ const Transactions = () => {
         <Container style={{ width: "100%" }} fluid className="d-flex flex-column justify-content-center mt-2">
             <Row className="sectionTitle">
                 <Col>
-                    <h2 style={{fontWeight: '650'}}>Transactions</h2>
+                    <h2 style={{ fontWeight: '650' }}>Transactions</h2>
                 </Col>
             </Row>
 
@@ -258,19 +309,19 @@ const Transactions = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {transactions.length > 0 ? (
+                            {Array.isArray(transactions) && transactions.length > 0 ? (
                                 transactions.map((transaction, tIndex) => (
                                     <React.Fragment key={tIndex}>
                                         <tr>
-                                            <td rowSpan={transaction.products.length + 1}>{transaction.date}</td>
-                                            <td rowSpan={transaction.products.length + 1}>{transaction.week}</td>
-                                            <td rowSpan={transaction.products.length + 1}>{transaction.mris}</td>
-                                            <td rowSpan={transaction.products.length + 1}>{transaction.supplier}</td>
-                                            <td rowSpan={transaction.products.length + 1}>{transaction.requestedBy}</td>
-                                            <td rowSpan={transaction.products.length + 1}>{transaction.section}</td>
-                                            <td rowSpan={transaction.products.length + 1}>{transaction.purpose}</td>
+                                            <td rowSpan={transaction.products?.length + 1 || 2}>{transaction.date}</td>
+                                            <td rowSpan={transaction.products?.length + 1 || 2}>{transaction.week}</td>
+                                            <td rowSpan={transaction.products?.length + 1 || 2}>{transaction.mris}</td>
+                                            <td rowSpan={transaction.products?.length + 1 || 2}>{transaction.supplier}</td>
+                                            <td rowSpan={transaction.products?.length + 1 || 2}>{transaction.requestedBy}</td>
+                                            <td rowSpan={transaction.products?.length + 1 || 2}>{transaction.section}</td>
+                                            <td rowSpan={transaction.products?.length + 1 || 2}>{transaction.purpose}</td>
                                             <td colSpan="12"></td>
-                                            <td rowSpan={transaction.products.length + 1}>
+                                            <td rowSpan={transaction.products?.length + 1 || 2}>
                                                 <BtnEditDeleteTransaction
                                                     onEdit={handleEdit}
                                                     onDelete={() => handleDelete(transaction.mris)}
@@ -282,22 +333,29 @@ const Transactions = () => {
                                                 />
                                             </td>
                                         </tr>
-                                        {transaction.products.map((product, pIndex) => (
-                                            <tr key={pIndex}>
-                                                <td>{product.itemID}</td>
-                                                <td>{product.productName}</td>
-                                                <td>{transaction.area}</td>
-                                                <td>{product.purchasedFromSupplier}</td>
-                                                <td>{product.returnToSupplier}</td>
-                                                <td>{product.transferFromWarehouse}</td>
-                                                <td>{product.transferToWarehouse}</td>
-                                                <td>{product.issuedQuantity}</td>
-                                                <td>{product.returnedQuantity}</td>
-                                                <td>{product.consumption}</td>
-                                                <td>{product.cost}</td>
-                                                <td>{product.total}</td>
+
+                                        {transaction.products && transaction.products.length > 0 ? (
+                                            transaction.products.map((product, pIndex) => (
+                                                <tr key={`${tIndex}-${pIndex}`}>
+                                                    <td>{product.itemID}</td>
+                                                    <td>{product.productName}</td>
+                                                    <td>{transaction.area}</td>
+                                                    <td>{product.purchasedFromSupplier}</td>
+                                                    <td>{product.returnToSupplier}</td>
+                                                    <td>{product.transferFromWarehouse}</td>
+                                                    <td>{product.transferToWarehouse}</td>
+                                                    <td>{product.issuedQuantity}</td>
+                                                    <td>{product.returnedQuantity}</td>
+                                                    <td>{product.consumption}</td>
+                                                    <td>{product.cost}</td>
+                                                    <td>{product.total}</td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr>
+                                                <td colSpan="12" className="text-center text-muted">No products added</td>
                                             </tr>
-                                        ))}
+                                        )}
                                     </React.Fragment>
                                 ))
                             ) : (
