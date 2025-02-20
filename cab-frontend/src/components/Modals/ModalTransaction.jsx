@@ -1,6 +1,7 @@
 import { faPenToSquare, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { API_ENDPOINTS } from "../../config";
 import { Modal, Form, Button, Row, Col } from 'react-bootstrap';
 
 const ModalTransaction = ({
@@ -19,11 +20,121 @@ const ModalTransaction = ({
     productData,
     handleProductChange,
     handleShowProductModal,
-    setProductData
+    setProductData,
+    selectedSection,
+    setSelectedSection,
+    selectedPurpose,
+    setSelectedPurpose,
+    selectedProduct,
+    setSelectedProduct,
+    selectedArea,
+    setSelectedArea
 }) => {
     const [editProductIndex, setEditProductIndex] = useState(null);
     const [showEditProductModal, setShowEditProductModal] = useState(false);
     const [editProductData, setEditProductData] = useState({});
+    const [sections, setSections] = useState([]);
+    const [purpose, setPurpose] = useState([]);
+    const [products, setProducts] = useState([]);
+    const [area, setArea] = useState([]);
+    const [filteredProducts, setFilteredProducts] = useState([]);
+
+    useEffect(() => {
+        fetchSections();
+        fetchPurpose();
+        fetchProducts();
+        fetchArea();
+    }, []);
+
+    const fetchArea = async () => {
+        try {
+            const response = await fetch(API_ENDPOINTS.AREA_LIST);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            setArea(data);
+        } catch (error) {
+            console.error("Error fetching area:", error);
+        }
+    };
+
+    const fetchSections = async () => {
+        try {
+            const response = await fetch(API_ENDPOINTS.SECTION_LIST);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            setSections(data);
+        } catch (error) {
+            console.error("Error fetching sections:", error);
+        }
+    };
+
+    const fetchPurpose = async () => {
+        try {
+            const response = await fetch(API_ENDPOINTS.PURPOSE_LIST);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            setPurpose(data);
+        } catch (error) {
+            console.error("Error fetching purpose:", error);
+        }
+    };
+
+    const fetchProducts = async () => {
+        try {
+            const response = await fetch(API_ENDPOINTS.ITEM_LIST);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            setProducts(data);
+        } catch (error) {
+            console.error("Error fetching products:", error);
+        }
+    };
+
+    const handleProductNameChange = (e) => {
+        const { value } = e.target;
+        setProductData(prevData => ({
+            ...prevData,
+            productName: value
+        }));
+
+        if (value) {
+            const filtered = products.filter(product => product.itemName.toLowerCase().includes(value.toLowerCase()));
+            setFilteredProducts(filtered);
+        } else {
+            setFilteredProducts([]);
+        }
+    };
+
+    const handleAreaChange = (event) => {
+        setSelectedArea(event.target.value);
+    };
+
+    const handlePurposeChange = (event) => {
+        setSelectedPurpose(event.target.value);
+    };
+
+    const handleSectionChange = (event) => {
+        setSelectedSection(event.target.value);
+    };
+
+    const handleProductSelect = (product) => {
+        setSelectedProduct(product.itemID);
+        setProductData({
+            itemID: product.itemID,
+            productName: product.itemName,
+            cost: product.unitCost
+        });
+        setFilteredProducts([]);
+    };
+
 
     const handleTransactionTypeChange = (e) => {
         const { value } = e.target;
@@ -55,19 +166,6 @@ const ModalTransaction = ({
                 total: ""
             }));
         }
-    };
-
-    const calculateConsumption = (data) => {
-        const issued = parseInt(data.issuedQuantity) || 0;
-        const returned = parseInt(data.returnedQuantity) || 0;
-        return returned - issued;
-    };
-
-    const calculateTotal = (data) => {
-        const purchased = parseInt(data.purchasedFromSupplier) || 0;
-        const consumption = calculateConsumption(data);
-        const cost = parseFloat(data.cost) || 0;
-        return Math.abs(purchased || consumption) * cost;
     };
 
     const handleEditProduct = (index) => {
@@ -142,21 +240,25 @@ const ModalTransaction = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Section</Form.Label>
-                            <Form.Select name="section" value={transactionData.section} onChange={handleTransactionChange} required>
+                            <Form.Select name="section" value={selectedSection} onChange={handleSectionChange} required>
                                 <option value="">Select Section</option>
-                                <option value="Section A">Section A</option>
-                                <option value="Section B">Section B</option>
-                                <option value="Section C">Section C</option>
+                                {sections.map((section) => (
+                                    <option key={section.sectionID} value={section.sectionID}>
+                                        {section.sectionName}
+                                    </option>
+                                ))}
                             </Form.Select>
                         </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Label>Purpose</Form.Label>
-                            <Form.Select name="purpose" value={transactionData.purpose} onChange={handleTransactionChange} required>
+                            <Form.Select name="purpose" value={selectedPurpose} onChange={handlePurposeChange} required>
                                 <option value="">Select Purpose</option>
-                                <option value="Purpose A">Purpose A</option>
-                                <option value="Purpose B">Purpose B</option>
-                                <option value="Purpose C">Purpose C</option>
+                                {purpose.map((purpose) => (
+                                    <option key={purpose.purposeID} value={purpose.purposeID}>
+                                        {purpose.purposeName}
+                                    </option>
+                                ))}
                             </Form.Select>
                         </Form.Group>
 
@@ -212,43 +314,69 @@ const ModalTransaction = ({
                             <Form.Label>Transaction Type</Form.Label>
                             <Form.Select name="transactionType" value={transactionType} onChange={handleTransactionTypeChange} required>
                                 <option value="">Select Transaction Type</option>
-                                <option value="Purchase/Return">Purchase/Return</option>
+                                <option value="PurchaseSupply">Purchased from Supplier</option>
+                                <option value="ReturnSupply">Return to Supplier</option>
                                 <option value="Issue/Return">Issue/Return</option>
                             </Form.Select>
                         </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Label>Product Name</Form.Label>
-                            <Form.Control type="text" name="productName" value={productData.productName} onChange={handleProductChange} />
+                            <Form.Control
+                                type="text"
+                                name="productName"
+                                value={productData.productName}
+                                onChange={handleProductNameChange}
+                                required
+                            />
+                            {filteredProducts.length > 0 && (
+                                <div className="dropdown-menu show">
+                                    {filteredProducts.map((product) => (
+                                        <div
+                                            key={product.itemID}
+                                            className="dropdown-item"
+                                            onClick={() => handleProductSelect(product)}
+                                        >
+                                            {product.itemName} ({product.itemID})
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Label>Item ID</Form.Label>
-                            <Form.Control type="number" name="itemID" value={productData.itemID} onChange={handleProductChange} />
+                            <Form.Control type="text" name="itemID" value={productData.itemID} readOnly />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Label>Area</Form.Label>
-                            <Form.Select name="area" value={productData.area} onChange={handleProductChange} required>
+                            <Form.Select name="area" value={selectedArea} onChange={handleAreaChange} required>
                                 <option value="">Select Area</option>
-                                <option value="Area A">Area A</option>
-                                <option value="Area B">Area B</option>
-                                <option value="Area C">Area C</option>
+                                {area.map((area) => (
+                                    <option key={area.areaID} value={area.areaID}>
+                                        {area.areaName}
+                                    </option>
+                                ))}
                             </Form.Select>
                         </Form.Group>
 
-                        {transactionType === 'Purchase/Return' && (
+                        {transactionType === 'PurchaseSupply' && (
                             <>
                                 <Form.Group className="mb-3">
                                     <Form.Label>Purchased from Supplier</Form.Label>
                                     <Form.Control type="number" name="purchasedFromSupplier" value={productData.purchasedFromSupplier} onChange={handleProductChange} min="0" />
                                 </Form.Group>
 
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Return to Supplier</Form.Label>
-                                    <Form.Control type="number" name="returnToSupplier" value={productData.returnToSupplier} onChange={handleProductChange} min="0" />
-                                </Form.Group>
+
                             </>
+                        )}
+
+                        {transactionType === 'ReturnSupply' && (
+                            <Form.Group className="mb-3">
+                                <Form.Label>Return to Supplier</Form.Label>
+                                <Form.Control type="number" name="returnToSupplier" value={productData.returnToSupplier} onChange={handleProductChange} min="0" />
+                            </Form.Group>
                         )}
 
                         {transactionType === 'Issue/Return' && (
@@ -268,10 +396,6 @@ const ModalTransaction = ({
                                     </Col>
                                 </Row>
 
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Consumption</Form.Label>
-                                    <Form.Control type="number" name="consumption" value={calculateConsumption(productData)} readOnly />
-                                </Form.Group>
                             </>
                         )}
 
@@ -288,11 +412,6 @@ const ModalTransaction = ({
                         <Form.Group className="mb-3">
                             <Form.Label>Cost</Form.Label>
                             <Form.Control type="number" name="cost" value={productData.cost} onChange={handleProductChange} required min="0" />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3">
-                            <Form.Label>Total</Form.Label>
-                            <Form.Control type="number" name="total" value={calculateTotal(productData)} readOnly />
                         </Form.Group>
 
                         <div className="d-flex justify-content-end gap-2">
@@ -318,7 +437,8 @@ const ModalTransaction = ({
                             <Form.Label>Transaction Type</Form.Label>
                             <Form.Select name="transactionType" value={editProductData.transactionType} onChange={handleTransactionTypeChange} required>
                                 <option value="">Select Transaction Type</option>
-                                <option value="Purchase/Return">Purchase/Return</option>
+                                <option value="PurchaseSupply">Purchased from Supplier</option>
+                                <option value="ReturnSupply">Return to Supplier</option>
                                 <option value="Issue/Return">Issue/Return</option>
                             </Form.Select>
                         </Form.Group>
@@ -373,11 +493,6 @@ const ModalTransaction = ({
                                         </Form.Group>
                                     </Col>
                                 </Row>
-
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Consumption</Form.Label>
-                                    <Form.Control type="number" name="consumption" value={calculateConsumption(editProductData)} readOnly />
-                                </Form.Group>
                             </>
                         )}
 
@@ -394,12 +509,6 @@ const ModalTransaction = ({
                         <Form.Group className="mb-3">
                             <Form.Label>Cost</Form.Label>
                             <Form.Control type="number" name="cost" value={editProductData.cost} onChange={handleEditProductChange} required min="0" />
-                        </Form.Group>
-
-
-                        <Form.Group className="mb-3">
-                            <Form.Label>Total</Form.Label>
-                            <Form.Control type="number" name="total" value={calculateTotal(editProductData)} readOnly />
                         </Form.Group>
 
                         <div className="d-flex justify-content-end gap-2">

@@ -17,4 +17,7 @@ export const API_ENDPOINTS = {
     CLASSIFICATIONS_LIST: `${BASE_URL}ims/classification/`,
     MEASUREMENTS_LIST: `${BASE_URL}ims/measurement/`,
     SECTION_LIST: `${BASE_URL}ims/section/`,
+    PURPOSE_LIST: `${BASE_URL}ims/purpose/`,
+    PRODUCT_LIST: `${BASE_URL}ims/product/`,
+    AREA_LIST: `${BASE_URL}ims/area/`,
 };
