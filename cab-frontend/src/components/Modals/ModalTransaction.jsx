@@ -38,13 +38,15 @@ const ModalTransaction = ({
     const [products, setProducts] = useState([]);
     const [area, setArea] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
+    const [setEditSelectedArea, setSelectedEditArea] = useState('');
 
     useEffect(() => {
         fetchSections();
         fetchPurpose();
         fetchProducts();
         fetchArea();
-    }, []);
+        setSelectedEditArea(productData?.areaID || '')
+    }, [productData]);
 
     const fetchArea = async () => {
         try {
@@ -115,6 +117,17 @@ const ModalTransaction = ({
 
     const handleAreaChange = (event) => {
         setSelectedArea(event.target.value);
+    };
+
+    const handleEditAreaChange = (e) => {
+        const selectedId = parseInt(e.target.value, 10);
+        setSelectedEditArea(selectedId);
+        handleProductChange({
+            target: {
+                name: 'areaID',
+                value: selectedId,
+            }
+        });
     };
 
     const handlePurposeChange = (event) => {
@@ -436,7 +449,6 @@ const ModalTransaction = ({
                         <Form.Group className="mb-3">
                             <Form.Label>Transaction Type</Form.Label>
                             <Form.Select name="transactionType" value={editProductData.transactionType} onChange={handleTransactionTypeChange} required>
-                                <option value="">Select Transaction Type</option>
                                 <option value="PurchaseSupply">Purchased from Supplier</option>
                                 <option value="ReturnSupply">Return to Supplier</option>
                                 <option value="Issue/Return">Issue/Return</option>
@@ -455,11 +467,12 @@ const ModalTransaction = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Area</Form.Label>
-                            <Form.Select name="area" value={editProductData.area} onChange={handleEditProductChange} required>
-                                <option value="">Select Area</option>
-                                <option value="Area A">Area A</option>
-                                <option value="Area B">Area B</option>
-                                <option value="Area C">Area C</option>
+                            <Form.Select name="area" value={setEditSelectedArea} onChange={handleEditAreaChange} required>
+                                {area.map((area) => (
+                                    <option key={area.areaID} value={area.areaID}>
+                                        {area.areaName}
+                                    </option>
+                                ))}
                             </Form.Select>
                         </Form.Group>
 
