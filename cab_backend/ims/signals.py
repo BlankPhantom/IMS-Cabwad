@@ -3,7 +3,30 @@ from django.dispatch import receiver
 from django.utils.timezone import now
 from django.db.models import Sum
 from django.utils import timezone
-from .models import TransactionProduct, MonthlyConsumption, MonthlyConsumptionTotal, Item
+from .models import TransactionProduct, MonthlyConsumption, MonthlyConsumptionTotal, Item, BeginningBalance
+
+# ✅ Signal to add new items to BeginningBalance automatically
+@receiver(post_save, sender=Item)
+def add_new_item_to_balance(sender, instance, created, **kwargs):
+    if created:  # Only run when a new item is created
+        current_month = timezone.now().month
+        current_year = timezone.now().year
+
+        # Check if this item already exists in BeginningBalance for this month/year
+        if not BeginningBalance.objects.filter(
+            itemID=instance.itemID,
+            created_at__month=current_month,
+            created_at__year=current_year
+        ).exists():
+            BeginningBalance.objects.create(
+                itemID=instance.itemID,
+                itemName=instance.itemName,
+                measurementID=instance.measurementID,
+                itemQuantity=instance.itemQuantity,
+                unitCost=instance.unitCost,
+                totalCost=instance.totalCost,
+                created_at=timezone.now()
+            )
 
 @receiver(post_save, sender=TransactionProduct)
 def create_monthly_consumption(sender, instance, created, **kwargs):
