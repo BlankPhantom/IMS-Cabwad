@@ -367,6 +367,12 @@ def get_running_balance(request):
     return Response(serializer.data)
 
 @api_view(['GET'])
+def get_monthly_consumption(request):
+    monthly = MonthlyConsumption.objects.all()
+    serializer = MonthlyConsumptionSerializer(monthly, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
 def get_monthly_total(request):
     monthly_total = MonthlyConsumptionTotal.objects.all()
     serializer = MonthlyConsumptionTotalSerializer(monthly_total, many=True)

@@ -14,6 +14,13 @@ export const API_ENDPOINTS = {
     UPDATE_ITEM:(itemID) => `${BASE_URL}ims/item/update/${itemID}/`,
     DELETE_ITEM:(itemID) => `${BASE_URL}ims/item/delete/${itemID}/`,
     
+    //Beginning Balance Endpoint
+    BEGINNING_BAL_LIST: `${BASE_URL}ims/beginning-bal/`,
+
+    //Running Balance Endpoint
+    RUNNING_BAL_LIST: `${BASE_URL}ims/run-bal/`,
+    RUNNING_BAL_CREATE: `${BASE_URL}ims/run-bal/create/`,
+
     CLASSIFICATIONS_LIST: `${BASE_URL}ims/classification/`,
     MEASUREMENTS_LIST: `${BASE_URL}ims/measurement/`,
     SECTION_LIST: `${BASE_URL}ims/section/`,
