@@ -14,7 +14,7 @@ const DashBoard = () => {
                     <SideNav />
                 </Col>
                 <Col xs={10} style={{ marginLeft: "220px" }}>
-                    <Container>
+                    <Container className="mb-5">
                         <Outlet /> {/* This will render the current page based on the route */}
                     </Container>
                     <CabFooter />

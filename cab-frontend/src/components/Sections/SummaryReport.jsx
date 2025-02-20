@@ -9,7 +9,7 @@ const SummaryReport = () => {
         <Container style={{ width: '95%' }} fluid className="d-flex flex-column justify-content-center mt-2">
             <Row className="sectionTitle">
                 <Col>
-                    <h2 style={{ fontWeight: '650' }}>Summary Report</h2>
+                    <h2 className="mt-5" style={{ fontWeight: '650' }}>Summary Report</h2>
                 </Col>
             </Row>
 

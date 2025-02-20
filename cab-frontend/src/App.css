@@ -77,9 +77,10 @@ html {
 
 .topNav {
   width: 100%;
-  position: fixed;
+  position: fixed !important;  /* Sticks to the top */
   top: 0;
-  z-index: -1;
+  left: 0;
+  z-index: 1 !important; /* Ensures it's above other elements */
   height: 45px;
   background-color: #0042a5 !important;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);

@@ -17,7 +17,7 @@ const SideNav = () => {
     return (
         <>
             <div className="sideNav" style={{ width: "200px", height: "100vh", backgroundColor: "#005ce5", position: "fixed" }}>
-                <Nav className="flex-column p-3">
+                <Nav className="flex-column p-3 mt-5">
                     {["Masterlist", "Beginning Balance", "Transactions", "Running Balance", "Monthly Consumption", "Summary Report"].map((item, index) => {
                         const path = `/dashboard/${item.toLowerCase().replace(/\s+/g, '-')}`;
                         return (

@@ -265,7 +265,7 @@ const Transactions = () => {
         <Container style={{ width: "100%" }} fluid className="d-flex flex-column justify-content-center mt-2">
             <Row className="sectionTitle">
                 <Col>
-                    <h2 style={{ fontWeight: '650' }}>Transactions</h2>
+                    <h2 className="mt-5" style={{ fontWeight: '650' }}>Transactions</h2>
                 </Col>
             </Row>
 
@@ -282,7 +282,7 @@ const Transactions = () => {
             </Row>
 
             <Row>
-                <div style={{ maxHeight: "500px", overflowY: "auto", width: "100%", margiin: "0", padding: "0" }}>
+                <div style={{ overflowY: "auto", width: "100%", margiin: "0", padding: "0" }}>
                     <Table responsive bordered striped hover id="TtableStyle" className="tableStyle mt-3">
                         <thead>
                             <tr>
