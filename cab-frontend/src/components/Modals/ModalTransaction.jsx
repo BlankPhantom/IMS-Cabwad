@@ -122,6 +122,7 @@ const ModalTransaction = ({
     const handleEditAreaChange = (e) => {
         const selectedId = parseInt(e.target.value, 10);
         setSelectedEditArea(selectedId);
+        console.log(setEditSelectedArea)
         handleProductChange({
             target: {
                 name: 'areaID',
@@ -243,12 +244,12 @@ const ModalTransaction = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Supplier</Form.Label>
-                            <Form.Control type="text" name="supplier" value={transactionData.supplier} onChange={handleTransactionChange} required />
+                            <Form.Control type="text" name="supplier" value={transactionData.supplier} onChange={handleTransactionChange} />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Label>Requested By</Form.Label>
-                            <Form.Control type="text" name="requestedBy" value={transactionData.requestedBy} onChange={handleTransactionChange} required />
+                            <Form.Control type="text" name="requestedBy" value={transactionData.requestedBy} onChange={handleTransactionChange}  />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
@@ -380,8 +381,6 @@ const ModalTransaction = ({
                                     <Form.Label>Purchased from Supplier</Form.Label>
                                     <Form.Control type="number" name="purchasedFromSupplier" value={productData.purchasedFromSupplier} onChange={handleProductChange} min="0" />
                                 </Form.Group>
-
-
                             </>
                         )}
 

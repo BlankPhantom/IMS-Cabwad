@@ -21,6 +21,9 @@ export const API_ENDPOINTS = {
     RUNNING_BAL_LIST: `${BASE_URL}ims/run-bal/`,
     RUNNING_BAL_CREATE: `${BASE_URL}ims/run-bal/create/`,
 
+    //Monthly Consumption Endpoint
+    MONSTHLY_CONSUMPTION: `${BASE_URL}ims/monthly-consumption/`,
+
     CLASSIFICATIONS_LIST: `${BASE_URL}ims/classification/`,
     MEASUREMENTS_LIST: `${BASE_URL}ims/measurement/`,
     SECTION_LIST: `${BASE_URL}ims/section/`,
