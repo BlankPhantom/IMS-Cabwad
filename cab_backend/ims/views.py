@@ -12,6 +12,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.contrib.auth import authenticate
 from ims.models import (Item, BeginningBalance, Classification, Measurement, Section, Purpose, TransactionProduct, TransactionDetails,RunningBalance, Area, MonthlyConsumption, MonthlyConsumptionTotal )
                         # Transaction, TransactionProduct, TransactionDetails, RunningBalance, MonthlyConsumption)
@@ -161,7 +163,7 @@ def copy_items_to_balance(request):
         current_month = timezone.now().month
         current_year = timezone.now().year
 
-        # Check if there are any BeginningBalance entries for the current month and year
+        # Check if BeginningBalance entries for the current month and year already exist
         if BeginningBalance.objects.filter(created_at__month=current_month, created_at__year=current_year).exists():
             return JsonResponse({'error': 'Items have already been copied for this month'}, status=400)
 
@@ -175,20 +177,17 @@ def copy_items_to_balance(request):
                 measurementID=item.measurementID,
                 itemQuantity=item.itemQuantity,
                 unitCost=item.unitCost,
-                totalCost=item.totalCost,
+                totalCost=item.itemQuantity * item.unitCost,
                 created_at=timezone.now()
             ) for item in items
         ]
+
         # Bulk insert for efficiency
         BeginningBalance.objects.bulk_create(beginning_balances)
-        return JsonResponse({'message': 'Items copied successfully!'}, status=201)
-    return JsonResponse({'error': 'Invalid request method'}, status=400)
 
-@api_view(['GET'])
-def get_running_balance(request):
-    running_bal = RunningBalance.objects.all()
-    serializer = RunningBalanceSerializer(running_bal, many=True)
-    return Response(serializer.data)
+        return JsonResponse({'message': 'Items copied successfully!'}, status=201)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
 
 @api_view(['POST'])
 def login(request):

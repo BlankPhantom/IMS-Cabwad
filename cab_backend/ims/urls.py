@@ -18,6 +18,9 @@ urlpatterns = [
     path("beginning-bal/", views.get_beginning_bal, name="get-beginning-balance"),
     path('copy-items/', views.copy_items_to_balance, name='copy-items'),
 
+    path('run-bal/', views.get_running_balance, name='get-running-balance'),
+    path('run-bal/create/', views.create_update_runbal, name='create-running-balance'),
+
     path('section/', views.section_list_all, name='get-section'),
     path('purpose/', views.purpose_list_all, name='get-purpose'),
     path('measurement/', views.measurement_list_all, name='get-measurement'),
@@ -38,10 +41,6 @@ urlpatterns = [
 
     path('transaction-detail/delete/<int:id>/', views.transaction_detail_delete, name='delete-transaction-detail'),
     path('transaction-product/delete/<int:detailID>/<int:id>/', views.transaction_product_delete, name='delete-transaction-product'),
-
-    path('run-bal/', views.get_running_balance, name='get-running-balance'),
-    path('run-bal/create/', views.create_update_runbal, name='create-running-balance'),
-
 
     path('monthly-consumption/', views.get_monthly_consumption, name="get-monthly-consumption"),
     path('monthly-consumption-total/', views.get_monthly_total, name="get-monthly-total")
