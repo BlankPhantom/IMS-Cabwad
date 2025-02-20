@@ -21,7 +21,6 @@ const Transactions = () => {
         requestedBy: "",
         section: "",
         purpose: "",
-        area: "",
         products: [] // Stores added products
     });
 
@@ -29,6 +28,7 @@ const Transactions = () => {
         transactionType: "",
         productName: "",
         itemID: "",
+        area: "",
         purchasedFromSupplier: "",
         returnToSupplier: "",
         transferFromWarehouse: "",
