@@ -32,15 +32,11 @@ export const API_ENDPOINTS = {
     DELETE_TRANSACTION: (id) => `${BASE_URL}ims/transaction-detail/delete/${id}/`, // Delete a transaction
 
     // Transaction Products (Nested within transactions)
-    TRANSACTION_PRODUCTS: (detailID) =>
-        `${BASE_URL}ims/transaction-product/${detailID}`, // Get all products under a transaction
-    TRANSACTION_PRODUCT_DETAILS: (detailID, id) =>
-        `${BASE_URL}ims/transaction-product/${detailID}/${id}/`, // Get single product in a transaction
+    TRANSACTION_PRODUCTS: (detailID) => `${BASE_URL}ims/transaction-product/?detailID=${detailID}`, // Get all products under a transaction
+    TRANSACTION_PRODUCT_DETAILS: (detailID, id) => `${BASE_URL}ims/transaction-product/${detailID}/${id}/`, // Get single product in a transaction
     ADD_TRANSACTION_PRODUCT: `${BASE_URL}ims/transaction-product/create/`, // Create a transaction product
-    UPDATE_TRANSACTION_PRODUCT: (detailID, id) =>
-        `${BASE_URL}ims/transaction-product/update/${detailID}/${id}/`, // Update a product in a transaction
-    DELETE_TRANSACTION_PRODUCT: (detailID, id) =>
-        `${BASE_URL}ims/transaction-product/delete/${detailID}/${id}/`, // Delete a product in a transaction
+    UPDATE_TRANSACTION_PRODUCT: (detailID, id) => `${BASE_URL}ims/transaction-product/update/${detailID}/${id}/`, // Update a product in a transaction
+    DELETE_TRANSACTION_PRODUCT: (detailID, id) => `${BASE_URL}ims/transaction-product/delete/${detailID}/${id}/`, // Delete a product in a transaction
 
     FETCH_TRANSACTIONS: `${BASE_URL}ims/transaction-detail/`,
 

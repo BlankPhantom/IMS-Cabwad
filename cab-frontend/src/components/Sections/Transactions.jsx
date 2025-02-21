@@ -210,11 +210,12 @@ const Transactions = () => {
             mris: transactionData.mris,
             supplier: transactionData.supplier,
             requestedBy: transactionData.requestedBy,
-            sectionID: selectedSection,
-            purposeID: selectedPurpose,
+            sectionID: selectedSection.sectionID,  // Updated
+            purposeID: selectedPurpose.purposeID,  // Updated
             products: transactionData.products, // Include all products in the transaction
         };
-
+        console.log("Selected Section:", selectedSection);
+        console.log("Selected Purpose:", selectedPurpose);
         const token = localStorage.getItem('access_token');
 
         try {
@@ -318,8 +319,8 @@ const Transactions = () => {
                                             <td rowSpan={transaction.products?.length + 1 || 2}>{transaction.mris}</td>
                                             <td rowSpan={transaction.products?.length + 1 || 2}>{transaction.supplier}</td>
                                             <td rowSpan={transaction.products?.length + 1 || 2}>{transaction.requestedBy}</td>
-                                            <td rowSpan={transaction.products?.length + 1 || 2}>{transaction.section}</td>
-                                            <td rowSpan={transaction.products?.length + 1 || 2}>{transaction.purpose}</td>
+                                            <td rowSpan={transaction.products?.length + 1 || 2}>{transaction.sectionName}</td>
+                                            <td rowSpan={transaction.products?.length + 1 || 2}>{transaction.purposeName}</td>
                                             <td colSpan="12"></td>
                                             <td rowSpan={transaction.products?.length + 1 || 2}>
                                                 <BtnEditDeleteTransaction
@@ -396,6 +397,7 @@ const Transactions = () => {
                 setSelectedProduct={setSelectedProduct}
                 selectedArea={selectedArea}
                 setSelectedArea={setSelectedArea}
+                setTransactionData={setTransactionData}
             />
         </Container>
     );

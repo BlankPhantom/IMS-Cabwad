@@ -28,7 +28,8 @@ const ModalTransaction = ({
     selectedProduct,
     setSelectedProduct,
     selectedArea,
-    setSelectedArea
+    setSelectedArea,
+    setTransactionData
 }) => {
     const [editProductIndex, setEditProductIndex] = useState(null);
     const [showEditProductModal, setShowEditProductModal] = useState(false);
@@ -249,7 +250,7 @@ const ModalTransaction = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Requested By</Form.Label>
-                            <Form.Control type="text" name="requestedBy" value={transactionData.requestedBy} onChange={handleTransactionChange}  />
+                            <Form.Control type="text" name="requestedBy" value={transactionData.requestedBy} onChange={handleTransactionChange} />
                         </Form.Group>
 
                         <Form.Group className="mb-3">

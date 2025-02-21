@@ -123,19 +123,6 @@ const EditTransactionModal = ({
         }
     };
 
-    const calculateConsumption = (data) => {
-        const issued = parseInt(data.issuedQuantity) || 0;
-        const returned = parseInt(data.returnedQuantity) || 0;
-        return returned - issued;
-    };
-
-    const calculateTotal = (data) => {
-        const purchased = parseInt(data.purchasedFromSupplier) || 0;
-        const consumption = calculateConsumption(data);
-        const cost = parseFloat(data.cost) || 0;
-        return Math.abs(purchased || consumption) * cost;
-    };
-
     return (
         <>
             <Modal show={show} size="lg" onHide={handleClose} centered>
@@ -199,33 +186,6 @@ const EditTransactionModal = ({
                                 Add Product
                             </Button>
                         </div>
-
-                        {/* Product List */}
-                        <h5 className="mt-3">Product List</h5>
-
-                        <ul className="mt-3">
-                            {transactionData?.products?.length > 0 ? (
-                                transactionData.products.map((product, index) => (
-                                    <li key={index}>
-                                        {product.productName}
-                                        <span
-                                            style={{ color: "#ffcc00", marginRight: '5px', marginLeft: '5px', cursor: "pointer" }}
-                                            onClick={() => handleEditProduct(index)}
-                                        >
-                                            <FontAwesomeIcon icon={faPenToSquare} />
-                                        </span>
-                                        <span
-                                            style={{ color: "red", cursor: "pointer" }}
-                                            onClick={() => handleDeleteProduct(index)}
-                                        >
-                                            <FontAwesomeIcon icon={faTrashAlt} />
-                                        </span>
-                                    </li>
-                                ))
-                            ) : (
-                                <p>No products added yet.</p>
-                            )}
-                        </ul>
 
                         <div className="d-flex justify-content-end gap-2 mt-3">
                             <Button variant="danger" onClick={handleClose}>
@@ -295,11 +255,6 @@ const EditTransactionModal = ({
                                         </Form.Group>
                                     </Col>
                                 </Row>
-
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Consumption</Form.Label>
-                                    <Form.Control type="number" name="consumption" value={calculateConsumption(productData)} readOnly />
-                                </Form.Group>
                             </>
                         )}
 
@@ -316,11 +271,6 @@ const EditTransactionModal = ({
                         <Form.Group className="mb-3">
                             <Form.Label>Cost</Form.Label>
                             <Form.Control type="number" name="cost" value={productData.cost} onChange={handleProductChange} required min="0" />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3">
-                            <Form.Label>Total</Form.Label>
-                            <Form.Control type="number" name="total" value={calculateTotal(productData)} readOnly />
                         </Form.Group>
 
                         <div className="d-flex justify-content-end gap-2">
@@ -391,11 +341,6 @@ const EditTransactionModal = ({
                                         </Form.Group>
                                     </Col>
                                 </Row>
-
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Consumption</Form.Label>
-                                    <Form.Control type="number" name="consumption" value={calculateConsumption(editProductData)} readOnly />
-                                </Form.Group>
                             </>
                         )}
 
@@ -412,11 +357,6 @@ const EditTransactionModal = ({
                         <Form.Group className="mb-3">
                             <Form.Label>Cost</Form.Label>
                             <Form.Control type="number" name="cost" value={editProductData.cost || productData.cost} onChange={handleEditProductChange} />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3">
-                            <Form.Label>Total</Form.Label>
-                            <Form.Control type="number" name="total" value={calculateTotal(editProductData)} readOnly />
                         </Form.Group>
 
                         <div className="d-flex justify-content-end gap-2">
