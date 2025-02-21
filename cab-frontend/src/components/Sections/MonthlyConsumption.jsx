@@ -36,17 +36,32 @@ const MonthlyConsumption = () => {
         }
     };
 
-    // Fetch Monthly Consumption Data
     const fetchMonthlyConsumption = async () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await fetch(`${API_ENDPOINTS.MONTHLY_CONSUMPTION}?month=${selectedMonth}&year=${selectedYear}&section=${selectedSection}`);
-            if (!response.ok) {
-                throw new Error("Failed to fetch monthly consumption data.");
+            const queryParams = new URLSearchParams({
+                month: selectedMonth,
+                year: selectedYear,
+                sectionID: selectedSection,
+            });
+
+            if(selectedMonth === 0){
+                const response = await fetch(API_ENDPOINTS.MONTHLY_CONSUMPTION);
+                if (!response.ok) {
+                    throw new Error("Failed to fetch monthly consumption data.");
+                }
+                const data = await response.json();
+                setConsumptionData(data);
+            } else{
+                const response = await fetch(`${API_ENDPOINTS.MONTHLY_CONSUMPTION}?${queryParams}`);
+                if (!response.ok) {
+                    throw new Error("Failed to fetch monthly consumption data.");
+                }
+                const data = await response.json();
+                setConsumptionData(data);
             }
-            const data = await response.json();
-            setConsumptionData(data);
+            
         } catch (error) {
             console.error("Error fetching monthly consumption:", error);
             setError("Failed to load monthly consumption data.");
@@ -70,7 +85,7 @@ const MonthlyConsumption = () => {
         <Container style={{ width: "100%" }} fluid className="d-flex flex-column justify-content-center mt-2">
             <Row className="sectionTitle">
                 <Col>
-                    <h2 className="mt-5" style={{ fontWeight: "650" }}>Monthly Consumption</h2>
+                    <h2 style={{ fontWeight: "650" }}>Monthly Consumption</h2>
                 </Col>
             </Row>
 
@@ -126,7 +141,7 @@ const MonthlyConsumption = () => {
                                     <td>{item.date}</td>
                                     <td>{item.week}</td>
                                     <td>{item.itemID}</td>
-                                    <td>{item.productName}</td>
+                                    <td>{item.itemName}</td>
                                     <td>{item.consumption}</td>
                                     <td>₱{item.cost}</td>
                                     <td>₱{item.total}</td>

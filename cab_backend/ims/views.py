@@ -70,92 +70,21 @@ def item_delete(request, id):
     
     items.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
-
+            
 @api_view(['GET'])
 def get_beginning_bal(request):
+    month = request.query_params.get('month')
+    year = request.query_params.get('year')
+
     beginning_bal = BeginningBalance.objects.all()
-    serializer = BeginningBalanceSerializer(beginning_bal, many=True, context={'request': request})
+
+    if month:
+        beginning_bal = beginning_bal.filter(created_at__month=month)
+    if year:
+        beginning_bal = beginning_bal.filter(created_at__year=year)
+    
+    serializer = BeginningBalanceSerializer(beginning_bal, many=True)
     return Response(serializer.data)
-            
-@csrf_exempt
-@api_view(['POST'])
-def create_update_runbal(request):
-    if request.method == 'POST':
-        current_month = timezone.now().month
-        current_year = timezone.now().year
-
-        # Get all items
-        items = Item.objects.all()
-
-        for item in items:
-            transactions = TransactionProduct.objects.filter(itemID=item.itemID)
-            sums = transactions.aggregate(
-                purchasedFromSupp_sum=Sum('purchasedFromSupp'),
-                returnToSupplier_sum=Sum('returnToSupplier'),
-                transferFromWH_sum=Sum('transferFromWH'),
-                transferToWH_sum=Sum('transferToWH'),
-                issuedQty_sum=Sum('issuedQty'),
-                returnedQty_sum=Sum('returnedQty'),
-                consumption_sum=Sum('consumption'),
-            )
-
-            # Check if there is an existing RunningBalance entry for the current month and year
-            running_balance, created = RunningBalance.objects.get_or_create(
-                itemID=item,
-                created_at__month=current_month,
-                created_at__year=current_year,
-                defaults={
-                    'itemName': item.itemName,
-                    'measurementID': item.measurementID,
-                    'itemQuantity': item.itemQuantity,
-                    'unitCost': item.unitCost,
-                    'beginningBalance': 0,  # This will be updated below if it is a new month
-                    'purchasedFromSupp': 0,
-                    'returnToSupplier': 0,
-                    'transferFromWH': 0,
-                    'transferToWH': 0,
-                    'issuedQty': 0,
-                    'returnedQty': 0,
-                    'consumption': 0,
-                    'totalCost': 0,
-                }
-            )
-
-            if created:
-                # Calculate the previous month and year
-                if current_month == 1:
-                    last_month = 12
-                    last_year = current_year - 1
-                else:
-                    last_month = current_month - 1
-                    last_year = current_year
-
-                # Fetch the itemQuantity from the previous month in the BeginningBalance model
-                last_month_bb = BeginningBalance.objects.filter(
-                    itemID=item.itemID,  # Ensure correct itemID field
-                    created_at__month=last_month,
-                    created_at__year=last_year
-                ).order_by('-created_at').first()
-
-                if last_month_bb:
-                    running_balance.beginningBalance = last_month_bb.itemQuantity
-                else:
-                    running_balance.beginningBalance = 0
-            else:
-                # If updating an existing entry, set the aggregated sums
-                running_balance.purchasedFromSupp = sums['purchasedFromSupp_sum'] or 0
-                running_balance.returnToSupplier = sums['returnToSupplier_sum'] or 0
-                running_balance.transferFromWH = sums['transferFromWH_sum'] or 0
-                running_balance.transferToWH = sums['transferToWH_sum'] or 0
-                running_balance.issuedQty = sums['issuedQty_sum'] or 0
-                running_balance.returnedQty = sums['returnedQty_sum'] or 0
-                running_balance.consumption = sums['consumption_sum'] or 0
-
-            # Update the totalCost based on unitCost and itemQuantity
-            running_balance.totalCost = running_balance.unitCost * running_balance.itemQuantity
-            running_balance.save()
-
-        return Response({"detail": "Running balance processed successfully."})
 
 @csrf_exempt
 def copy_items_to_balance(request):
@@ -361,14 +290,118 @@ def transaction_product_delete(request, id, detailID):
 
 @api_view(['GET'])
 def get_running_balance(request):
+    month = request.query_params.get('month')
+    year = request.query_params.get('year')
+
     running_balances = RunningBalance.objects.all()
+
+    if month:
+        running_balances = running_balances.filter(created_at__month=month)
+    if year:
+        running_balances = running_balances.filter(created_at__year=year)
+
     serializer = RunningBalanceSerializer(running_balances, many=True)
     return Response(serializer.data)
 
+@csrf_exempt
+@api_view(['POST'])
+def create_update_runbal(request):
+    if request.method == 'POST':
+        current_month = timezone.now().month
+        current_year = timezone.now().year
+
+        # Get all items
+        items = Item.objects.all()
+
+        for item in items:
+            transactions = TransactionProduct.objects.filter(itemID=item.itemID)
+            sums = transactions.aggregate(
+                purchasedFromSupp_sum=Sum('purchasedFromSupp'),
+                returnToSupplier_sum=Sum('returnToSupplier'),
+                transferFromWH_sum=Sum('transferFromWH'),
+                transferToWH_sum=Sum('transferToWH'),
+                issuedQty_sum=Sum('issuedQty'),
+                returnedQty_sum=Sum('returnedQty'),
+                consumption_sum=Sum('consumption'),
+            )
+
+            # Check if there is an existing RunningBalance entry for the current month and year
+            running_balance, created = RunningBalance.objects.get_or_create(
+                itemID=item,
+                created_at__month=current_month,
+                created_at__year=current_year,
+                defaults={
+                    'itemName': item.itemName,
+                    'measurementID': item.measurementID,
+                    'itemQuantity': item.itemQuantity,
+                    'unitCost': item.unitCost,
+                    'beginningBalance': 0,  # This will be updated below if it is a new month
+                    'purchasedFromSupp': 0,
+                    'returnToSupplier': 0,
+                    'transferFromWH': 0,
+                    'transferToWH': 0,
+                    'issuedQty': 0,
+                    'returnedQty': 0,
+                    'consumption': 0,
+                    'totalCost': 0,
+                }
+            )
+
+            if created:
+                # Calculate the previous month and year
+                if current_month == 1:
+                    last_month = 12
+                    last_year = current_year - 1
+                else:
+                    last_month = current_month - 1
+                    last_year = current_year
+
+                # Fetch the itemQuantity from the previous month in the BeginningBalance model
+                last_month_bb = BeginningBalance.objects.filter(
+                    itemID=item.itemID,  # Ensure correct itemID field
+                    created_at__month=last_month,
+                    created_at__year=last_year
+                ).order_by('-created_at').first()
+
+                if last_month_bb:
+                    running_balance.beginningBalance = last_month_bb.itemQuantity
+                else:
+                    running_balance.beginningBalance = 0
+            else:
+                # If updating an existing entry, set the aggregated sums
+                running_balance.purchasedFromSupp = sums['purchasedFromSupp_sum'] or 0
+                running_balance.returnToSupplier = sums['returnToSupplier_sum'] or 0
+                running_balance.transferFromWH = sums['transferFromWH_sum'] or 0
+                running_balance.transferToWH = sums['transferToWH_sum'] or 0
+                running_balance.issuedQty = sums['issuedQty_sum'] or 0
+                running_balance.returnedQty = sums['returnedQty_sum'] or 0
+                running_balance.consumption = sums['consumption_sum'] or 0
+
+            # Update the totalCost based on unitCost and itemQuantity
+            running_balance.totalCost = running_balance.unitCost * running_balance.itemQuantity
+            running_balance.save()
+
+        return Response({"detail": "Running balance processed successfully."})
+
 @api_view(['GET'])
 def get_monthly_consumption(request):
-    monthly = MonthlyConsumption.objects.all()
-    serializer = MonthlyConsumptionSerializer(monthly, many=True)
+    # Get query parameters
+    month = request.query_params.get('month')
+    year = request.query_params.get('year')
+    section_id = request.query_params.get('sectionID')
+
+    # Filter MonthlyConsumption based on the provided parameters
+    monthly_consumption = MonthlyConsumption.objects.all()
+
+    if month:
+        monthly_consumption = monthly_consumption.filter(date__month=month)
+    if year:
+        monthly_consumption = monthly_consumption.filter(date__year=year)
+    if section_id:
+        monthly_consumption = monthly_consumption.filter(sectionID=section_id)
+
+    # Serialize the filtered data
+    serializer = MonthlyConsumptionSerializer(monthly_consumption, many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])

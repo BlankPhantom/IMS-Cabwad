@@ -39,16 +39,6 @@ class ItemSerializer(serializers.ModelSerializer):
         if Item.objects.filter(itemName=itemName).exclude(itemID=itemID).exists():
             raise serializers.ValidationError("An item with this name already exists")
         return data
-    
-class BeginningBalanceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = BeginningBalance
-        fields = '__all__'
-
-class RunningBalanceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RunningBalance
-        fields = '__all__'
 
 class ClassificationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -59,6 +49,20 @@ class MeasurementSerializer(serializers.ModelSerializer):
     class Meta:
         model = Measurement
         fields = ('measurementID','measureName')
+
+class BeginningBalanceSerializer(serializers.ModelSerializer):
+    measureName = MeasurementSerializer(source='measurementID')
+
+    class Meta:
+        model = BeginningBalance
+        fields = '__all__'
+
+class RunningBalanceSerializer(serializers.ModelSerializer):
+    measureName = MeasurementSerializer(source='measurementID')
+    
+    class Meta:
+        model = RunningBalance
+        fields = ('__all__')
 
 class SectionSerializer(serializers.ModelSerializer):
     class Meta:

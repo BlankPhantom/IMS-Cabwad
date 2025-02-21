@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 const MonthYearPicker = ({onMonthYearChange}) => {
     const months = [
-        "January", "February", "March", "April", "May", "June", 
+        "All", "January", "February", "March", "April", "May", "June", 
         "July", "August", "September", "October", "November", "December"
     ];
     

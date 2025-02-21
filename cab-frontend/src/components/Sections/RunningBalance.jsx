@@ -6,27 +6,49 @@ import MonthYearPicker from "../MonthYearPicker";
 
 const RunningBalance = () => {
     const [runningBalanceData, setRunningBalanceData] = useState([]);
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    useEffect(() => {
-        fetchRunningBalance();
-    }, []);
-
     const fetchRunningBalance = async () => {
         try {
-            const response = await fetch(API_ENDPOINTS.RUNNING_BAL_LIST);
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+            const queryParams = new URLSearchParams({
+                month: selectedMonth,
+                year: selectedYear,
+            });
+
+            if(selectedMonth === 0){
+                const response = await fetch(API_ENDPOINTS.RUNNING_BAL_LIST);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
+                setRunningBalanceData(data);
+            } else{
+                const response = await fetch(`${API_ENDPOINTS.RUNNING_BAL_LIST}?${queryParams}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
+                setRunningBalanceData(data);
             }
-            const data = await response.json();
-            setRunningBalanceData(data);
+            
         } catch (err) {
             console.error("Error fetching running balance:", err);
             setError("Failed to load running balance data.");
         } finally {
             setLoading(false);
         }
+    };
+
+    useEffect(() => {
+        fetchRunningBalance();
+    }, [selectedMonth, selectedYear]);
+
+    const handleMonthYearChange = (month, year) => {
+        setSelectedMonth(month);
+        setSelectedYear(year);
     };
 
     return (
@@ -39,7 +61,7 @@ const RunningBalance = () => {
 
             <Row>
                 <Col>
-                    <MonthYearPicker />
+                    <MonthYearPicker onMonthYearChange={handleMonthYearChange}/>
                 </Col>
             </Row>
 
@@ -79,22 +101,22 @@ const RunningBalance = () => {
                                 <td colSpan="14" className="text-center text-danger">{error}</td>
                             </tr>
                         ) : runningBalanceData.length > 0 ? (
-                            runningBalanceData.map((item) => (
-                                <tr key={item.itemID}>
+                            runningBalanceData.map((item, index) => (
+                                <tr key={index}>
                                     <td>{item.itemID}</td>
-                                    <td>{item.productName}</td>
-                                    <td>{item.unitMeasurement}</td>
+                                    <td>{item.itemName}</td>
+                                    <td>{item.measureName.measureName}</td>
                                     <td>{item.beginningBalance}</td>
-                                    <td>{item.purchasedFromSupplier}</td>
+                                    <td>{item.purchasedFromSupp}</td>
                                     <td>{item.returnToSupplier}</td>
-                                    <td>{item.transferFromWarehouse}</td>
-                                    <td>{item.transferToWarehouse}</td>
-                                    <td>{item.issuedQuantity}</td>
-                                    <td>{item.returnedQuantity}</td>
+                                    <td>{item.transferFromWH}</td>
+                                    <td>{item.transferToWH}</td>
+                                    <td>{item.issuedQty}</td>
+                                    <td>{item.returnedQty}</td>
                                     <td>{item.consumption}</td>
-                                    <td>{item.availableStocks}</td>
-                                    <td>{item.cost}</td>
-                                    <td>{item.total}</td>
+                                    <td>{item.itemQuantity}</td>
+                                    <td>₱ {item.unitCost}</td>
+                                    <td>₱ {item.totalCost}</td>
                                 </tr>
                             ))
                         ) : (

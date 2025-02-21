@@ -16,20 +16,45 @@ const BeginningBalance = () => {
     const fetchBeginningBalance = async () => {
         const token = localStorage.getItem("access_token");
         try {
-            const response = await fetch(API_ENDPOINTS.BEGINNING_BAL_LIST, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Token ${token}`,
-                },
+            const queryParams = new URLSearchParams({
+                month: selectedMonth,
+                year: selectedYear,
             });
 
-            if (!response.ok) {
-                throw new Error("Failed to fetch beginning balance data");
-            }
+            if (selectedMonth === 0){
+                const response = await fetch(API_ENDPOINTS.BEGINNING_BAL_LIST, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Token ${token}`,
+                    },
+                });
+    
+                if (!response.ok) {
+                    throw new Error("Failed to fetch beginning balance data");
+                }
+    
+                const data = await response.json();
+                setItems(data);
+            } else {
+                const response = await fetch(`${API_ENDPOINTS.BEGINNING_BAL_LIST}?${queryParams}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Token ${token}`,
+                    },
+                });
+    
+                if (!response.ok) {
+                    throw new Error("Failed to fetch beginning balance data");
+                }
+                
+                console.log(`${API_ENDPOINTS.BEGINNING_BAL_LIST}?${queryParams}`)
 
-            const data = await response.json();
-            setItems(data);
+                const data = await response.json();
+                setItems(data);
+            }
+            
         } catch (e) {
             console.error("Error fetching beginning balance:", e);
             setError("Failed to load beginning balance data.");
@@ -40,21 +65,7 @@ const BeginningBalance = () => {
 
     useEffect(() => {
         fetchBeginningBalance();
-    }, []);
-
-    useEffect(() => {
-        filterAndSortItems();
-    }, [items, selectedMonth, selectedYear]);
-
-    const filterAndSortItems = () => {
-        const filtered = items.filter((item) => {
-            const updatedAt = new Date(item.updated_at);
-            return updatedAt.getMonth() === selectedMonth && updatedAt.getFullYear() === selectedYear;
-        });
-
-        const sorted = filtered.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
-        setFilteredItems(sorted);
-    };
+    }, [selectedMonth, selectedYear]);
 
     const handleMonthYearChange = (month, year) => {
         setSelectedMonth(month);
@@ -102,12 +113,12 @@ const BeginningBalance = () => {
                             <tr>
                                 <td colSpan="6" className="text-center text-danger">{error}</td>
                             </tr>
-                        ) : filteredItems.length > 0 ? (
-                            filteredItems.map((item) => (
-                                <tr key={item.id}>
+                        ) : items.length > 0 ? (
+                            items.map((item, index) => (
+                                <tr key={index}>
                                     <td>{item.itemID}</td>
                                     <td>{item.itemName}</td>
-                                    <td>{item.measurementName}</td>
+                                    <td>{item.measureName.measureName}</td>
                                     <td>{item.itemQuantity}</td>
                                     <td>₱{item.unitCost}</td>
                                     <td>₱{item.totalCost}</td>

@@ -44,5 +44,5 @@ urlpatterns = [
 
     path('monthly-consumption/', views.get_monthly_consumption, name="get-monthly-consumption"),
     path('monthly-consumption-total/', views.get_monthly_total, name="get-monthly-total")
-    # path('monthly-consumption/create/', views.create_monthly_consumption, name="create-monthly-consumption")
+
 ]

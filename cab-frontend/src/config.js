@@ -22,7 +22,7 @@ export const API_ENDPOINTS = {
     RUNNING_BAL_CREATE: `${BASE_URL}ims/run-bal/create/`,
 
     //Monthly Consumption Endpoint
-    MONSTHLY_CONSUMPTION: `${BASE_URL}ims/monthly-consumption/`,
+    MONTHLY_CONSUMPTION:`${BASE_URL}ims/monthly-consumption/`,
 
     // Transaction Endpoints (Considering transaction details and products as one)
     TRANSACTION_LIST: `${BASE_URL}ims/transaction-detail/`, // Get all transaction details
