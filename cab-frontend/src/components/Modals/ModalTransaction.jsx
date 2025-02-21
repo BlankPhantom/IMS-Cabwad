@@ -257,8 +257,8 @@ const ModalTransaction = ({
                             <Form.Label>Section</Form.Label>
                             <Form.Select name="section" value={selectedSection} onChange={handleSectionChange} required>
                                 <option value="">Select Section</option>
-                                {sections.map((section) => (
-                                    <option key={section.sectionID} value={section.sectionID}>
+                                {sections.map((section, index) => (
+                                    <option key={index} value={section.sectionID}>
                                         {section.sectionName}
                                     </option>
                                 ))}
@@ -269,8 +269,8 @@ const ModalTransaction = ({
                             <Form.Label>Purpose</Form.Label>
                             <Form.Select name="purpose" value={selectedPurpose} onChange={handlePurposeChange} required>
                                 <option value="">Select Purpose</option>
-                                {purpose.map((purpose) => (
-                                    <option key={purpose.purposeID} value={purpose.purposeID}>
+                                {purpose.map((purpose, index) => (
+                                    <option key={index} value={purpose.purposeID}>
                                         {purpose.purposeName}
                                     </option>
                                 ))}

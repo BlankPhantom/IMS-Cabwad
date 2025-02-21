@@ -40,8 +40,8 @@ const Transactions = () => {
         total: ""
     });
 
-    const [selectedSection, setSelectedSection] = useState("");
-    const [selectedPurpose, setSelectedPurpose] = useState("");
+    const [selectedSection, setSelectedSection] = useState(0);
+    const [selectedPurpose, setSelectedPurpose] = useState(0);
     const [selectedProduct, setSelectedProduct] = useState("");
     const [selectedArea, setSelectedArea] = useState("");
     const [products, setProducts] = useState([]);
@@ -203,32 +203,35 @@ const Transactions = () => {
     // Submit transaction
     const handleSubmitTransaction = async (e) => {
         e.preventDefault();
-
+    
         const formData = {
             date: transactionData.date,
             week: transactionData.week,
             mris: transactionData.mris,
             supplier: transactionData.supplier,
             requestedBy: transactionData.requestedBy,
-            sectionID: selectedSection.sectionID,  // Updated
-            purposeID: selectedPurpose.purposeID,  // Updated
+            sectionID: selectedSection,  // Use selectedSection
+            purposeID: selectedPurpose,  // Use selectedPurpose
             products: transactionData.products, // Include all products in the transaction
         };
+        
         console.log("Selected Section:", selectedSection);
         console.log("Selected Purpose:", selectedPurpose);
+        console.log("Form Data:", formData);  // Log formData for debugging
+        
         const token = localStorage.getItem('access_token');
-
+    
         try {
             const response = await fetch(API_ENDPOINTS.ADD_TRANSACTION, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(transactionData),
+                body: JSON.stringify(formData),  // Use formData here
             });
-
+    
             const result = await response.json();
-
+    
             if (result.id) {
                 // Add products separately
                 await Promise.all(transactionData.products.map(product =>
@@ -241,13 +244,14 @@ const Transactions = () => {
                     })
                 ));
             }
-
+    
             console.log("Transaction saved:", result);
             fetchTransactions(); // Refresh data
         } catch (error) {
             console.error("Error saving transaction:", error);
         }
     };
+    
 
     // Handle edit and delete actions
     const handleEdit = (updatedTransaction) => {
