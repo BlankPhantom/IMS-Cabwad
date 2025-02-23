@@ -1,9 +1,8 @@
-from datetime import datetime
+
 from django.utils import timezone
 from django.utils.timezone import now
 from django.http import JsonResponse
 from django.db.models import Sum
-from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
@@ -12,16 +11,12 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.contrib.auth import authenticate
-from ims.models import (Item, BeginningBalance, Classification, Measurement, Section, Purpose, TransactionProduct, TransactionDetails,RunningBalance, Area, MonthlyConsumption, MonthlyConsumptionTotal )
-                        # Transaction, TransactionProduct, TransactionDetails, RunningBalance, MonthlyConsumption)
-from ims.serializers import (UserSerializer,ItemSerializer, BeginningBalanceSerializer, ClassificationSerializer, MeasurementSerializer, SectionSerializer, PurposeSerializer, TransactionProductSerializer, TransactionDetailsSerializer, RunningBalanceSerializer, AreaSerializer, MonthlyConsumptionTotalSerializer, MonthlyConsumptionSerializer) 
-            # TransactionSerializer, TransactionProductSerializer, TransactionDetailsSerializer,RunningBalanceSerializer, MonthlyConsumptionSerializer
-import logging
-
-from django.shortcuts import get_object_or_404
+from ims.models import (Item, BeginningBalance, Classification, Measurement, Section, Purpose, TransactionProduct, 
+                        TransactionDetails,RunningBalance, Area, MonthlyConsumption, MonthlyConsumptionTotal )                     
+from ims.serializers import (UserSerializer,ItemSerializer, BeginningBalanceSerializer, ClassificationSerializer, MeasurementSerializer, 
+                             SectionSerializer, PurposeSerializer, TransactionProductSerializer, TransactionDetailsSerializer, 
+                             RunningBalanceSerializer, AreaSerializer, MonthlyConsumptionTotalSerializer, MonthlyConsumptionSerializer) 
 
 @api_view(['GET'])
 def item_list_all(request):
@@ -411,3 +406,42 @@ def get_monthly_total(request):
     return Response(serializer.data)
 
 # end of transaction
+
+from django.http import HttpResponse
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from .utils import generate_reports_doc, convert_docx_to_pdf # Assuming the function is in a utils.py file
+import os
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from django.http import HttpResponse
+from ims.models import MonthlyConsumptionTotal
+import os
+
+@csrf_exempt
+@api_view(['GET'])
+def download_report_doc(request, year, month):
+    try:
+        # Query the report by year and month
+        report = MonthlyConsumptionTotal.objects.get(updated_at__year=year, updated_at__month=month)
+    except MonthlyConsumptionTotal.DoesNotExist:
+        return Response({"error": "Report not found for the specified year and month"}, status=404)
+    
+    # Generate the DOCX report
+    doc_path = generate_reports_doc(report)
+    
+    # Convert the DOCX to PDF
+    pdf_path = convert_docx_to_pdf(doc_path)
+    
+    # Serve the PDF file for download
+    if os.path.exists(pdf_path):
+        with open(pdf_path, 'rb') as pdf_file:
+            response = HttpResponse(pdf_file.read(), content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename="report_{year}_{month}.pdf"'
+            response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+            response['Pragma'] = 'no-cache'
+            response['Expires'] = '0'
+            
+            return response
+    else:
+        return Response({"error": "Document generation failed"}, status=500)

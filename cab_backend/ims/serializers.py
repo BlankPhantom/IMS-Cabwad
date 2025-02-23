@@ -85,6 +85,7 @@ class MonthlyConsumptionSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class MonthlyConsumptionTotalSerializer(serializers.ModelSerializer):
+    month = serializers.SerializerMethodField()
     class Meta:
         model = MonthlyConsumptionTotal
         fields = '__all__'

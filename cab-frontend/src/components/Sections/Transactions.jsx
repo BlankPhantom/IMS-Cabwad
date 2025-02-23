@@ -40,8 +40,8 @@ const Transactions = () => {
         total: ""
     });
 
-    const [selectedSection, setSelectedSection] = useState("");
-    const [selectedPurpose, setSelectedPurpose] = useState("");
+    const [selectedSection, setSelectedSection] = useState(0);
+    const [selectedPurpose, setSelectedPurpose] = useState(0);
     const [selectedProduct, setSelectedProduct] = useState("");
     const [selectedArea, setSelectedArea] = useState("");
     const [products, setProducts] = useState([]);
@@ -210,8 +210,8 @@ const Transactions = () => {
             mris: transactionData.mris,
             supplier: transactionData.supplier,
             requestedBy: transactionData.requestedBy,
-            sectionID: selectedSection.sectionID,  // Updated
-            purposeID: selectedPurpose.purposeID,  // Updated
+            sectionID: selectedSection,
+            purposeID: selectedPurpose,
             products: transactionData.products, // Include all products in the transaction
         };
         console.log("Selected Section:", selectedSection);
