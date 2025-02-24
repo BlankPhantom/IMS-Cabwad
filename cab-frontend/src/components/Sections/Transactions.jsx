@@ -226,7 +226,7 @@ const Transactions = () => {
                     transactionDetailsID,
                     itemID: product.itemID,
                     productName: product.productName,
-                    areaID: selectedArea || null,
+                    areaID: selectedArea || 0,
                     purchasedFromSupplier: parseInt(product.purchasedFromSupplier, 10) || 0,
                     returnToSupplier: parseInt(product.returnToSupplier, 10) || 0,
                     transferFromWarehouse: parseInt(product.transferFromWarehouse, 10) || 0, // Ensure number
