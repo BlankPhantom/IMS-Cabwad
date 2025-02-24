@@ -268,7 +268,7 @@ const ModalTransaction = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Purpose</Form.Label>
-                            <Form.Select name="purpose" value={selectedPurpose} onChange={handlePurposeChange} required>
+                            <Form.Select name="purpose" value={selectedPurpose} onChange={handlePurposeChange}>
                                 <option value="">Select Purpose</option>
                                 {purpose.map((purpose) => (
                                     <option key={purpose.purposeID} value={purpose.purposeID}>
@@ -367,7 +367,7 @@ const ModalTransaction = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Area</Form.Label>
-                            <Form.Select name="area" value={selectedArea} onChange={handleAreaChange} required>
+                            <Form.Select name="area" value={selectedArea} onChange={handleAreaChange}>
                                 <option value="">Select Area</option>
                                 {area.map((area) => (
                                     <option key={area.areaID} value={area.areaID}>
@@ -459,17 +459,17 @@ const ModalTransaction = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Product Name</Form.Label>
-                            <Form.Control type="text" name="productName" value={editProductData.productName} onChange={handleEditProductChange} />
+                            <Form.Control type="text" name="productName" value={editProductData.productName} required onChange={handleEditProductChange} />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Label>Item ID</Form.Label>
-                            <Form.Control type="number" name="itemID" value={editProductData.itemID} onChange={handleEditProductChange} />
+                            <Form.Control type="number" name="itemID" value={editProductData.itemID} required onChange={handleEditProductChange} />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Label>Area</Form.Label>
-                            <Form.Select name="area" value={selectedArea} onChange={handleEditAreaChange} required>
+                            <Form.Select name="area" value={selectedArea} onChange={handleEditAreaChange}>
                                 {area.map((area) => (
                                     <option key={area.areaID} value={area.areaID}>
                                         {area.areaName}
@@ -523,7 +523,7 @@ const ModalTransaction = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Cost</Form.Label>
-                            <Form.Control type="number" name="cost" value={editProductData.cost} onChange={handleEditProductChange} required min="0" />
+                            <Form.Control type="number" name="cost" value={editProductData.cost} onChange={handleEditProductChange} min="0" />
                         </Form.Group>
 
                         <div className="d-flex justify-content-end gap-2">

@@ -458,14 +458,14 @@ const Transactions = () => {
                                             transaction.products.map((product, pIndex) => (
                                                 <tr key={`${transaction.transactionDetailsID}-${pIndex}`}>
                                                     <td>{product.itemID}</td>
-                                                    <td>{product.productName}</td>
+                                                    <td>{product.itemName}</td>
                                                     <td>{product.areaID ? product.areaID : "N/A"}</td>
-                                                    <td>{product.purchasedFromSupplier || 0}</td>
+                                                    <td>{product.purchasedFromSupp || 0}</td>
                                                     <td>{product.returnToSupplier || 0}</td>
-                                                    <td>{product.transferFromWarehouse || 0}</td>
-                                                    <td>{product.transferToWarehouse || 0}</td>
-                                                    <td>{product.issuedQuantity || 0}</td>
-                                                    <td>{product.returnedQuantity || 0}</td>
+                                                    <td>{product.transferFromWH || 0}</td>
+                                                    <td>{product.transferToWH || 0}</td>
+                                                    <td>{product.issuedQty|| 0}</td>
+                                                    <td>{product.returnedQty|| 0}</td>
                                                     <td>{product.consumption || 0}</td>
                                                     <td>{product.cost || 0}</td>
                                                     <td>{product.total || 0}</td>

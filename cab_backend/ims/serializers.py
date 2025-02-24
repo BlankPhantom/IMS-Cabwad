@@ -101,6 +101,8 @@ class TransactionDetailsSerializer(serializers.ModelSerializer):
 class TransactionProductSerializer(serializers.ModelSerializer):
     itemQuantity = serializers.SerializerMethodField()
     itemName = serializers.CharField(source='itemID.itemName', read_only=True)
+    cost = serializers.CharField(source='itemID.unitCost', read_only=True)
+    total = serializers.SerializerMethodField()
 
     class Meta:
         model = TransactionProduct
@@ -108,8 +110,13 @@ class TransactionProductSerializer(serializers.ModelSerializer):
             'transactionDetailsID', 'transactionProductID', 'itemID', 'itemName',
             'itemQuantity', 'areaID', 'purchasedFromSupp', 'returnToSupplier',
             'transferFromWH', 'transferToWH', 'issuedQty', 'returnedQty', 'consumption',
+            'cost', 'total'
         )
 
+    def get_total(self, instance):
+        total = instance.consumption * instance.itemID.unitCost
+        return total
+    
     def get_itemQuantity(self, instance):
         item = Item.objects.get(pk=instance.itemID.pk)
         return item.itemQuantity
