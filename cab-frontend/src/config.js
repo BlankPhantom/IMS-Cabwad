@@ -25,7 +25,8 @@ export const API_ENDPOINTS = {
     MONTHLY_CONSUMPTION:`${BASE_URL}ims/monthly-consumption/`,
 
     // Transaction Endpoints (Considering transaction details and products as one)
-    TRANSACTION_LIST: `${BASE_URL}ims/transaction-detail/`, // Get all transaction details
+    TRANSACTION_LIST: `${BASE_URL}ims/transaction-detail/`,
+    TRANSACTION_PRODUCTS_ALL: `${BASE_URL}ims/transaction-product/`,
     TRANSACTION_DETAILS: (id) => `${BASE_URL}ims/transaction-detail/${id}/`, // Get single transaction detail
     ADD_TRANSACTION: `${BASE_URL}ims/transaction-detail/create/`, // Create a new transaction
     UPDATE_TRANSACTION: (id) => `${BASE_URL}ims/transaction-detail/update/${id}/`, // Update a transaction

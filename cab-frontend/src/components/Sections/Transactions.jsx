@@ -49,7 +49,9 @@ const Transactions = () => {
     useEffect(() => {
         fetchProducts();
         fetchTransactions();
+        fetchTransactionsWithProducts();
     }, []);
+
 
     const fetchTransactions = async () => {
         try {
@@ -72,6 +74,63 @@ const Transactions = () => {
             setProducts(data);
         } catch (error) {
             console.error("Error fetching products:", error);
+        }
+    };
+
+    const fetchTransactionsWithProducts = async () => {
+        try {
+            console.log("Fetching Transactions from:", API_ENDPOINTS.TRANSACTION_LIST);
+            console.log("Fetching Products from:", API_ENDPOINTS.TRANSACTION_PRODUCTS_ALL);
+
+            const transactionsResponse = await fetch(API_ENDPOINTS.TRANSACTION_LIST, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Token ${localStorage.getItem("access_token")}`, // ✅ Ensure token is included
+                },
+            });
+
+            if (!transactionsResponse.ok) {
+                throw new Error(`Transactions API Error: ${transactionsResponse.status} ${transactionsResponse.statusText}`);
+            }
+
+            const transactions = await transactionsResponse.json();
+            console.log("Fetched Transactions:", transactions);
+
+            const productsResponse = await fetch(API_ENDPOINTS.TRANSACTION_PRODUCTS_ALL, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Token ${localStorage.getItem("access_token")}`,
+                },
+            });
+
+            if (!productsResponse.ok) {
+                throw new Error(`Products API Error: ${productsResponse.status} ${productsResponse.statusText}`);
+            }
+
+            const productsText = await productsResponse.text();
+            console.log("Products Raw Response:", productsText);
+
+            // ✅ **Check if Response is Valid JSON**
+            let allProducts;
+            try {
+                allProducts = JSON.parse(productsText);
+            } catch (error) {
+                console.error("Invalid JSON from Products API:", productsText);
+                throw new Error("Products API did not return valid JSON.");
+            }
+
+            // ✅ **Filter products correctly**
+            const transactionsWithProducts = transactions.map(transaction => ({
+                ...transaction,
+                products: allProducts.filter(product => product.transactionDetailsID === transaction.transactionDetailsID),
+            }));
+
+            setTransactions(transactionsWithProducts);
+            console.log("Updated Transactions with Products:", transactionsWithProducts);
+        } catch (error) {
+            console.error("Error fetching transactions and products:", error);
         }
     };
 
@@ -301,7 +360,7 @@ const Transactions = () => {
                 throw new Error("Transaction Details ID is missing in API response.");
             }
 
-            fetchTransactions(); // Refresh transaction list
+            fetchTransactionsWithProducts();// Refresh transaction list
             alert("Transaction and products have been successfully added!");
             setShowTransactionModal(false);
         } catch (error) {
@@ -346,7 +405,7 @@ const Transactions = () => {
             <Row>
                 <div style={{ overflowY: "auto", width: "100%", margiin: "0", padding: "0" }}>
                     <Table responsive bordered striped hover id="TtableStyle" className="tableStyle mt-3">
-                        <thead>
+                        <thead className="sticky-header">
                             <tr>
                                 <th>Date</th>
                                 <th>Week</th>
@@ -395,22 +454,21 @@ const Transactions = () => {
                                                 />
                                             </td>
                                         </tr>
-
-                                        {transaction.products && transaction.products.length > 0 ? (
+                                        {transaction.products?.length > 0 ? (
                                             transaction.products.map((product, pIndex) => (
-                                                <tr key={`${tIndex}-${pIndex}`}>
+                                                <tr key={`${transaction.transactionDetailsID}-${pIndex}`}>
                                                     <td>{product.itemID}</td>
                                                     <td>{product.productName}</td>
-                                                    <td>{transaction.area}</td>
-                                                    <td>{product.purchasedFromSupplier}</td>
-                                                    <td>{product.returnToSupplier}</td>
-                                                    <td>{product.transferFromWarehouse}</td>
-                                                    <td>{product.transferToWarehouse}</td>
-                                                    <td>{product.issuedQuantity}</td>
-                                                    <td>{product.returnedQuantity}</td>
-                                                    <td>{product.consumption}</td>
-                                                    <td>{product.cost}</td>
-                                                    <td>{product.total}</td>
+                                                    <td>{product.areaID ? product.areaID : "N/A"}</td>
+                                                    <td>{product.purchasedFromSupplier || 0}</td>
+                                                    <td>{product.returnToSupplier || 0}</td>
+                                                    <td>{product.transferFromWarehouse || 0}</td>
+                                                    <td>{product.transferToWarehouse || 0}</td>
+                                                    <td>{product.issuedQuantity || 0}</td>
+                                                    <td>{product.returnedQuantity || 0}</td>
+                                                    <td>{product.consumption || 0}</td>
+                                                    <td>{product.cost || 0}</td>
+                                                    <td>{product.total || 0}</td>
                                                 </tr>
                                             ))
                                         ) : (
