@@ -46,8 +46,7 @@ const ModalTransaction = ({
         fetchPurpose();
         fetchProducts();
         fetchArea();
-        setSelectedEditArea(productData?.areaID || '')
-    }, [productData]);
+    }, []);
 
     const fetchArea = async () => {
         try {
@@ -117,8 +116,10 @@ const ModalTransaction = ({
     };
 
     const handleAreaChange = (event) => {
+        console.log("Selected Area:", event.target.value);
         setSelectedArea(event.target.value);
     };
+
 
     const handleEditAreaChange = (e) => {
         const selectedId = parseInt(e.target.value, 10);
@@ -376,6 +377,7 @@ const ModalTransaction = ({
                             </Form.Select>
                         </Form.Group>
 
+
                         {transactionType === 'PurchaseSupply' && (
                             <>
                                 <Form.Group className="mb-3">
@@ -414,12 +416,12 @@ const ModalTransaction = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Transfer from other Warehouse</Form.Label>
-                            <Form.Control type="text" name="transferFromWarehouse" value={productData.transferFromWarehouse} onChange={handleProductChange} />
+                            <Form.Control type="number" name="transferFromWarehouse" value={productData.transferFromWarehouse} onChange={handleProductChange} />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Label>Transfer to other Warehouse</Form.Label>
-                            <Form.Control type="text" name="transferToWarehouse" value={productData.transferToWarehouse} onChange={handleProductChange} />
+                            <Form.Control type="number" name="transferToWarehouse" value={productData.transferToWarehouse} onChange={handleProductChange} />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
@@ -467,7 +469,7 @@ const ModalTransaction = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Area</Form.Label>
-                            <Form.Select name="area" value={setEditSelectedArea} onChange={handleEditAreaChange} required>
+                            <Form.Select name="area" value={selectedArea} onChange={handleEditAreaChange} required>
                                 {area.map((area) => (
                                     <option key={area.areaID} value={area.areaID}>
                                         {area.areaName}

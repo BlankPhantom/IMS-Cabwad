@@ -73,7 +73,7 @@ class TransactionProduct(models.Model):
     transactionProductID = models.AutoField(primary_key=True)
     transactionDetailsID = models.ForeignKey(TransactionDetails, on_delete=models.CASCADE)
     itemID = models.ForeignKey(Item, on_delete=models.CASCADE) 
-    areaID = models.ForeignKey(Area, on_delete=models.CASCADE, null=True)
+    areaID = models.ForeignKey('Area', on_delete=models.CASCADE, null=True)
     purchasedFromSupp = models.IntegerField(blank=True, default=0)
     returnToSupplier = models.IntegerField(blank=True, default=0)
     transferFromWH = models.IntegerField(blank=True, default=0)

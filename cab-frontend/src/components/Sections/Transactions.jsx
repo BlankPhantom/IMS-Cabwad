@@ -43,7 +43,7 @@ const Transactions = () => {
     const [selectedSection, setSelectedSection] = useState(0);
     const [selectedPurpose, setSelectedPurpose] = useState(0);
     const [selectedProduct, setSelectedProduct] = useState("");
-    const [selectedArea, setSelectedArea] = useState("");
+    const [selectedArea, setSelectedArea] = useState(0);
     const [products, setProducts] = useState([]);
 
     useEffect(() => {
@@ -172,35 +172,95 @@ const Transactions = () => {
     };
 
     // Add product to the list
+    // const handleAddProduct = (e) => {
+    //     e.preventDefault();
+    //     setTransactionData({
+    //         ...transactionData,
+    //         products: [...transactionData.products, { ...productData, transactionType }] // Append new product with transactionType
+    //     });
+
+    //     setProductData({ // Reset product fields
+    //         transactionType: "",
+    //         productName: "",
+    //         itemID: "",
+    //         area: "",
+    //         purchasedFromSupplier: "",
+    //         returnToSupplier: "",
+    //         transferFromWarehouse: "",
+    //         transferToWarehouse: "",
+    //         issuedQuantity: "",
+    //         returnedQuantity: "",
+    //         consumption: "",
+    //         cost: "",
+    //         total: ""
+    //     });
+
+    //     setTransactionType('');
+    //     handleCloseProductModal();
+    //     handleShowTransactionModal();
+    // };
+
     const handleAddProduct = (e) => {
         e.preventDefault();
-        setTransactionData({
-            ...transactionData,
-            products: [...transactionData.products, { ...productData, transactionType }] // Append new product with transactionType
-        });
 
-        setProductData({ // Reset product fields
-            transactionType: "",
-            productName: "",
-            itemID: "",
-            area: "",
-            purchasedFromSupplier: "",
-            returnToSupplier: "",
-            transferFromWarehouse: "",
-            transferToWarehouse: "",
-            issuedQuantity: "",
-            returnedQuantity: "",
-            consumption: "",
-            cost: "",
-            total: ""
-        });
+        setTransactionData(prevData => ({
+            ...prevData,
+            products: [...(prevData.products || []), productData]  // Ensure products exist
+        }));
 
-        setTransactionType('');
         handleCloseProductModal();
         handleShowTransactionModal();
     };
 
-    // Submit transaction
+
+    // Submit products separately
+    const submitProducts = async (transactionDetailsID) => {
+        if (!Array.isArray(transactionData.products) || transactionData.products.length === 0) {
+            console.warn("No products to submit.");
+            return;
+        }
+
+        try {
+            await Promise.all(transactionData.products.map(async (product) => {
+                const productPayload = {
+                    transactionDetailsID,
+                    itemID: product.itemID,
+                    productName: product.productName,
+                    areaID: selectedArea || null,
+                    purchasedFromSupplier: parseInt(product.purchasedFromSupplier, 10) || 0,
+                    returnToSupplier: parseInt(product.returnToSupplier, 10) || 0,
+                    transferFromWarehouse: parseInt(product.transferFromWarehouse, 10) || 0, // Ensure number
+                    transferToWarehouse: parseInt(product.transferToWarehouse, 10) || 0, // Ensure number
+                    issuedQuantity: parseInt(product.issuedQuantity, 10) || 0,
+                    returnedQuantity: parseInt(product.returnedQuantity, 10) || 0,
+                    cost: parseFloat(product.cost) || 0,
+                };
+
+                console.log("Submitting Product:", productPayload); // Debugging
+
+                const productResponse = await fetch(API_ENDPOINTS.ADD_TRANSACTION_PRODUCT, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Token ${localStorage.getItem("access_token")}`,
+                    },
+                    body: JSON.stringify(productPayload),
+                });
+
+                if (!productResponse.ok) {
+                    const errorResponse = await productResponse.json();
+                    console.error("API Error Response:", errorResponse);
+                    throw new Error(`Failed to add product: ${product.productName} - ${JSON.stringify(errorResponse)}`);
+                }
+            }));
+
+            alert("Products have been successfully added!");
+        } catch (error) {
+            console.error("Error adding products:", error);
+            alert("Some products could not be added. Please check your data.");
+        }
+    };
+
     const handleSubmitTransaction = async (e) => {
         e.preventDefault();
 
@@ -212,40 +272,41 @@ const Transactions = () => {
             requestedBy: transactionData.requestedBy,
             sectionID: selectedSection,
             purposeID: selectedPurpose,
-            products: transactionData.products, // Include all products in the transaction
         };
-        console.log("Selected Section:", selectedSection);
-        console.log("Selected Purpose:", selectedPurpose);
-        const token = localStorage.getItem('access_token');
+
+        const token = localStorage.getItem("access_token");
 
         try {
             const response = await fetch(API_ENDPOINTS.ADD_TRANSACTION, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Token ${token}`,
                 },
-                body: JSON.stringify(transactionData),
+                body: JSON.stringify(formData),
             });
 
             const result = await response.json();
+            console.log("API Response:", result); // Debugging response
 
-            if (result.id) {
-                // Add products separately
-                await Promise.all(transactionData.products.map(product =>
-                    fetch(API_ENDPOINTS.ADD_TRANSACTION_PRODUCT, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({ ...product, transactionDetailID: result.id }),
-                    })
-                ));
+            if (!response.ok) {
+                throw new Error(result.detail || "Failed to add transaction");
             }
 
-            console.log("Transaction saved:", result);
-            fetchTransactions(); // Refresh data
+            console.log("Transaction Details ID:", result.transactionDetailsID); // Debugging
+
+            if (result.transactionDetailsID) {
+                await submitProducts(result.transactionDetailsID); // Use correct key
+            } else {
+                throw new Error("Transaction Details ID is missing in API response.");
+            }
+
+            fetchTransactions(); // Refresh transaction list
+            alert("Transaction and products have been successfully added!");
+            setShowTransactionModal(false);
         } catch (error) {
             console.error("Error saving transaction:", error);
+            alert("Error saving transaction. Please try again.");
         }
     };
 
