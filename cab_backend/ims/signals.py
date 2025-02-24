@@ -74,17 +74,9 @@ def get_current_week_month_year():
     year = today.year
     return week_number, month, year
 
-# Helper function to calculate totals by sectionID for the current week and month
+# Helper function to calculate totals by sectionID for each week and month
 def calculate_totals_for_week_and_month():
     current_week, current_month, current_year = get_current_week_month_year()
-
-    # Get consumption totals for each sectionID for the current week and month
-    totals = MonthlyConsumption.objects.filter(
-        created_at__year=current_year,
-        created_at__month=current_month,
-        created_at__day__gte=(current_week - 1) * 7 + 1,
-        created_at__day__lte=current_week * 7
-    ).values('sectionID').annotate(total=Sum('total'))
 
     # Map sectionID to model fields
     section_mapping = {
@@ -98,41 +90,62 @@ def calculate_totals_for_week_and_month():
         9: 'totalGenService',
     }
 
-    # Initialize totals with 0
-    section_totals = {field: 0 for field in section_mapping.values()}
+    # Initialize totals for each week (1-5)
+    weekly_totals = {
+        f'{field}{week}': 0 for field in section_mapping.values() for week in range(1, 6)
+    }
 
-    # Update section totals based on query results
-    for item in totals:
-        section_id = item['sectionID']
-        if section_id in section_mapping:
-            field_name = section_mapping[section_id]
-            section_totals[field_name] = item['total']
+    # Calculate totals for each week
+    for week in range(1, 6):
+        # Get consumption totals for each sectionID for the current week and month
+        totals = MonthlyConsumption.objects.filter(
+            created_at__year=current_year,
+            created_at__month=current_month,
+            created_at__day__gte=(week - 1) * 7 + 1,
+            created_at__day__lte=week * 7
+        ).values('sectionID').annotate(total=Sum('total'))
 
-    # ✅ Ensure totalConsumption sums all the other fields
-    section_totals['totalConsumption'] = sum(section_totals.values())
+        # Update weekly totals based on query results
+        for item in totals:
+            section_id = item['sectionID']
+            if section_id in section_mapping:
+                field_name = f"{section_mapping[section_id]}{week}"
+                weekly_totals[field_name] = item['total']
 
-    # Ensure unique check uses week, month, and year
-    weekly_total, created = MonthlyConsumptionTotal.objects.get_or_create(
-        week=current_week,
+    # Calculate totalConsumption for each week
+    for week in range(1, 6):
+        weekly_totals[f'totalConsumption{week}'] = sum(
+            weekly_totals[f'{field}{week}'] for field in section_mapping.values()
+        )
+
+    # Calculate overall totals for the month
+    overall_totals = {
+        field: sum(weekly_totals[f'{field}{week}'] for week in range(1, 6))
+        for field in section_mapping.values()
+    }
+    overall_totals['totalConsumption'] = sum(overall_totals.values())
+
+    # Combine weekly and overall totals
+    totals = {**weekly_totals, **overall_totals}
+
+    # Ensure unique check uses month and year
+    monthly_total, created = MonthlyConsumptionTotal.objects.get_or_create(
         created_at__year=current_year,
         created_at__month=current_month,
-        defaults=section_totals
+        defaults=totals
     )
 
-    # Debugging information
-    print(f"Created: {created}, Week: {current_week}, Month: {current_month}, Year: {current_year}")
-    print(f"Before Update: {weekly_total}")
-
-    # ✅ If record already exists, update ALL fields (including totalConsumption)
+    # If the record already exists, update ALL fields (including weekly and overall totals)
     if not created:
-        for field, value in section_totals.items():
-            setattr(weekly_total, field, value)
-        weekly_total.updated_at = now()
-        weekly_total.save()
+        for field, value in totals.items():
+            setattr(monthly_total, field, value)
+        monthly_total.updated_at = now()
+        monthly_total.save()
 
-        print(f"Updated Weekly Total: {weekly_total}")
+    # Debugging information
+    print(f"Monthly Total: {monthly_total}, Created: {created}, Week: {current_week}, Month: {current_month}, Year: {current_year}")
 
 # Signal to update or create MonthlyConsumptionTotal when MonthlyConsumption is created
 @receiver(post_save, sender=MonthlyConsumption)
-def update_weekly_total(sender, instance, **kwargs):
+def update_monthly_total(sender, instance, **kwargs):
     calculate_totals_for_week_and_month()
