@@ -52,6 +52,19 @@ const Transactions = () => {
         fetchTransactionsWithProducts();
     }, []);
 
+    const formatProductPayload = (product, transactionDetailsID) => ({
+        transactionDetailsID,
+        itemID: product.itemID,
+        productName: product.productName,
+        areaID: selectedArea,
+        purchasedFromSupplier: parseInt(product.purchasedFromSupplier, 10) || 0,
+        returnToSupplier: parseInt(product.returnToSupplier, 10) || 0,
+        transferFromWarehouse: parseInt(product.transferFromWarehouse, 10) || 0,
+        transferToWarehouse: parseInt(product.transferToWarehouse, 10) || 0,
+        issuedQuantity: parseInt(product.issuedQuantity, 10) || 0,
+        returnedQuantity: parseInt(product.returnedQuantity, 10) || 0,
+        cost: parseFloat(product.cost) || 0,
+    });
 
     const fetchTransactions = async () => {
         try {
@@ -95,7 +108,6 @@ const Transactions = () => {
             }
 
             const transactions = await transactionsResponse.json();
-            console.log("Fetched Transactions:", transactions);
 
             const productsResponse = await fetch(API_ENDPOINTS.TRANSACTION_PRODUCTS_ALL, {
                 method: "GET",
@@ -110,7 +122,6 @@ const Transactions = () => {
             }
 
             const productsText = await productsResponse.text();
-            console.log("Products Raw Response:", productsText);
 
             // ✅ **Check if Response is Valid JSON**
             let allProducts;
@@ -280,39 +291,34 @@ const Transactions = () => {
         }
 
         try {
-            await Promise.all(transactionData.products.map(async (product) => {
-                const productPayload = {
-                    transactionDetailsID,
-                    itemID: product.itemID,
-                    productName: product.productName,
-                    areaID: selectedArea || 0,
-                    purchasedFromSupplier: parseInt(product.purchasedFromSupplier, 10) || 0,
-                    returnToSupplier: parseInt(product.returnToSupplier, 10) || 0,
-                    transferFromWarehouse: parseInt(product.transferFromWarehouse, 10) || 0, // Ensure number
-                    transferToWarehouse: parseInt(product.transferToWarehouse, 10) || 0, // Ensure number
-                    issuedQuantity: parseInt(product.issuedQuantity, 10) || 0,
-                    returnedQuantity: parseInt(product.returnedQuantity, 10) || 0,
-                    cost: parseFloat(product.cost) || 0,
-                };
+            const token = localStorage.getItem("access_token");
+            if (!token) {
+                console.error("Authorization token is missing.");
+                alert("Authorization token is missing. Please log in again.");
+                return;
+            }
 
+            const productRequests = transactionData.products.map((product) => {
+                const productPayload = formatProductPayload(product, transactionDetailsID);
                 console.log("Submitting Product:", productPayload); // Debugging
 
-                const productResponse = await fetch(API_ENDPOINTS.ADD_TRANSACTION_PRODUCT, {
+                return fetch(API_ENDPOINTS.ADD_TRANSACTION_PRODUCT, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        "Authorization": `Token ${localStorage.getItem("access_token")}`,
+                        "Authorization": `Token ${token}`,
                     },
                     body: JSON.stringify(productPayload),
+                }).then(async (response) => {
+                    if (!response.ok) {
+                        const errorResponse = await response.json();
+                        console.error("API Error Response:", errorResponse);
+                        throw new Error(`Failed to add product: ${product.productName} - ${JSON.stringify(errorResponse)}`);
+                    }
                 });
+            });
 
-                if (!productResponse.ok) {
-                    const errorResponse = await productResponse.json();
-                    console.error("API Error Response:", errorResponse);
-                    throw new Error(`Failed to add product: ${product.productName} - ${JSON.stringify(errorResponse)}`);
-                }
-            }));
-
+            await Promise.all(productRequests);
             alert("Products have been successfully added!");
         } catch (error) {
             console.error("Error adding products:", error);
@@ -459,13 +465,13 @@ const Transactions = () => {
                                                 <tr key={`${transaction.transactionDetailsID}-${pIndex}`}>
                                                     <td>{product.itemID}</td>
                                                     <td>{product.itemName}</td>
-                                                    <td>{product.areaID ? product.areaID : "N/A"}</td>
+                                                    <td>{product.areaName}</td>
                                                     <td>{product.purchasedFromSupp || 0}</td>
                                                     <td>{product.returnToSupplier || 0}</td>
                                                     <td>{product.transferFromWH || 0}</td>
                                                     <td>{product.transferToWH || 0}</td>
-                                                    <td>{product.issuedQty|| 0}</td>
-                                                    <td>{product.returnedQty|| 0}</td>
+                                                    <td>{product.issuedQty || 0}</td>
+                                                    <td>{product.returnedQty || 0}</td>
                                                     <td>{product.consumption || 0}</td>
                                                     <td>{product.cost || 0}</td>
                                                     <td>{product.total || 0}</td>

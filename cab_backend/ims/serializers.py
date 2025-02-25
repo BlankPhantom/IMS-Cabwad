@@ -101,6 +101,7 @@ class TransactionDetailsSerializer(serializers.ModelSerializer):
 class TransactionProductSerializer(serializers.ModelSerializer):
     itemQuantity = serializers.SerializerMethodField()
     itemName = serializers.CharField(source='itemID.itemName', read_only=True)
+    areaName = serializers.CharField(source='areaID.areaName', read_only=True)
     cost = serializers.CharField(source='itemID.unitCost', read_only=True)
     total = serializers.SerializerMethodField()
 
@@ -108,7 +109,7 @@ class TransactionProductSerializer(serializers.ModelSerializer):
         model = TransactionProduct
         fields = (
             'transactionDetailsID', 'transactionProductID', 'itemID', 'itemName',
-            'itemQuantity', 'areaID', 'purchasedFromSupp', 'returnToSupplier',
+            'itemQuantity', 'areaID', 'areaName' , 'purchasedFromSupp', 'returnToSupplier',
             'transferFromWH', 'transferToWH', 'issuedQty', 'returnedQty', 'consumption',
             'cost', 'total'
         )

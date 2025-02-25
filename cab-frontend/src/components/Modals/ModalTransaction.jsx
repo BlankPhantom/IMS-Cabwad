@@ -25,11 +25,9 @@ const ModalTransaction = ({
     setSelectedSection,
     selectedPurpose,
     setSelectedPurpose,
-    selectedProduct,
     setSelectedProduct,
     selectedArea,
     setSelectedArea,
-    setTransactionData
 }) => {
     const [editProductIndex, setEditProductIndex] = useState(null);
     const [showEditProductModal, setShowEditProductModal] = useState(false);
@@ -115,12 +113,6 @@ const ModalTransaction = ({
         }
     };
 
-    const handleAreaChange = (event) => {
-        console.log("Selected Area:", event.target.value);
-        setSelectedArea(event.target.value);
-    };
-
-
     const handleEditAreaChange = (e) => {
         const selectedId = parseInt(e.target.value, 10);
         setSelectedEditArea(selectedId);
@@ -133,7 +125,13 @@ const ModalTransaction = ({
         });
     };
 
+    const handleAreaChange = (event) => {
+        console.log("Selected Area:", event.target.value);
+        setSelectedArea(event.target.value);
+    };
+
     const handlePurposeChange = (event) => {
+         console.log("Selected purpose:", event.target.value);
         setSelectedPurpose(event.target.value);
     };
 
@@ -150,7 +148,6 @@ const ModalTransaction = ({
         });
         setFilteredProducts([]);
     };
-
 
     const handleTransactionTypeChange = (e) => {
         const { value } = e.target;
