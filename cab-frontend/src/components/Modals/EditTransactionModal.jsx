@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Form, Button, Row, Col } from 'react-bootstrap';
 import { faPenToSquare, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { API_ENDPOINTS } from "../../config";
 
 const EditTransactionModal = ({
     show,
@@ -9,56 +10,74 @@ const EditTransactionModal = ({
     handleSubmit,
     transactionData,
     handleChange,
-    setEditTransactionData
+    setEditTransactionData,
+    productData,
 }) => {
-    const [productData, setProductData] = useState({
-        transactionType: "",
-        productName: "",
-        itemID: "",
-        area: "",
-        purchasedFromSupplier: "",
-        returnToSupplier: "",
-        transferFromWarehouse: "",
-        transferToWarehouse: "",
-        issuedQuantity: "",
-        returnedQuantity: "",
-        consumption: "",
-        cost: "",
-        total: ""
-    });
-
     const [editProductIndex, setEditProductIndex] = useState(null);
-    const [showEditProductModal, setShowEditProductModal] = useState(false);
-    const [showProductModal, setShowProductModal] = useState(false);
     const [editProductData, setEditProductData] = useState({});
-    const [transactionType, setTransactionType] = useState("");
+    const [sections, setSections] = useState([]);
+    const [purpose, setPurpose] = useState([]);
+    const [products, setProducts] = useState([]);
+    const [area, setArea] = useState([]);
+    const [filteredProducts, setFilteredProducts] = useState([]);
 
-    const handleProductChange = (e) => {
-        const { name, value } = e.target;
-        setProductData({ ...productData, [name]: value });
+    useEffect(() => {
+        fetchSections();
+        fetchPurpose();
+        fetchProducts();
+        fetchArea();
+    }, []);
+
+    const fetchArea = async () => {
+        try {
+            const response = await fetch(API_ENDPOINTS.AREA_LIST);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            setArea(data);
+        } catch (error) {
+            console.error("Error fetching area:", error);
+        }
     };
 
-    const handleAddProduct = (e) => {
-        e.preventDefault();
-        setEditTransactionData({
-            ...transactionData,
-            products: [...transactionData.products, productData]
-        });
-        setProductData({
-            transactionType: "",
-            productName: "",
-            itemID: "",
-            purchasedFromSupplier: "",
-            returnToSupplier: "",
-            transferFromWarehouse: "",
-            transferToWarehouse: "",
-            issuedQuantity: "",
-            returnedQuantity: "",
-            consumption: "",
-            cost: "",
-            total: ""
-        });
-        setShowProductModal(false);
+    const fetchSections = async () => {
+        try {
+            const response = await fetch(API_ENDPOINTS.SECTION_LIST);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            setSections(data);
+        } catch (error) {
+            console.error("Error fetching sections:", error);
+        }
+    };
+
+    const fetchPurpose = async () => {
+        try {
+            const response = await fetch(API_ENDPOINTS.PURPOSE_LIST);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            setPurpose(data);
+        } catch (error) {
+            console.error("Error fetching purpose:", error);
+        }
+    };
+
+    const fetchProducts = async () => {
+        try {
+            const response = await fetch(API_ENDPOINTS.ITEM_LIST);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            setProducts(data);
+        } catch (error) {
+            console.error("Error fetching products:", error);
+        }
     };
 
     const handleEditProduct = (index) => {
@@ -90,37 +109,6 @@ const EditTransactionModal = ({
     const handleEditProductChange = (e) => {
         const { name, value } = e.target;
         setEditProductData((prevData) => ({ ...prevData, [name]: value }));
-    };
-
-    const handleTransactionTypeChange = (e) => {
-        const { value } = e.target;
-        setTransactionType(value);
-
-        if (showEditProductModal) {
-            setEditProductData((prevData) => ({
-                ...prevData,
-                transactionType: value,
-                purchasedFromSupplier: "",
-                returnToSupplier: "",
-                issuedQuantity: "",
-                returnedQuantity: "",
-                consumption: "",
-            }));
-        } else {
-            setProductData((prevData) => ({
-                ...prevData,
-                transactionType: value,
-                purchasedFromSupplier: "",
-                returnToSupplier: "",
-                transferFromWarehouse: "",
-                transferToWarehouse: "",
-                issuedQuantity: "",
-                returnedQuantity: "",
-                consumption: "",
-                cost: "",
-                total: ""
-            }));
-        }
     };
 
     return (
@@ -200,7 +188,7 @@ const EditTransactionModal = ({
             </Modal>
 
             {/* ADD PRODUCT MODAL */}
-            <Modal show={showProductModal} onHide={() => setShowProductModal(false)} centered>
+            {/* <Modal show={showProductModal} onHide={() => setShowProductModal(false)} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>Add New Product</Modal.Title>
                 </Modal.Header>
@@ -283,10 +271,10 @@ const EditTransactionModal = ({
                         </div>
                     </Form>
                 </Modal.Body>
-            </Modal>
+            </Modal> */}
 
             {/* EDIT PRODUCT MODAL */}
-            <Modal show={showEditProductModal} onHide={() => setShowEditProductModal(false)} centered>
+            {/* <Modal show={showEditProductModal} onHide={() => setShowEditProductModal(false)} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>{editProductIndex !== null ? "Edit Product" : "Add Product"}</Modal.Title>
                 </Modal.Header>
@@ -369,7 +357,7 @@ const EditTransactionModal = ({
                         </div>
                     </Form>
                 </Modal.Body>
-            </Modal>
+            </Modal> */}
         </>
     );
 };

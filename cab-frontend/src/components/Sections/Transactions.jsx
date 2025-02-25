@@ -7,12 +7,18 @@ import BtnAddTransaction from "../Button/BtnAddTransaction";
 import ModalTransaction from "../Modals/ModalTransaction";
 import BtnEditDeleteTransaction from "../Button/BtnEditDeleteTransaction";
 import { API_ENDPOINTS } from "../../config";
+import EditTransactionModal from "../Modals/EditTransactionModal";
 
 const Transactions = () => {
     const [showTransactionModal, setShowTransactionModal] = useState(false);
     const [showProductModal, setShowProductModal] = useState(false);
     const [transactions, setTransactions] = useState([]); // State to store all transactions
     const [transactionType, setTransactionType] = useState('');
+    const [selectedSection, setSelectedSection] = useState(0);
+    const [selectedPurpose, setSelectedPurpose] = useState(0);
+    const [selectedProduct, setSelectedProduct] = useState("");
+    const [selectedArea, setSelectedArea] = useState(0);
+    const [products, setProducts] = useState([]);
     const [transactionData, setTransactionData] = useState({
         date: getCurrentDate(),
         week: getWeekNumber(getCurrentDate()),
@@ -40,12 +46,6 @@ const Transactions = () => {
         total: ""
     });
 
-    const [selectedSection, setSelectedSection] = useState(0);
-    const [selectedPurpose, setSelectedPurpose] = useState(0);
-    const [selectedProduct, setSelectedProduct] = useState("");
-    const [selectedArea, setSelectedArea] = useState(0);
-    const [products, setProducts] = useState([]);
-
     useEffect(() => {
         fetchProducts();
         fetchTransactions();
@@ -54,15 +54,16 @@ const Transactions = () => {
 
     const formatProductPayload = (product, transactionDetailsID) => ({
         transactionDetailsID,
+        transactionType: product.transactionType || "", 
         itemID: product.itemID,
         productName: product.productName,
         areaID: selectedArea,
-        purchasedFromSupplier: parseInt(product.purchasedFromSupplier, 10) || 0,
+        purchasedFromSupp: parseInt(product.purchasedFromSupplier, 10) || 0,
         returnToSupplier: parseInt(product.returnToSupplier, 10) || 0,
-        transferFromWarehouse: parseInt(product.transferFromWarehouse, 10) || 0,
-        transferToWarehouse: parseInt(product.transferToWarehouse, 10) || 0,
-        issuedQuantity: parseInt(product.issuedQuantity, 10) || 0,
-        returnedQuantity: parseInt(product.returnedQuantity, 10) || 0,
+        transferFromWH: parseInt(product.transferFromWarehouse, 10) || 0,
+        transferToWH: parseInt(product.transferToWarehouse, 10) || 0,
+        issuedQty: parseInt(product.issuedQuantity, 10) || 0,
+        returnedQty: parseInt(product.returnedQuantity, 10) || 0,
         cost: parseFloat(product.cost) || 0,
     });
 
@@ -241,46 +242,26 @@ const Transactions = () => {
         }
     };
 
-    // Add product to the list
-    // const handleAddProduct = (e) => {
-    //     e.preventDefault();
-    //     setTransactionData({
-    //         ...transactionData,
-    //         products: [...transactionData.products, { ...productData, transactionType }] // Append new product with transactionType
-    //     });
-
-    //     setProductData({ // Reset product fields
-    //         transactionType: "",
-    //         productName: "",
-    //         itemID: "",
-    //         area: "",
-    //         purchasedFromSupplier: "",
-    //         returnToSupplier: "",
-    //         transferFromWarehouse: "",
-    //         transferToWarehouse: "",
-    //         issuedQuantity: "",
-    //         returnedQuantity: "",
-    //         consumption: "",
-    //         cost: "",
-    //         total: ""
-    //     });
-
-    //     setTransactionType('');
-    //     handleCloseProductModal();
-    //     handleShowTransactionModal();
-    // };
-
     const handleAddProduct = (e) => {
         e.preventDefault();
-
-        setTransactionData(prevData => ({
+    
+        const newProduct = {
+            ...productData, // Include all product data
+            transactionType, // Ensure transaction type is stored
+        };
+    
+        setTransactionData((prevData) => ({
             ...prevData,
-            products: [...(prevData.products || []), productData]  // Ensure products exist
+            products: [...(prevData.products || []), newProduct], // Ensure products exist
         }));
+    
+        console.log("Added Product:", newProduct); // Debugging
 
         handleCloseProductModal();
+        setTransactionType('');
         handleShowTransactionModal();
     };
+    
 
 
     // Submit products separately
@@ -523,6 +504,19 @@ const Transactions = () => {
                 selectedArea={selectedArea}
                 setSelectedArea={setSelectedArea}
                 setTransactionData={setTransactionData}
+            />
+
+            <EditTransactionModal
+                selectedArea={selectedArea}
+                setSelectedArea={setSelectedArea}
+                handleAddProduct={handleAddProduct}
+                transactionType={transactionType}
+                setTransactionType={setTransactionType}
+                handleTransactionTypeChange={handleTransactionTypeChange}
+                productData={productData}
+                setSelectedProduct={setSelectedProduct}
+                selectedProduct={selectedProduct}
+                transactionData={transactionData}
             />
         </Container>
     );

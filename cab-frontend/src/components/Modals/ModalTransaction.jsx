@@ -131,7 +131,7 @@ const ModalTransaction = ({
     };
 
     const handlePurposeChange = (event) => {
-         console.log("Selected purpose:", event.target.value);
+        console.log("Selected purpose:", event.target.value);
         setSelectedPurpose(event.target.value);
     };
 
@@ -151,43 +151,31 @@ const ModalTransaction = ({
 
     const handleTransactionTypeChange = (e) => {
         const { value } = e.target;
-        setTransactionType(value);
-
-        if (showEditProductModal) {
-            setEditProductData((prevData) => ({
-                ...prevData,
-                transactionType: value,
-                purchasedFromSupplier: "",
-                returnToSupplier: "",
-                issuedQuantity: "",
-                returnedQuantity: "",
-                consumption: "",
-            }));
-        } else {
-            setProductData((prevData) => ({
-                ...prevData,
-                transactionType: value,
-                area: "",
-                purchasedFromSupplier: "",
-                returnToSupplier: "",
-                transferFromWarehouse: "",
-                transferToWarehouse: "",
-                issuedQuantity: "",
-                returnedQuantity: "",
-                consumption: "",
-                cost: "",
-                total: ""
-            }));
-        }
+        setTransactionType(value); // Always update state
+    
+        setEditProductData((prevData) => ({
+            ...prevData,
+            transactionType: value,
+            purchasedFromSupplier: "", // Clear fields
+            returnToSupplier: "",
+            issuedQuantity: "",
+            returnedQuantity: "",
+        }));
     };
 
     const handleEditProduct = (index) => {
         const product = transactionData.products[index];
+
+        if (!product) {
+            console.error("Product not found at index:", index);
+            return;
+        }
         setEditProductIndex(index);
         setEditProductData(product);
-        setTransactionType(product.transactionType || ''); // Set the transaction type based on the product being edited
+        setTransactionType(product.transactionType || ""); // Ensure transaction type is set
         setShowEditProductModal(true);
     };
+
 
     const handleDeleteProduct = (index) => {
         const updatedProducts = transactionData.products.filter((_, i) => i !== index);
@@ -448,6 +436,7 @@ const ModalTransaction = ({
                         <Form.Group className="mb-3">
                             <Form.Label>Transaction Type</Form.Label>
                             <Form.Select name="transactionType" value={editProductData.transactionType} onChange={handleTransactionTypeChange} required>
+                                <option value="">Select Transaction Type</option>
                                 <option value="PurchaseSupply">Purchased from Supplier</option>
                                 <option value="ReturnSupply">Return to Supplier</option>
                                 <option value="Issue/Return">Issue/Return</option>
@@ -461,12 +450,12 @@ const ModalTransaction = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Item ID</Form.Label>
-                            <Form.Control type="number" name="itemID" value={editProductData.itemID} required onChange={handleEditProductChange} />
+                            <Form.Control type="text" name="itemID" value={editProductData.itemID} required onChange={handleEditProductChange} />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Label>Area</Form.Label>
-                            <Form.Select name="area" value={selectedArea} onChange={handleEditAreaChange}>
+                            <Form.Select name="area" value={editProductData.selectedArea} onChange={handleEditAreaChange}>
                                 {area.map((area) => (
                                     <option key={area.areaID} value={area.areaID}>
                                         {area.areaName}
@@ -475,18 +464,20 @@ const ModalTransaction = ({
                             </Form.Select>
                         </Form.Group>
 
-                        {transactionType === 'Purchase/Return' && (
+                        {transactionType === 'PurchaseSupply' && (
                             <>
                                 <Form.Group className="mb-3">
                                     <Form.Label>Purchased from Supplier</Form.Label>
                                     <Form.Control type="number" name="purchasedFromSupplier" value={editProductData.purchasedFromSupplier} onChange={handleEditProductChange} min="0" />
                                 </Form.Group>
-
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Return to Supplier</Form.Label>
-                                    <Form.Control type="number" name="returnToSupplier" value={editProductData.returnToSupplier} onChange={handleEditProductChange} min="0" />
-                                </Form.Group>
                             </>
+                        )}
+
+                        {transactionType === 'ReturnSupply' && (
+                            <Form.Group className="mb-3">
+                                <Form.Label>Return to Supplier</Form.Label>
+                                <Form.Control type="number" name="returnToSupplier" value={editProductData.returnToSupplier} onChange={handleEditProductChange} min="0" />
+                            </Form.Group>
                         )}
 
                         {transactionType === 'Issue/Return' && (
@@ -505,6 +496,7 @@ const ModalTransaction = ({
                                         </Form.Group>
                                     </Col>
                                 </Row>
+
                             </>
                         )}
 
