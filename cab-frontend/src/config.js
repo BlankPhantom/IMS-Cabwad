@@ -16,6 +16,7 @@ export const API_ENDPOINTS = {
 
     //Beginning Balance Endpoint
     BEGINNING_BAL_LIST: `${BASE_URL}ims/beginning-bal/`,
+    BEGINNING_BAL_CREATE: `${BASE_URL}ims/copy-items/`,
 
     //Running Balance Endpoint
     RUNNING_BAL_LIST: `${BASE_URL}ims/run-bal/`,

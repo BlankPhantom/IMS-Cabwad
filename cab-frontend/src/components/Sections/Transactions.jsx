@@ -50,6 +50,7 @@ const Transactions = () => {
         fetchProducts();
         fetchTransactions();
         fetchTransactionsWithProducts();
+        createRunningBal();
     }, []);
 
     const formatProductPayload = (product, transactionDetailsID) => ({
@@ -242,6 +243,27 @@ const Transactions = () => {
         }
     };
 
+    const createRunningBal = () => {
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+            console.error("Authorization token is missing.");
+            alert("Authorization token is missing. Please log in again.");
+            return;
+        }
+        try {
+            return fetch(API_ENDPOINTS.RUNNING_BAL_CREATE, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Token ${token}`,
+                },
+            });
+        } catch (error) {
+            console.error("Error adding products:", error);
+            alert("Some products could not be added. Please check your data.");
+        }
+    };
+
     const handleAddProduct = (e) => {
         e.preventDefault();
     
@@ -253,19 +275,15 @@ const Transactions = () => {
         // Create a new updated product object
         const updatedProduct = {
             ...productData,
-            areaID: selectedArea, // Ensure areaID is included
+            areaID: selectedArea,
         };
-    
-        // Update state with the correct product data
         setProductData(updatedProduct);
-    
-        // Update transaction data immediately using the updated object
         setTransactionData((prevData) => ({
             ...prevData,
-            products: [...(prevData.products || []), updatedProduct], // Use updatedProduct here
+            products: [...(prevData.products || []), updatedProduct],
         }));
     
-        console.log("Submitting Product:", updatedProduct); // Debugging
+        console.log("Submitting Product:", updatedProduct);
     
         handleCloseProductModal();
         handleShowTransactionModal();
@@ -287,8 +305,8 @@ const Transactions = () => {
             }
     
             const productRequests = transactionData.products.map((product) => {
-                const productPayload = formatProductPayload(product, transactionDetailsID);
-                console.log("Final Product Payload:", productPayload); // Debugging
+            const productPayload = formatProductPayload(product, transactionDetailsID);
+            console.log("Final Product Payload:", productPayload); // Debugging
     
                 return fetch(API_ENDPOINTS.ADD_TRANSACTION_PRODUCT, {
                     method: "POST",
@@ -307,9 +325,10 @@ const Transactions = () => {
                     }
                 });
             });
-    
+            
             await Promise.all(productRequests);
             alert("Products have been successfully added!");
+            
         } catch (error) {
             console.error("Error adding products:", error);
             alert("Some products could not be added. Please check your data.");
