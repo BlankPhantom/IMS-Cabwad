@@ -7,3 +7,5 @@ pymysql
 django-cors-headers
 django-seed
 cryptography
+docx2pdf
+python-docx
