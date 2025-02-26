@@ -57,7 +57,7 @@ const Transactions = () => {
         transactionType: product.transactionType || "",
         itemID: product.itemID,
         productName: product.productName,
-        areaID: selectedArea,
+        areaID: product.areaID, // Ensure areaID is included
         purchasedFromSupp: parseInt(product.purchasedFromSupplier, 10) || 0,
         returnToSupplier: parseInt(product.returnToSupplier, 10) || 0,
         transferFromWH: parseInt(product.transferFromWarehouse, 10) || 0,
@@ -244,38 +244,40 @@ const Transactions = () => {
 
     const handleAddProduct = (e) => {
         e.preventDefault();
-
+    
         if (!selectedArea) {
             alert("Please select an area.");
             return;
         }
-
-        // Update productData to include areaID before adding it
-        const updatedProductData = {
+    
+        // Create a new updated product object
+        const updatedProduct = {
             ...productData,
-            areaID: selectedArea, // Ensure areaID is updated
+            areaID: selectedArea, // Ensure areaID is included
         };
-
-        console.log("Updated Product Data:", updatedProductData);
-
+    
+        // Update state with the correct product data
+        setProductData(updatedProduct);
+    
+        // Update transaction data immediately using the updated object
         setTransactionData((prevData) => ({
             ...prevData,
-            products: [...(prevData.products || []), updatedProductData],
+            products: [...(prevData.products || []), updatedProduct], // Use updatedProduct here
         }));
-
+    
+        console.log("Submitting Product:", updatedProduct); // Debugging
+    
         handleCloseProductModal();
         handleShowTransactionModal();
     };
+    
 
-
-
-    // Submit products separately
     const submitProducts = async (transactionDetailsID) => {
         if (!Array.isArray(transactionData.products) || transactionData.products.length === 0) {
             console.warn("No products to submit.");
             return;
         }
-
+    
         try {
             const token = localStorage.getItem("access_token");
             if (!token) {
@@ -283,11 +285,11 @@ const Transactions = () => {
                 alert("Authorization token is missing. Please log in again.");
                 return;
             }
-
+    
             const productRequests = transactionData.products.map((product) => {
                 const productPayload = formatProductPayload(product, transactionDetailsID);
-                console.log("Submitting Product:", productPayload); // Debugging
-
+                console.log("Final Product Payload:", productPayload); // Debugging
+    
                 return fetch(API_ENDPOINTS.ADD_TRANSACTION_PRODUCT, {
                     method: "POST",
                     headers: {
@@ -295,15 +297,17 @@ const Transactions = () => {
                         "Authorization": `Token ${token}`,
                     },
                     body: JSON.stringify(productPayload),
+                    
                 }).then(async (response) => {
                     if (!response.ok) {
+                        console.log("Final Submitted Product Data:", productData);
                         const errorResponse = await response.json();
                         console.error("API Error Response:", errorResponse);
                         throw new Error(`Failed to add product: ${product.productName} - ${JSON.stringify(errorResponse)}`);
                     }
                 });
             });
-
+    
             await Promise.all(productRequests);
             alert("Products have been successfully added!");
         } catch (error) {
