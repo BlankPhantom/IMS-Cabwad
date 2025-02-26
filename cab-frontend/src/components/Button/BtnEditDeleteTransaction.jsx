@@ -10,7 +10,8 @@ const BtnEditDeleteTransaction = ({ transaction, onUpdate, onDelete, fetchTransa
     const [editTransactionData, setEditTransactionData] = useState(transaction);
 
     const handleShowEditTransactionModal = () => {
-        setEditTransactionData(transaction); // Ensure modal has the latest data
+        console.log("Editing Transaction ID:", transaction.transactionDetailsID); // ✅ Log the ID
+        setEditTransactionData(transaction); // Ensure modal has latest data
         setShowEditTransactionModal(true);
     };
 

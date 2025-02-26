@@ -392,10 +392,35 @@ const Transactions = () => {
         setTransactions(updatedTransactions);
     };
 
-    const handleDelete = (mris) => {
-        const updatedTransactions = transactions.filter(transaction => transaction.mris !== mris);
-        setTransactions(updatedTransactions);
+    const handleDelete = async (transactionDetailsID) => {
+        if (!window.confirm("Are you sure you want to delete this transaction and its associated products?")) {
+            return; // Exit if user cancels
+        }
+    
+        try {
+            const response = await fetch(API_ENDPOINTS.DELETE_TRANSACTION(transactionDetailsID), {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Token ${localStorage.getItem("access_token")}`
+                }
+            });
+    
+            if (!response.ok) {
+                throw new Error("Failed to delete transaction");
+            }
+    
+            // ✅ Update state by filtering out the deleted transaction
+            setTransactions((prevTransactions) =>
+                prevTransactions.filter(transaction => transaction.transactionDetailsID !== transactionDetailsID)
+            );
+    
+            alert("Transaction and its products have been successfully deleted!"); // ✅ Success alert
+        } catch (error) {
+            console.error("Error deleting transaction:", error);
+            alert("Error deleting transaction. Please try again.");
+        }
     };
+    
 
     const handleUpdateTransaction = (updatedTransaction) => {
         setTransactions((prevTransactions) =>
@@ -469,7 +494,7 @@ const Transactions = () => {
                                                 <BtnEditDeleteTransaction
                                                     onEdit={handleEdit}
                                                     fetchTransactionsWithProducts={fetchTransactionsWithProducts}
-                                                    onDelete={() => handleDelete(transaction.mris)}
+                                                    onDelete={handleDelete}
                                                     onUpdate={handleUpdateTransaction} 
                                                     transaction={transaction}
                                                     handleTransactionChange={handleTransactionChange}
