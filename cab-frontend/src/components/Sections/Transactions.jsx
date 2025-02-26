@@ -54,7 +54,7 @@ const Transactions = () => {
 
     const formatProductPayload = (product, transactionDetailsID) => ({
         transactionDetailsID,
-        transactionType: product.transactionType || "", 
+        transactionType: product.transactionType || "",
         itemID: product.itemID,
         productName: product.productName,
         areaID: selectedArea,
@@ -244,24 +244,29 @@ const Transactions = () => {
 
     const handleAddProduct = (e) => {
         e.preventDefault();
-    
-        const newProduct = {
-            ...productData, // Include all product data
-            transactionType, // Ensure transaction type is stored
+
+        if (!selectedArea) {
+            alert("Please select an area.");
+            return;
+        }
+
+        // Update productData to include areaID before adding it
+        const updatedProductData = {
+            ...productData,
+            areaID: selectedArea, // Ensure areaID is updated
         };
-    
+
+        console.log("Updated Product Data:", updatedProductData);
+
         setTransactionData((prevData) => ({
             ...prevData,
-            products: [...(prevData.products || []), newProduct], // Ensure products exist
+            products: [...(prevData.products || []), updatedProductData],
         }));
-    
-        console.log("Added Product:", newProduct); // Debugging
 
         handleCloseProductModal();
-        setTransactionType('');
         handleShowTransactionModal();
     };
-    
+
 
 
     // Submit products separately
