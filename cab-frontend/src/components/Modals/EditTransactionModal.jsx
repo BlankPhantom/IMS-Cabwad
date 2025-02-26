@@ -19,6 +19,9 @@ const EditTransactionModal = ({
     const [purpose, setPurpose] = useState([]);
     const [products, setProducts] = useState([]);
     const [area, setArea] = useState([]);
+    const [selectedSection, setSelectedSection] = useState(0);
+    const [selectedPurpose, setSelectedPurpose] = useState(0);
+
     const [filteredProducts, setFilteredProducts] = useState([]);
 
     useEffect(() => {
@@ -26,7 +29,14 @@ const EditTransactionModal = ({
         fetchPurpose();
         fetchProducts();
         fetchArea();
-    }, []);
+    }, []); // ✅ Run only once when the modal is mounted
+
+    useEffect(() => {
+        if (transactionData) {
+            setSelectedSection(transactionData.sectionID || "");
+            setSelectedPurpose(transactionData.purposeID || "");
+        }
+    }, [transactionData]);
 
     const fetchArea = async () => {
         try {
@@ -78,6 +88,36 @@ const EditTransactionModal = ({
         } catch (error) {
             console.error("Error fetching products:", error);
         }
+    };
+
+    const handleEditAreaChange = (e) => {
+        const selectedId = parseInt(e.target.value, 10);
+        setSelectedEditArea(selectedId);
+        console.log(setEditSelectedArea)
+        handleProductChange({
+            target: {
+                name: 'areaID',
+                value: selectedId,
+            }
+        });
+    };
+
+    const handleEditSectionChange = (e) => {
+        const selectedId = parseInt(e.target.value, 10);
+        setSelectedSection(selectedId);
+        setEditTransactionData((prevData) => ({
+            ...prevData,
+            sectionID: selectedId,
+        }));
+    };
+
+    const handleEditPurposeChange = (e) => {
+        const selectedId = parseInt(e.target.value, 10);
+        setSelectedPurpose(selectedId);
+        setEditTransactionData((prevData) => ({
+            ...prevData,
+            purposeID: selectedId,
+        }));
     };
 
     const handleEditProduct = (index) => {
@@ -151,21 +191,25 @@ const EditTransactionModal = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Section</Form.Label>
-                            <Form.Select name="section" value={transactionData.section} onChange={handleChange} required>
+                            <Form.Select name="section" value={selectedSection} onChange={handleEditSectionChange} required>
                                 <option value="">Select Section</option>
-                                <option value="Section A">Section A</option>
-                                <option value="Section B">Section B</option>
-                                <option value="Section C">Section C</option>
+                                {sections.map((section) => (
+                                    <option key={section.sectionID} value={section.sectionID}>
+                                        {section.sectionName}
+                                    </option>
+                                ))}
                             </Form.Select>
                         </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Label>Purpose</Form.Label>
-                            <Form.Select name="purpose" value={transactionData.purpose} onChange={handleChange} required>
+                            <Form.Select name="purpose" value={selectedPurpose} onChange={handleEditPurposeChange} required>
                                 <option value="">Select Purpose</option>
-                                <option value="Purpose A">Purpose A</option>
-                                <option value="Purpose B">Purpose B</option>
-                                <option value="Purpose C">Purpose C</option>
+                                {purpose.map((purpose) => (
+                                    <option key={purpose.purposeID} value={purpose.purposeID}>
+                                        {purpose.purposeName}
+                                    </option>
+                                ))}
                             </Form.Select>
                         </Form.Group>
 
@@ -186,178 +230,6 @@ const EditTransactionModal = ({
                     </Form>
                 </Modal.Body>
             </Modal>
-
-            {/* ADD PRODUCT MODAL */}
-            {/* <Modal show={showProductModal} onHide={() => setShowProductModal(false)} centered>
-                <Modal.Header closeButton>
-                    <Modal.Title>Add New Product</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form onSubmit={handleAddProduct}>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Transaction Type</Form.Label>
-                            <Form.Select name="transactionType" value={transactionType} onChange={handleTransactionTypeChange} required>
-                                <option value="">Select Transaction Type</option>
-                                <option value="Purchase/Return">Purchase/Return</option>
-                                <option value="Issue/Return">Issue/Return</option>
-                            </Form.Select>
-                        </Form.Group>
-
-                        <Form.Group className="mb-3">
-                            <Form.Label>Product Name</Form.Label>
-                            <Form.Control type="text" name="productName" value={productData.productName} onChange={handleProductChange} />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3">
-                            <Form.Label>Item ID</Form.Label>
-                            <Form.Control type="number" name="itemID" value={productData.itemID} onChange={handleProductChange} />
-                        </Form.Group>
-
-                        {transactionType === 'Purchase/Return' && (
-                            <>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Purchased from Supplier</Form.Label>
-                                    <Form.Control type="number" name="purchasedFromSupplier" value={productData.purchasedFromSupplier} onChange={handleProductChange} min="0" />
-                                </Form.Group>
-
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Return to Supplier</Form.Label>
-                                    <Form.Control type="number" name="returnToSupplier" value={productData.returnToSupplier} onChange={handleProductChange} min="0" />
-                                </Form.Group>
-                            </>
-                        )}
-
-                        {transactionType === 'Issue/Return' && (
-                            <>
-                                <Row>
-                                    <Col>
-                                        <Form.Group className="mb-3">
-                                            <Form.Label>Issued Quantity</Form.Label>
-                                            <Form.Control type="number" name="issuedQuantity" value={productData.issuedQuantity} onChange={handleProductChange} min="0" />
-                                        </Form.Group>
-                                    </Col>
-                                    <Col>
-                                        <Form.Group className="mb-3">
-                                            <Form.Label>Returned Quantity</Form.Label>
-                                            <Form.Control type="number" name="returnedQuantity" value={productData.returnedQuantity} onChange={handleProductChange} min="0" />
-                                        </Form.Group>
-                                    </Col>
-                                </Row>
-                            </>
-                        )}
-
-                        <Form.Group className="mb-3">
-                            <Form.Label>Transfer from Warehouse</Form.Label>
-                            <Form.Control type="text" name="transferFromWarehouse" value={productData.transferFromWarehouse} onChange={handleProductChange} />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3">
-                            <Form.Label>Transfer to Warehouse</Form.Label>
-                            <Form.Control type="text" name="transferToWarehouse" value={productData.transferToWarehouse} onChange={handleProductChange} />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3">
-                            <Form.Label>Cost</Form.Label>
-                            <Form.Control type="number" name="cost" value={productData.cost} onChange={handleProductChange} required min="0" />
-                        </Form.Group>
-
-                        <div className="d-flex justify-content-end gap-2">
-                            <Button variant="danger" onClick={() => setShowProductModal(false)}>
-                                Cancel
-                            </Button>
-                            <Button type="submit" variant="primary">
-                                Add New Record
-                            </Button>
-                        </div>
-                    </Form>
-                </Modal.Body>
-            </Modal> */}
-
-            {/* EDIT PRODUCT MODAL */}
-            {/* <Modal show={showEditProductModal} onHide={() => setShowEditProductModal(false)} centered>
-                <Modal.Header closeButton>
-                    <Modal.Title>{editProductIndex !== null ? "Edit Product" : "Add Product"}</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form onSubmit={handleSaveProduct}>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Transaction Type</Form.Label>
-                            <Form.Select name="transactionType" value={editProductData.transactionType || productData.transactionType} onChange={handleTransactionTypeChange} required>
-                                <option value="">Select Transaction Type</option>
-                                <option value="Purchase/Return">Purchase/Return</option>
-                                <option value="Issue/Return">Issue/Return</option>
-                            </Form.Select>
-                        </Form.Group>
-
-                        <Form.Group className="mb-3">
-                            <Form.Label>Product Name</Form.Label>
-                            <Form.Control type="text" name="productName" value={editProductData.productName || productData.productName} onChange={handleEditProductChange} required />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3">
-                            <Form.Label>Item ID</Form.Label>
-                            <Form.Control type="text" name="itemID" value={editProductData.itemID || productData.itemID} onChange={handleEditProductChange} required />
-                        </Form.Group>
-
-                        {transactionType === 'Purchase/Return' && (
-                            <>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Purchased from Supplier</Form.Label>
-                                    <Form.Control type="number" name="purchasedFromSupplier" value={editProductData.purchasedFromSupplier || productData.purchasedFromSupplier} onChange={handleEditProductChange} min="0" />
-                                </Form.Group>
-
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Return to Supplier</Form.Label>
-                                    <Form.Control type="number" name="returnToSupplier" value={editProductData.returnToSupplier || productData.returnToSupplier} onChange={handleEditProductChange} min="0" />
-                                </Form.Group>
-                            </>
-                        )}
-
-                        {transactionType === 'Issue/Return' && (
-                            <>
-                                <Row>
-                                    <Col>
-                                        <Form.Group className="mb-3">
-                                            <Form.Label>Issued Quantity</Form.Label>
-                                            <Form.Control type="number" name="issuedQuantity" value={editProductData.issuedQuantity || productData.issuedQuantity} onChange={handleEditProductChange} min="0" />
-                                        </Form.Group>
-                                    </Col>
-                                    <Col>
-                                        <Form.Group className="mb-3">
-                                            <Form.Label>Returned Quantity</Form.Label>
-                                            <Form.Control type="number" name="returnedQuantity" value={editProductData.returnedQuantity || productData.returnedQuantity} onChange={handleEditProductChange} min="0" />
-                                        </Form.Group>
-                                    </Col>
-                                </Row>
-                            </>
-                        )}
-
-                        <Form.Group className="mb-3">
-                            <Form.Label>Transfer from Warehouse</Form.Label>
-                            <Form.Control type="text" name="transferFromWarehouse" value={editProductData.transferFromWarehouse || productData.transferFromWarehouse} onChange={handleEditProductChange} />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3">
-                            <Form.Label>Transfer to Warehouse</Form.Label>
-                            <Form.Control type="text" name="transferToWarehouse" value={editProductData.transferToWarehouse || productData.transferToWarehouse} onChange={handleEditProductChange} />
-                        </Form.Group>
-
-                        <Form.Group className="mb-3">
-                            <Form.Label>Cost</Form.Label>
-                            <Form.Control type="number" name="cost" value={editProductData.cost || productData.cost} onChange={handleEditProductChange} />
-                        </Form.Group>
-
-                        <div className="d-flex justify-content-end gap-2">
-                            <Button variant="danger" onClick={() => setShowEditProductModal(false)}>
-                                Cancel
-                            </Button>
-                            <Button type="submit" variant="primary">
-                                {editProductIndex !== null ? "Save Changes" : "Add Product"}
-                            </Button>
-                        </div>
-                    </Form>
-                </Modal.Body>
-            </Modal> */}
         </>
     );
 };

@@ -374,6 +374,14 @@ const Transactions = () => {
         setTransactions(updatedTransactions);
     };
 
+    const handleUpdateTransaction = (updatedTransaction) => {
+        setTransactions((prevTransactions) =>
+            prevTransactions.map((txn) =>
+                txn.transactionDetailsID === updatedTransaction.transactionDetailsID ? updatedTransaction : txn
+            )
+        );
+    };
+    
     return (
         <Container style={{ width: "100%" }} fluid className="d-flex flex-column justify-content-center mt-2">
             <Row className="sectionTitle">
@@ -437,7 +445,9 @@ const Transactions = () => {
                                             <td rowSpan={transaction.products?.length + 1 || 2}>
                                                 <BtnEditDeleteTransaction
                                                     onEdit={handleEdit}
+                                                    fetchTransactionsWithProducts={fetchTransactionsWithProducts}
                                                     onDelete={() => handleDelete(transaction.mris)}
+                                                    onUpdate={handleUpdateTransaction} 
                                                     transaction={transaction}
                                                     handleTransactionChange={handleTransactionChange}
                                                     handleShowProductModal={handleShowProductModal}
