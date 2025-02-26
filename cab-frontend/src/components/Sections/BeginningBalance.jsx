@@ -77,7 +77,7 @@ const BeginningBalance = () => {
             console.error("Authorization token is missing.");
             alert("Authorization token is missing. Please log in again.");
             return;
-        }
+        }   
         try {            
                 const response = fetch(API_ENDPOINTS.BEGINNING_BAL_CREATE, {
                     method: "POST",
