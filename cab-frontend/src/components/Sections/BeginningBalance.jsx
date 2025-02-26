@@ -67,6 +67,33 @@ const BeginningBalance = () => {
         fetchBeginningBalance();
     }, [selectedMonth, selectedYear]);
 
+    useEffect(() => {
+        createBegginingBal();
+    }, []);
+
+    const createBegginingBal = async() => {
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+            console.error("Authorization token is missing.");
+            alert("Authorization token is missing. Please log in again.");
+            return;
+        }
+        try {            
+                const response = fetch(API_ENDPOINTS.BEGINNING_BAL_CREATE, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Token ${token}`,
+                    },
+                });
+        } catch (e) {
+            console.error("Error fetching beginning balance:", e);
+            setError("Failed to load beginning balance data.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleMonthYearChange = (month, year) => {
         setSelectedMonth(month);
         setSelectedYear(year);

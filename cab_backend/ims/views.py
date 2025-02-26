@@ -353,7 +353,7 @@ def create_update_runbal(request):
 
                 # Fetch the itemQuantity from the previous month in the BeginningBalance model
                 last_month_bb = BeginningBalance.objects.filter(
-                    itemID=item.itemID,  # Ensure correct itemID field
+                    itemID=item.itemID, 
                     created_at__month=last_month,
                     created_at__year=last_year
                 ).order_by('-created_at').first()
