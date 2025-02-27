@@ -10,6 +10,7 @@ urlpatterns = [
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
 
     path('item/create/', views.item_create, name='create-item'),
+    path('item/bulk-create/', views.item_bulk_create, name='bulk-create-item'),
     path('item/update/<str:id>/', views.item_update, name='update-item'),
     path('item/delete/<str:id>/', views.item_delete, name='delete-item'),
     path('item/', views.item_list_all, name='get-item'),
@@ -46,4 +47,6 @@ urlpatterns = [
     path('monthly-consumption-total/', views.get_monthly_total, name="get-monthly-total"),
 
     path('download-report/<int:year>/<int:month>/', views.download_report_doc, name='download-report'),
+    
+    path('getexcel/', views.xlsm_to_json)
 ]

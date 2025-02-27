@@ -6,7 +6,6 @@ import BeginningBalance from "./components/Sections/BeginningBalance";
 import Transactions from "./components/Sections/Transactions";
 import RunningBalance from "./components/Sections/RunningBalance";
 import MonthlyConsumption from "./components/Sections/MonthlyConsumption";
-import SummaryReport from "./components/Sections/SummaryReport";
 import Login from "./components/Login";
 
 const App = () => {
@@ -22,7 +21,6 @@ const App = () => {
                     <Route path="transactions" element={<Transactions />} />
                     <Route path="running-balance" element={<RunningBalance />} />
                     <Route path="monthly-consumption" element={<MonthlyConsumption />} />
-                    <Route path="summary-report" element={<SummaryReport />} />
                 </Route>
             </Routes>
         </Router>

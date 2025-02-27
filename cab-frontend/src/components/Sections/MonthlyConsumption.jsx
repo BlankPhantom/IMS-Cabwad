@@ -3,6 +3,7 @@ import "../table.css";
 import { Container, Table, Col, Row, Form, Button } from "react-bootstrap";
 import MonthYearPicker from "../MonthYearPicker";
 import { API_ENDPOINTS } from "../../config";
+import { saveAs } from "file-saver";
 
 const MonthlyConsumption = () => {
   const [selectedSection, setSelectedSection] = useState("");
@@ -82,29 +83,50 @@ const MonthlyConsumption = () => {
     setSelectedYear(year);
   };
 
-  const handleGenerateReports = () => {
-    const token = localStorage.getItem("access_token");
-    if (!token) {
-      console.error("Authorization token is missing.");
-      alert("Authorization token is missing. Please log in again.");
-      return;
-    }
+  const handleGenerateReports = async () => {
     try {
-      return fetch(
-        API_ENDPOINTS.DOWNLOAD_REPORTS(selectedYear,selectedMonth),
+      const token = localStorage.getItem("access_token");
+      if (!token) {
+        alert("Authorization token is missing. Please log in again.");
+        return;
+      }
+  
+      // Ask the user which file type they want to download
+      const fileType = window.confirm("Do you want to download as PDF? Click 'Cancel' for DOCX.")
+        ? "pdf"
+        : "docx";
+  
+      // Fetch the report from API (modify endpoint based on file type)
+      const response = await fetch(
+        API_ENDPOINTS.DOWNLOAD_REPORTS(selectedYear, selectedMonth, fileType), // Adjust API to accept fileType
         {
           method: "GET",
           headers: {
-            "Content-Type": "application/json",
             Authorization: `Token ${token}`,
           },
         }
       );
+  
+      if (!response.ok) {
+        throw new Error("Failed to fetch the report.");
+      }
+  
+      // Convert response to Blob
+      const blob = await response.blob();
+  
+      // Determine file name & extension
+      const fileName = `Monthly_Report_${selectedYear}_${selectedMonth}.${fileType}`;
+  
+      // Save the file
+      saveAs(blob, fileName);
+  
+      alert(`Report downloaded successfully as ${fileType.toUpperCase()}!`);
     } catch (error) {
-      console.error("Error adding products:", error);
-      alert("Some products could not be added. Please check your data.");
+      console.error("Error generating the report:", error);
+      alert("Failed to generate report. Please try again.");
     }
   };
+  
 
   return (
     <Container
@@ -140,7 +162,9 @@ const MonthlyConsumption = () => {
 
       <Row>
         <Col className="d-flex justify-content-center mt-3">
-          <Button className="shadow" onClick={handleGenerateReports}>GENERATE MONTHLY REPORT</Button>
+          <Button className="shadow" onClick={handleGenerateReports}>
+            GENERATE MONTHLY REPORT
+          </Button>
         </Col>
         <Col className="d-flex justify-content-end mt-4">
           <input

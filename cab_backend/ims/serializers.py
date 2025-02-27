@@ -11,6 +11,21 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id','username','email')
 
+class ClassificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Classification
+        fields = ('classificationID','classification')
+
+class MeasurementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Measurement
+        fields = ('measurementID','measureName')
+
+class ItemListSerializer(serializers.ListSerializer):
+    def create(self, validated_data):
+        items = [Item(**item_data) for item_data in validated_data]
+        return Item.objects.bulk_create(items)
+    
 class ItemSerializer(serializers.ModelSerializer):
     classificationName = serializers.CharField(source='classificationID.classification', read_only=True)
     measurementName = serializers.CharField(source='measurementID.measureName', read_only=True)
@@ -20,6 +35,26 @@ class ItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Item
         fields = ('itemID', 'classificationID', 'classificationName','measurementID','measurementName','itemName','itemQuantity','unitCost','totalCost','month','year','created_at','updated_at')
+
+    def to_internal_value(self, data):
+        classification_name = data.pop('classificationName', None)
+        measurement_name = data.pop('measurementName', None)
+        
+        if classification_name:
+            try:
+                classification = Classification.objects.get(classification=classification_name)
+                data['classificationID'] = classification.pk
+            except Classification.DoesNotExist:
+                raise serializers.ValidationError({'classifiscationName': 'Invalid classification name'})
+        
+        if measurement_name:
+            try:
+                measurement = Measurement.objects.get(measureName=measurement_name)
+                data['measurementID'] = measurement.pk
+            except Measurement.DoesNotExist:
+                raise serializers.ValidationError({'measurementName': 'Invalid measurement name'})
+        
+        return super().to_internal_value(data)
 
     def get_totalCost(self, instance):
         instance.totalCost = instance.itemQuantity * instance.unitCost
@@ -39,16 +74,6 @@ class ItemSerializer(serializers.ModelSerializer):
         if Item.objects.filter(itemName=itemName).exclude(itemID=itemID).exists():
             raise serializers.ValidationError("An item with this name already exists")
         return data
-
-class ClassificationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Classification
-        fields = ('classificationID','classification')
-
-class MeasurementSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Measurement
-        fields = ('measurementID','measureName')
 
 class BeginningBalanceSerializer(serializers.ModelSerializer):
     measureName = MeasurementSerializer(source='measurementID')

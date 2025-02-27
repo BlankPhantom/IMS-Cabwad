@@ -6,6 +6,8 @@ from docx2pdf import convert
 from datetime import datetime
 
 def convert_docx_to_pdf(docx_path):
+    if isinstance(docx_path, tuple):
+        docx_path = docx_path[0]
     pythoncom.CoInitialize()
     try:
         # Define the output path for the PDF
@@ -51,7 +53,6 @@ def replace_text_in_table(table, placeholders):
 
 def generate_reports_doc(report):
     template_path = os.path.join(settings.BASE_DIR, 'Document Format', 'MONTHLY SUMMARY REPORT.docx')
-
     doc = Document(template_path)
 
     placeholders = {
@@ -127,7 +128,13 @@ def generate_reports_doc(report):
     os.makedirs(output_dir, exist_ok=True)
 
     output_path = os.path.join(output_dir, f'sample_report_{datetime.now().strftime("%Y%m%d")}.docx')
-    doc.save(output_path)
+    
+    try:
+        doc.save(output_path)
+        print(f"Document saved successfully: {output_path}")
+    except PermissionError as e:
+        print(f"Permission denied: {e}")
+        raise
 
     # Optionally convert to PDF
     pdf_path = convert_docx_to_pdf(output_path)

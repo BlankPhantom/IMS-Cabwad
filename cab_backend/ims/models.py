@@ -111,6 +111,7 @@ class RunningBalance(models.Model):
     consumption = models.IntegerField(default=0)
     unitCost = models.FloatField(default=0.0)
     totalCost = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    remarks = models.CharField(max_length=100, default="")
     created_at = models.DateTimeField(default= timezone.now)
     updated_at = models.DateTimeField(default= timezone.now)
 

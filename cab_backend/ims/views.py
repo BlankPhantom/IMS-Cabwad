@@ -1,4 +1,3 @@
-
 from django.utils import timezone
 from django.utils.timezone import now
 from django.http import JsonResponse
@@ -12,9 +11,13 @@ from rest_framework import status
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
+import pandas as pd
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.core.files.storage import default_storage
 from ims.models import (Item, BeginningBalance, Classification, Measurement, Section, Purpose, TransactionProduct, 
                         TransactionDetails,RunningBalance, Area, MonthlyConsumption, MonthlyConsumptionTotal )                     
-from ims.serializers import (UserSerializer,ItemSerializer, BeginningBalanceSerializer, ClassificationSerializer, MeasurementSerializer, 
+from ims.serializers import (ItemListSerializer, UserSerializer,ItemSerializer, BeginningBalanceSerializer, ClassificationSerializer, MeasurementSerializer, 
                              SectionSerializer, PurposeSerializer, TransactionProductSerializer, TransactionDetailsSerializer, 
                              RunningBalanceSerializer, AreaSerializer, MonthlyConsumptionTotalSerializer, MonthlyConsumptionSerializer) 
 
@@ -42,6 +45,29 @@ def item_create(request):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def item_bulk_create(request):
+    if request.method == 'POST':
+        items_data = request.data
+        created_items = []
+        errors = []
+
+        for item_data in items_data:
+            item_id = item_data.get('itemID')
+            if Item.objects.filter(itemID=item_id).exists():
+                continue  # Skip existing items
+
+            serializer = ItemSerializer(data=item_data)
+            if serializer.is_valid():
+                serializer.save()
+                created_items.append(serializer.data)
+            else:
+                errors.append(serializer.errors)
+
+        if errors:
+            return Response({"created_items": created_items, "errors": errors}, status=status.HTTP_207_MULTI_STATUS)
+        return Response(created_items, status=status.HTTP_201_CREATED)
 
 @api_view(['PUT'])
 def item_update(request, id):
@@ -405,6 +431,66 @@ def get_monthly_total(request):
     serializer = MonthlyConsumptionTotalSerializer(monthly_total, many=True)
     return Response(serializer.data)
 
+@csrf_exempt  # Remove in production; use proper authentication
+def xlsm_to_json(request):
+    if request.method == "POST" and request.FILES.get("file"):
+        excel_file = request.FILES["file"]
+        sheet_name = request.POST.get("sheet_name", "Masterlist")  # Default to "Sheet1"
+        additional_sheet_name = request.POST.get("additional_sheet", "Beginning Balance")
+        
+        # Save file temporarily, overwrite if exists
+        file_path = default_storage.save(f"temp/{excel_file.name}", excel_file)
+        if default_storage.exists(file_path):
+            default_storage.delete(file_path)
+        file_path = default_storage.save(f"temp/{excel_file.name}", excel_file)
+
+        try:
+            # Read the specified sheet from the .xlsm file
+            df = pd.read_excel(file_path, sheet_name=sheet_name, engine="openpyxl")
+            df_additional = pd.read_excel(file_path, sheet_name=additional_sheet_name, engine="openpyxl") 
+            
+            column_mapping = {
+                "PRODUCT NAME": "itemName",
+                "CLASSIFICATION": "classificationName"
+            } 
+            
+            # Specify the columns you want to extract
+            selected_columns = ["PRODUCT NAME", "CLASSIFICATION"]
+            df_selected = df[selected_columns].rename(columns=column_mapping)
+
+            additional_col_map = {
+                "PRODUCT NAME": "itemName", 
+                "UNIT OF MEASURE": "measurementName"
+            }
+            # Extract Unit of Measurement from the additional sheet
+            additional_columns = ["PRODUCT NAME", "UNIT OF MEASURE"]
+            df_additional_selected = df_additional[additional_columns].rename(columns=additional_col_map)
+
+            # Merge the dataframes on "itemName"
+            df_merged = pd.merge(df_selected, df_additional_selected, on="itemName", how="left")
+
+            # Trim whitespace from string columns
+            df_merged = df_merged.applymap(lambda x: x.strip() if isinstance(x, str) else x)
+
+            # Replace NaN with None (which becomes null in JSON)
+            df_merged = df_merged.where(pd.notnull(df_merged), "N/A")
+
+            # Convert to JSON
+            json_data = df_merged.to_dict(orient="records")
+
+            response = JsonResponse(json_data, safe=False)
+            default_storage.delete(file_path)
+            return response
+                
+
+        except ValueError as ve:
+            return JsonResponse({"error": f"Sheet '{sheet_name}' not found"}, status=400)
+        except KeyError as ke:
+            return JsonResponse({"error": f"Missing columns: {ke}"}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
 # end of transaction
 
 from django.http import HttpResponse
@@ -445,3 +531,5 @@ def download_report_doc(request, year, month):
             return response
     else:
         return Response({"error": "Document generation failed"}, status=500)
+
+

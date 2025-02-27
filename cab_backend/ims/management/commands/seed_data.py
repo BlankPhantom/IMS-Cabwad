@@ -1,18 +1,28 @@
 from django.core.management.base import BaseCommand
-from ims.models import Classification, Measurement, Section, Purpose, Area
+from ims.models import Item, Classification, Measurement, Section, Purpose, Area
+from django.contrib.auth.models import User
+import csv
+import os
+from datetime import datetime
+from django.conf import settings
+
 # Transaction, RunningBalance, MonthlyConsumption
 
 class Command(BaseCommand):
     help = 'Seed the database with initial data'
 
     def handle(self, *args, **kwargs):
+        #admin account
+        if not User.objects.filter(username='admin').exists():
+            User.objects.create_superuser('admin', 'admin@gmail.com', 'admin')
+        
         #seed data for classification
         classif = ['Chemicals','Construction','Fittings','Pipes','Water Meters','Other Materials']
         for name in classif:
             Classification.objects.get_or_create(classification=name)
 
         #seed data for measurement
-        measure = ['gal','bag','box','bundle','can','drum','Kgs','Lt','Ltr','mtr','pack','pail','pcs','roll','set',]
+        measure = ['N/A','gal','bag','bags','box','bot','bundle','Can','drum','drums','Kgs','Lt','ltr','mtr','mtrs','pack','Pail','pc','pcs','roll','set','sets']
         for name in measure:
             Measurement.objects.get_or_create(measureName=name)
 
@@ -30,6 +40,7 @@ class Command(BaseCommand):
         area = ["N/A","Casile","Diezmo","PS1","PS2","PS3"]
         for name in area:
             Area.objects.get_or_create(areaName=name)
+
 
         
 
