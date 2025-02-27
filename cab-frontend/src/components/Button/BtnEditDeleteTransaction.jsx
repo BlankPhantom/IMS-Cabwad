@@ -25,35 +25,54 @@ const BtnEditDeleteTransaction = ({ transaction, onUpdate, onDelete, fetchTransa
         }));
     };
 
-    const handleSubmitEditTransaction = async (e) => {
-        e.preventDefault();
+    // const handleSubmitEditTransaction = async (e) => {
+    //     e.preventDefault();
 
-        try {
-            const response = await fetch(API_ENDPOINTS.UPDATE_TRANSACTION(editTransactionData.transactionDetailsID), {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Token ${localStorage.getItem("access_token")}`,
-                },
-                body: JSON.stringify(editTransactionData),
-            });
+    //     try {
+    //         const response = await fetch(API_ENDPOINTS.UPDATE_TRANSACTION(editTransactionData.transactionDetailsID), {
+    //             method: "PUT",
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //                 "Authorization": `Token ${localStorage.getItem("access_token")}`,
+    //             },
+    //             body: JSON.stringify(editTransactionData),
+    //         });
 
-            if (!response.ok) {
-                throw new Error("Failed to update transaction");
-            }
+    //         if (!response.ok) {
+    //             throw new Error("Failed to update transaction");
+    //         }
 
-            const updatedTransaction = await response.json();
-            onUpdate(updatedTransaction); // Update UI with new transaction data
+    //         // Next, add new products to the transaction
+    //         for (const product of localProducts) {
+    //             const productPayload = {
+    //                 ...product,
+    //                 transactionDetailsID: transactionData.transactionDetailsID,
+    //             };
 
-            alert("Transaction and products have been successfully updated!"); // ✅ Success message
-            fetchTransactionsWithProducts(); // ✅ Refresh transaction list
+    //             const productResponse = await fetch(API_ENDPOINTS.ADD_TRANSACTION_PRODUCT, {
+    //                 method: "POST",
+    //                 headers: {
+    //                     "Content-Type": "application/json",
+    //                     Authorization: `Token ${token}`,
+    //                 },
+    //                 body: JSON.stringify(productPayload),
+    //             });
 
-            handleCloseEditTransactionModal();
-        } catch (error) {
-            console.error("Error updating transaction:", error);
-            alert("Error updating transaction. Please try again.");
-        }
-    };
+    //             if (!productResponse.ok) throw new Error("Failed to add product");
+    //         }
+
+    //         const updatedTransaction = await response.json();
+    //         onUpdate(updatedTransaction); // Update UI with new transaction data
+
+    //         alert("Transaction and products have been successfully updated!"); // ✅ Success message
+    //         fetchTransactionsWithProducts(); // ✅ Refresh transaction list
+
+    //         handleCloseEditTransactionModal();
+    //     } catch (error) {
+    //         console.error("Error updating transaction:", error);
+    //         alert("Error updating transaction. Please try again.");
+    //     }
+    // };
 
     return (
         <>
@@ -69,10 +88,11 @@ const BtnEditDeleteTransaction = ({ transaction, onUpdate, onDelete, fetchTransa
             <EditTransactionModal
                 show={showEditTransactionModal}
                 handleClose={handleCloseEditTransactionModal}
-                handleSubmit={handleSubmitEditTransaction}
+                // handleSubmit={handleSubmitEditTransaction}
                 transactionData={editTransactionData}
                 handleChange={handleEditTransactionChange}
                 setEditTransactionData={setEditTransactionData}
+                handleShow={handleShowEditTransactionModal}
             />
         </>
     );

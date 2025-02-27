@@ -94,9 +94,6 @@ const Transactions = () => {
 
     const fetchTransactionsWithProducts = async () => {
         try {
-            console.log("Fetching Transactions from:", API_ENDPOINTS.TRANSACTION_LIST);
-            console.log("Fetching Products from:", API_ENDPOINTS.TRANSACTION_PRODUCTS_ALL);
-
             const transactionsResponse = await fetch(API_ENDPOINTS.TRANSACTION_LIST, {
                 method: "GET",
                 headers: {
@@ -141,7 +138,6 @@ const Transactions = () => {
             }));
 
             setTransactions(transactionsWithProducts);
-            console.log("Updated Transactions with Products:", transactionsWithProducts);
         } catch (error) {
             console.error("Error fetching transactions and products:", error);
         }
@@ -266,12 +262,12 @@ const Transactions = () => {
 
     const handleAddProduct = (e) => {
         e.preventDefault();
-    
+
         if (!selectedArea) {
             alert("Please select an area.");
             return;
         }
-    
+
         // Create a new updated product object
         const updatedProduct = {
             ...productData,
@@ -282,20 +278,20 @@ const Transactions = () => {
             ...prevData,
             products: [...(prevData.products || []), updatedProduct],
         }));
-    
+
         console.log("Submitting Product:", updatedProduct);
-    
+
         handleCloseProductModal();
         handleShowTransactionModal();
     };
-    
+
 
     const submitProducts = async (transactionDetailsID) => {
         if (!Array.isArray(transactionData.products) || transactionData.products.length === 0) {
             console.warn("No products to submit.");
             return;
         }
-    
+
         try {
             const token = localStorage.getItem("access_token");
             if (!token) {
@@ -303,11 +299,11 @@ const Transactions = () => {
                 alert("Authorization token is missing. Please log in again.");
                 return;
             }
-    
+
             const productRequests = transactionData.products.map((product) => {
-            const productPayload = formatProductPayload(product, transactionDetailsID);
-            console.log("Final Product Payload:", productPayload); // Debugging
-    
+                const productPayload = formatProductPayload(product, transactionDetailsID);
+                console.log("Final Product Payload:", productPayload); // Debugging
+
                 return fetch(API_ENDPOINTS.ADD_TRANSACTION_PRODUCT, {
                     method: "POST",
                     headers: {
@@ -315,7 +311,7 @@ const Transactions = () => {
                         "Authorization": `Token ${token}`,
                     },
                     body: JSON.stringify(productPayload),
-                    
+
                 }).then(async (response) => {
                     if (!response.ok) {
                         console.log("Final Submitted Product Data:", productData);
@@ -325,10 +321,10 @@ const Transactions = () => {
                     }
                 });
             });
-            
+
             await Promise.all(productRequests);
             alert("Products have been successfully added!");
-            
+
         } catch (error) {
             console.error("Error adding products:", error);
             alert("Some products could not be added. Please check your data.");
@@ -376,7 +372,7 @@ const Transactions = () => {
             }
 
             fetchTransactionsWithProducts();// Refresh transaction list
-            alert("Transaction and products have been successfully added!");
+            alert("New Transaction Recorded!");
             setShowTransactionModal(false);
         } catch (error) {
             console.error("Error saving transaction:", error);
@@ -396,7 +392,7 @@ const Transactions = () => {
         if (!window.confirm("Are you sure you want to delete this transaction and its associated products?")) {
             return; // Exit if user cancels
         }
-    
+
         try {
             const response = await fetch(API_ENDPOINTS.DELETE_TRANSACTION(transactionDetailsID), {
                 method: "DELETE",
@@ -404,23 +400,23 @@ const Transactions = () => {
                     "Authorization": `Token ${localStorage.getItem("access_token")}`
                 }
             });
-    
+
             if (!response.ok) {
                 throw new Error("Failed to delete transaction");
             }
-    
+
             // ✅ Update state by filtering out the deleted transaction
             setTransactions((prevTransactions) =>
                 prevTransactions.filter(transaction => transaction.transactionDetailsID !== transactionDetailsID)
             );
-    
+
             alert("Transaction and its products have been successfully deleted!"); // ✅ Success alert
         } catch (error) {
             console.error("Error deleting transaction:", error);
             alert("Error deleting transaction. Please try again.");
         }
     };
-    
+
 
     const handleUpdateTransaction = (updatedTransaction) => {
         setTransactions((prevTransactions) =>
@@ -429,7 +425,7 @@ const Transactions = () => {
             )
         );
     };
-    
+
     return (
         <Container style={{ width: "100%" }} fluid className="d-flex flex-column justify-content-center mt-2">
             <Row className="sectionTitle">
@@ -495,7 +491,7 @@ const Transactions = () => {
                                                     onEdit={handleEdit}
                                                     fetchTransactionsWithProducts={fetchTransactionsWithProducts}
                                                     onDelete={handleDelete}
-                                                    onUpdate={handleUpdateTransaction} 
+                                                    onUpdate={handleUpdateTransaction}
                                                     transaction={transaction}
                                                     handleTransactionChange={handleTransactionChange}
                                                     handleShowProductModal={handleShowProductModal}
@@ -570,16 +566,8 @@ const Transactions = () => {
             />
 
             <EditTransactionModal
-                selectedArea={selectedArea}
-                setSelectedArea={setSelectedArea}
-                handleAddProduct={handleAddProduct}
-                transactionType={transactionType}
-                setTransactionType={setTransactionType}
-                handleTransactionTypeChange={handleTransactionTypeChange}
-                productData={productData}
-                setSelectedProduct={setSelectedProduct}
-                selectedProduct={selectedProduct}
                 transactionData={transactionData}
+                fetchTransactionsWithProducts={fetchTransactionsWithProducts}
             />
         </Container>
     );
