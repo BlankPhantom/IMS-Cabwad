@@ -201,7 +201,7 @@ const Masterlist = () => {
                     <input 
                         type="search" 
                         className="form-control" 
-                        placeholder="Search by Item ID, Product Name, or Classification" 
+                        placeholder="Search" 
                         style={{ width: '300px' }}
                         value={searchTerm}
                         onChange={handleSearchChange}
