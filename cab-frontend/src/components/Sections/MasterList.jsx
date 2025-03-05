@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../table.css";
 import { API_ENDPOINTS } from "../../config.js";
-import { Button, Container, Table, Col, Row } from "react-bootstrap";
+import { Container, Table, Col, Row } from "react-bootstrap";
 import BtnAddNewItem from "../Button/BtnAddNewItem.jsx";
 import BtnEditDeleteMaster from "../Button/BtnEditDeleteMaster.jsx";
 import EditMasterModal from "../Modals/EditMasterModal.jsx";
@@ -12,8 +12,7 @@ const Masterlist = () => {
     const [classifications, setClassifications] = useState([]);
     const [measurements, setMeasurements] = useState([]);
     const [showModal, setShowModal] = useState(false);
-    const [currentItem, setCurrentItem] = useState([]);
-    const [successMessage, setSuccessMessage] = useState('');
+    const [currentItem, setCurrentItem] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
 
     const fetchClassifications = async() => {
@@ -113,14 +112,14 @@ const Masterlist = () => {
     };
 
     const handleDelete = (id) => {
-        console.log('button clicked');
-        
         const item = items.find(item => item.itemID === id);
-        console.log(item);
         if (item){
-            setCurrentItem(item);
-            deleteItem(item.itemID);
-        };
+            const confirmDelete = window.confirm(`Are you sure you want to delete the item "${item.itemName}" (ID: ${item.itemID})?`);
+            
+            if (confirmDelete) {
+                deleteItem(item.itemID);
+            }
+        }
     }
 
     const deleteItem = async (id) => {
@@ -137,11 +136,12 @@ const Masterlist = () => {
                 throw new Error("Failed to delete item");
             }
             fetchItems();
-            setCurrentItem();
-            console.log('current item after delete' + currentItem)
+            setCurrentItem(null);
+            window.alert('Item deleted successfully!');
            
         } catch (e) {
             console.error("Error deleting item:", e);
+            window.alert('Failed to delete item.');
         }
     };
 
@@ -155,7 +155,7 @@ const Masterlist = () => {
 
     const handleCloseModal = () => {
         setShowModal(false);
-        setCurrentItem();
+        setCurrentItem(null);
     };
 
     const handleSaveChanges = async (updatedItemData) => {
@@ -174,10 +174,10 @@ const Masterlist = () => {
             }
             fetchItems();
             handleCloseModal();
-            setSuccessMessage('Item updated successfully!');
-            setTimeout(() => setSuccessMessage(''), 3000); // Clear message after 3 seconds
+            window.alert('Item updated successfully!');
         } catch (e) {
             console.error("Error updating item:", e);
+            window.alert('Failed to update item.');
         }
     };
 
@@ -201,23 +201,13 @@ const Masterlist = () => {
                     <input 
                         type="search" 
                         className="form-control" 
-                        placeholder="Search by Item ID, Product Name, or Classification" 
+                        placeholder="Search" 
                         style={{ width: '300px' }}
                         value={searchTerm}
                         onChange={handleSearchChange}
                     />
                 </Col>
             </Row>
-
-            {successMessage && (
-                <Row>
-                    <Col>
-                        <div className="alert alert-success" role="alert">
-                            {successMessage}
-                        </div>
-                    </Col>
-                </Row>
-            )}
 
             <Row>
                 <Table responsive bordered striped hover className="tableStyle mt-3">

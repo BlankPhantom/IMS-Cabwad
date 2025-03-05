@@ -502,7 +502,7 @@ const Transactions = () => {
                 <Col className="d-flex justify-content-end mt-3">
                     <input
                         type="search"
-                        placeholder="Search transactions"
+                        placeholder="Search"
                         style={{ width: "300px" }}
                         value={searchTerm}
                         onChange={handleSearch}

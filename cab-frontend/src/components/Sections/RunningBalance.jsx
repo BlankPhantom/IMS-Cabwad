@@ -1,39 +1,47 @@
 import React, { useEffect, useState } from "react";
 import "../table.css";
 import { API_ENDPOINTS } from "../../config";
-import { Container, Table, Col, Row } from "react-bootstrap";
+import { Container, Table, Col, Row, Form } from "react-bootstrap";
 import MonthYearPicker from "../MonthYearPicker";
 
 const RunningBalance = () => {
     const [runningBalanceData, setRunningBalanceData] = useState([]);
-    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+    const [filteredData, setFilteredData] = useState([]);
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+    const [searchTerm, setSearchTerm] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     const fetchRunningBalance = async () => {
+        const token = localStorage.getItem("access_token");
         try {
-            const queryParams = new URLSearchParams({
-                month: selectedMonth,
-                year: selectedYear,
+            let url = API_ENDPOINTS.RUNNING_BAL_LIST;
+            
+            // If a specific month is selected (not the default 'All')
+            if (selectedMonth !== 0) {
+                const queryParams = new URLSearchParams({
+                    month: selectedMonth,
+                    year: selectedYear,
+                });
+                url = `${url}?${queryParams}`;
+            }
+
+            const response = await fetch(url, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Token ${token}`,
+                },
             });
 
-            if(selectedMonth === 0){
-                const response = await fetch(API_ENDPOINTS.RUNNING_BAL_LIST);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                const data = await response.json();
-                setRunningBalanceData(data);
-            } else{
-                const response = await fetch(`${API_ENDPOINTS.RUNNING_BAL_LIST}?${queryParams}`);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                const data = await response.json();
-                setRunningBalanceData(data);
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
             }
             
+            const data = await response.json();
+            setRunningBalanceData(data);
+            setFilteredData(data);
         } catch (err) {
             console.error("Error fetching running balance:", err);
             setError("Failed to load running balance data.");
@@ -68,10 +76,30 @@ const RunningBalance = () => {
         }
     };
 
+    // Handle search functionality
+    const handleSearch = (event) => {
+        const term = event.target.value.toLowerCase();
+        setSearchTerm(term);
+
+        const filtered = runningBalanceData.filter(item => 
+            item.itemID.toLowerCase().includes(term) ||
+            item.itemName.toLowerCase().includes(term)
+        );
+
+        setFilteredData(filtered);
+    };
+
+    // Handle month and year change
     const handleMonthYearChange = (month, year) => {
+        // Convert month to correct format
         setSelectedMonth(month);
         setSelectedYear(year);
     };
+
+    // Fetch data when month/year changes
+    useEffect(() => {
+        fetchRunningBalance();
+    }, [selectedMonth, selectedYear]);
 
     return (
         <Container style={{ width: "100%" }} fluid className="d-flex flex-column justify-content-center mt-2">
@@ -81,15 +109,22 @@ const RunningBalance = () => {
                 </Col>
             </Row>
 
-            <Row>
-                <Col>
-                    <MonthYearPicker onMonthYearChange={handleMonthYearChange}/>
+            <Row className="mb-3">
+                <Col md={6}>
+                    <MonthYearPicker 
+                        onMonthYearChange={handleMonthYearChange}
+                        initialMonth={selectedMonth}
+                        initialYear={selectedYear}
+                    />
                 </Col>
-            </Row>
-
-            <Row>
-                <Col className="d-flex justify-content-end mt-3">
-                    <input type="search" className="" placeholder="Search" style={{ width: "300px" }} />
+                <Col md={6} className="d-flex justify-content-end">
+                    <Form.Control 
+                        type="search" 
+                        placeholder="Search by Item ID or Product Name" 
+                        value={searchTerm}
+                        onChange={handleSearch}
+                        style={{ width: "300px" }} 
+                    />
                 </Col>
             </Row>
 
@@ -122,8 +157,8 @@ const RunningBalance = () => {
                             <tr>
                                 <td colSpan="14" className="text-center text-danger">{error}</td>
                             </tr>
-                        ) : runningBalanceData.length > 0 ? (
-                            runningBalanceData.map((item, index) => (
+                        ) : filteredData.length > 0 ? (
+                            filteredData.map((item, index) => (
                                 <tr key={index}>
                                     <td>{item.itemID}</td>
                                     <td>{item.itemName}</td>
@@ -143,7 +178,12 @@ const RunningBalance = () => {
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="14" className="text-center">No records found.</td>
+                                <td colSpan="14" className="text-center">
+                                    {searchTerm 
+                                        ? `No results found for "${searchTerm}"` 
+                                        : "No records found."
+                                    }
+                                </td>
                             </tr>
                         )}
                     </tbody>
