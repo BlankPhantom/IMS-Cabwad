@@ -70,9 +70,10 @@ class ItemSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         itemName = data.get('itemName')
+        itemN = str(itemName)
         itemID = self.instance.itemID if self.instance else None
         if Item.objects.filter(itemName=itemName).exclude(itemID=itemID).exists():
-            raise serializers.ValidationError("An item with this name already exists")
+            raise serializers.ValidationError(f"An item with {itemN} name already exists")
         return data
 
 class BeginningBalanceSerializer(serializers.ModelSerializer):

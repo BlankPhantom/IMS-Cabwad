@@ -46,12 +46,22 @@ def item_create(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny 
+
+@csrf_exempt
 @api_view(['POST'])
 def item_bulk_create(request):
     if request.method == 'POST':
         items_data = request.data
+
+        # Added logging for debugging
+        print("Received bulk create request")
+        print("Request data:", items_data)
+
         created_items = []
         errors = []
+        print("Invalid items:", errors)  # Print any errors that occur during processing
 
         for item_data in items_data:
             item_id = item_data.get('itemID')
@@ -68,6 +78,9 @@ def item_bulk_create(request):
         if errors:
             return Response({"created_items": created_items, "errors": errors}, status=status.HTTP_207_MULTI_STATUS)
         return Response(created_items, status=status.HTTP_201_CREATED)
+
+    # Explicitly handle other methods
+    return Response({"detail": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 @api_view(['PUT'])
 def item_update(request, id):
@@ -109,44 +122,41 @@ def get_beginning_bal(request):
 
 @csrf_exempt
 def copy_items_to_balance(request):
-    if request.method == 'POST':
-        current_month = timezone.now().month
-        current_year = timezone.now().year
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid request method'}, status=400)
+    current_month = timezone.now().month
+    current_year = timezone.now().year
 
-        # Check if BeginningBalance entries for the current month and year already exist
-        if BeginningBalance.objects.filter(created_at__month=current_month, created_at__year=current_year).exists():
-            return JsonResponse({'error': 'Items have already been copied for this month'}, status=400)
+    # Check if BeginningBalance entries for the current month and year already exist
+    if BeginningBalance.objects.filter(created_at__month=current_month, created_at__year=current_year).exists():
+        return JsonResponse({'error': 'Items have already been copied for this month'}, status=400)
 
-        items = Item.objects.all()
+    items = Item.objects.all()
 
-        # Create BeginningBalance entries in bulk
-        beginning_balances = [
-            BeginningBalance(
-                itemID=item.itemID,
-                itemName=item.itemName,
-                measurementID=item.measurementID,
-                itemQuantity=item.itemQuantity,
-                unitCost=item.unitCost,
-                totalCost=item.itemQuantity * item.unitCost,
-                created_at=timezone.now()
-            ) for item in items
-        ]
+    # Create BeginningBalance entries in bulk
+    beginning_balances = [
+        BeginningBalance(
+            itemID=item.itemID,
+            itemName=item.itemName,
+            measurementID=item.measurementID,
+            itemQuantity=item.itemQuantity,
+            unitCost=item.unitCost,
+            totalCost=item.itemQuantity * item.unitCost,
+            created_at=timezone.now()
+        ) for item in items
+    ]
 
-        # Bulk insert for efficiency
-        BeginningBalance.objects.bulk_create(beginning_balances)
+    # Bulk insert for efficiency
+    BeginningBalance.objects.bulk_create(beginning_balances)
 
-        return JsonResponse({'message': 'Items copied successfully!'}, status=201)
-
-    return JsonResponse({'error': 'Invalid request method'}, status=400)
+    return JsonResponse({'message': 'Items copied successfully!'}, status=201)
 
 @api_view(['POST'])
 def login(request):
     username = request.data.get("username")
     password = request.data.get("password")
 
-    user = authenticate(username=username, password=password)  # 🔥 Secure authentication
-
-    if user:
+    if user := authenticate(username=username, password=password):
         token, created = Token.objects.get_or_create(user=user)
         serializer = UserSerializer(user)
         return Response({"token": token.key, "user": serializer.data}, status=status.HTTP_200_OK)
@@ -174,7 +184,7 @@ def create_user(request):
 @authentication_classes([SessionAuthentication, TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def test_token(request):
-    return Response("passed! for {}".format(request.user.email), status=status.HTTP_200_OK)
+    return Response(f"passed! for {request.user.email}", status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def classification_list_all(request):
@@ -308,6 +318,7 @@ def transaction_product_delete(request, id, detailID):
 
     transactionProd.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
+# end of transaction
 
 @api_view(['GET'])
 def get_running_balance(request):
@@ -475,13 +486,16 @@ def xlsm_to_json(request):
             # Replace NaN with None (which becomes null in JSON)
             df_merged = df_merged.where(pd.notnull(df_merged), "N/A")
 
-            # Convert to JSON
+            # Convert to JSON and trim all string values
             json_data = df_merged.to_dict(orient="records")
+            for item in json_data:
+                for key, value in item.items():
+                    if isinstance(value, str):
+                        item[key] = value.strip()
 
             response = JsonResponse(json_data, safe=False)
             default_storage.delete(file_path)
             return response
-                
 
         except ValueError as ve:
             return JsonResponse({"error": f"Sheet '{sheet_name}' not found"}, status=400)
@@ -491,7 +505,7 @@ def xlsm_to_json(request):
             return JsonResponse({"error": str(e)}, status=500)
 
     return JsonResponse({"error": "Invalid request"}, status=400)
-# end of transaction
+
 
 from django.http import HttpResponse
 from rest_framework.response import Response
