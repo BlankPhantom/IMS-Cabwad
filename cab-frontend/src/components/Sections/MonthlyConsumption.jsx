@@ -7,12 +7,14 @@ import { saveAs } from "file-saver";
 
 const MonthlyConsumption = () => {
   const [selectedSection, setSelectedSection] = useState("");
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // JavaScript months are 0-based
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [sections, setSections] = useState([]);
   const [consumptionData, setConsumptionData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetchSections();
@@ -22,6 +24,21 @@ const MonthlyConsumption = () => {
   useEffect(() => {
     fetchMonthlyConsumption();
   }, [selectedMonth, selectedYear, selectedSection]);
+
+  // Search effect to filter data
+  useEffect(() => {
+    if (searchTerm) {
+      const lowercasedTerm = searchTerm.toLowerCase();
+      const filtered = consumptionData.filter(item =>
+        Object.values(item).some(value =>
+          String(value).toLowerCase().includes(lowercasedTerm)
+        )
+      );
+      setFilteredData(filtered);
+    } else {
+      setFilteredData(consumptionData);
+    }
+  }, [searchTerm, consumptionData]);
 
   // Fetch sections for the dropdown
   const fetchSections = async () => {
@@ -83,6 +100,11 @@ const MonthlyConsumption = () => {
     setSelectedYear(year);
   };
 
+  // Handle Search Input Change
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
   const handleGenerateReports = async () => {
     try {
       const token = localStorage.getItem("access_token");
@@ -90,15 +112,15 @@ const MonthlyConsumption = () => {
         alert("Authorization token is missing. Please log in again.");
         return;
       }
-  
+
       // Ask the user which file type they want to download
       const fileType = window.confirm("Do you want to download as PDF? Click 'Cancel' for DOCX.")
         ? "pdf"
         : "docx";
-  
+
       // Fetch the report from API (modify endpoint based on file type)
       const response = await fetch(
-        API_ENDPOINTS.DOWNLOAD_REPORTS(selectedYear, selectedMonth, fileType), // Adjust API to accept fileType
+        API_ENDPOINTS.DOWNLOAD_REPORTS(selectedYear, selectedMonth, fileType),
         {
           method: "GET",
           headers: {
@@ -106,33 +128,32 @@ const MonthlyConsumption = () => {
           },
         }
       );
-  
+
       if (!response.ok) {
         throw new Error("Failed to fetch the report.");
       }
-  
+
       // Convert response to Blob
       const blob = await response.blob();
-  
+
       // Determine file name & extension
       const fileName = `Monthly_Report_${selectedYear}_${selectedMonth}.${fileType}`;
-  
+
       // Save the file
       saveAs(blob, fileName);
-  
+
       alert(`Report downloaded successfully as ${fileType.toUpperCase()}!`);
     } catch (error) {
       console.error("Error generating the report:", error);
       alert("Failed to generate report. Please try again.");
     }
   };
-  
 
   return (
     <Container
       style={{ width: "100%" }}
       fluid
-      className="d-flex flex-column justify-content-center mt-2">
+      className="d-flex flex-column justify-content-center mt-5">
       <Row className="sectionTitle">
         <Col>
           <h2 style={{ fontWeight: "650" }}>Monthly Consumption</h2>
@@ -169,8 +190,10 @@ const MonthlyConsumption = () => {
         <Col className="d-flex justify-content-end mt-4">
           <input
             type="search"
-            className=""
+            className="form-control"
             placeholder="Search"
+            value={searchTerm}
+            onChange={handleSearchChange}
             style={{ width: "300px" }}
           />
         </Col>
@@ -202,8 +225,8 @@ const MonthlyConsumption = () => {
                   {error}
                 </td>
               </tr>
-            ) : consumptionData.length > 0 ? (
-              consumptionData.map((item, index) => (
+            ) : filteredData.length > 0 ? (
+              filteredData.map((item, index) => (
                 <tr key={index}>
                   <td>{item.date}</td>
                   <td>{item.week}</td>
