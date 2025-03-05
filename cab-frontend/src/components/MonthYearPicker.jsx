@@ -1,17 +1,17 @@
 import React, { useState } from "react";
 
-const MonthYearPicker = ({onMonthYearChange}) => {
+const MonthYearPicker = ({ onMonthYearChange }) => {
     const months = [
-        "All", "January", "February", "March", "April", "May", "June", 
+        "All", "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
     ];
-    
+
     const currentDate = new Date();
-    const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth());
+    const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth() + 1); // Adjust for "All"
     const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
-    
+
     const years = Array.from({ length: 50 }, (_, i) => currentDate.getFullYear() - 25 + i);
-    
+
     const handleMonthChange = (e) => {
         const month = Number(e.target.value);
         setSelectedMonth(month);
@@ -26,7 +26,9 @@ const MonthYearPicker = ({onMonthYearChange}) => {
 
     return (
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <h2 style={{color: "rgb(71, 71, 71)", fontWeight: '700'}}>{months[selectedMonth]} - {selectedYear}</h2>
+            <h2 style={{ color: "rgb(71, 71, 71)", fontWeight: '700' }}>
+                {months[selectedMonth]} - {selectedYear}
+            </h2>
             <select value={selectedMonth} onChange={handleMonthChange}>
                 {months.map((month, index) => (
                     <option key={index} value={index}>{month}</option>

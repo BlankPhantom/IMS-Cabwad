@@ -13,6 +13,12 @@ const Transactions = () => {
     const [showTransactionModal, setShowTransactionModal] = useState(false);
     const [showProductModal, setShowProductModal] = useState(false);
     const [transactions, setTransactions] = useState([]); // State to store all transactions
+    const [selectedMonthYear, setSelectedMonthYear] = useState({
+        month: new Date().getMonth() + 1, // Default to current month
+        year: new Date().getFullYear() // Default to current year
+    });
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filteredTransactions, setFilteredTransactions] = useState([]);
     const [transactionType, setTransactionType] = useState('');
     const [selectedSection, setSelectedSection] = useState(0);
     const [selectedPurpose, setSelectedPurpose] = useState(0);
@@ -52,6 +58,10 @@ const Transactions = () => {
         fetchTransactionsWithProducts();
         createRunningBal();
     }, []);
+
+    useEffect(() => {
+        filterTransactionsByMonthYear();
+    }, [transactions, selectedMonthYear]);
 
     const formatProductPayload = (product, transactionDetailsID) => ({
         transactionDetailsID,
@@ -98,7 +108,7 @@ const Transactions = () => {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": `Token ${localStorage.getItem("access_token")}`, // ✅ Ensure token is included
+                    "Authorization": `Token ${localStorage.getItem("access_token")}`,
                 },
             });
 
@@ -122,7 +132,6 @@ const Transactions = () => {
 
             const productsText = await productsResponse.text();
 
-            // ✅ **Check if Response is Valid JSON**
             let allProducts;
             try {
                 allProducts = JSON.parse(productsText);
@@ -131,7 +140,6 @@ const Transactions = () => {
                 throw new Error("Products API did not return valid JSON.");
             }
 
-            // ✅ **Filter products correctly**
             const transactionsWithProducts = transactions.map(transaction => ({
                 ...transaction,
                 products: allProducts.filter(product => product.transactionDetailsID === transaction.transactionDetailsID),
@@ -142,6 +150,70 @@ const Transactions = () => {
             console.error("Error fetching transactions and products:", error);
         }
     };
+
+    const filterTransactionsByMonthYear = () => {
+        if (!Array.isArray(transactions)) return;
+
+        const filtered = transactions.filter(transaction => {
+            const transactionDate = new Date(transaction.date);
+            return (
+                transactionDate.getMonth() + 1 === selectedMonthYear.month &&
+                transactionDate.getFullYear() === selectedMonthYear.year
+            );
+        });
+
+        setFilteredTransactions(filtered);
+    };
+
+    const handleMonthYearChange = (month, year) => {
+        setSelectedMonthYear({ month, year });
+    };
+
+    const handleSearch = (e) => {
+        const term = e.target.value.toLowerCase();
+        setSearchTerm(term);
+
+        // Filter transactions based on search term
+        const filtered = transactions.filter(transaction => {
+            // Search in transaction main fields
+            const mainFieldsMatch = [
+                transaction.date,
+                transaction.week,
+                transaction.mris,
+                transaction.supplier,
+                transaction.requestedBy,
+                transaction.sectionName,
+                transaction.purposeName
+            ].some(field =>
+                field && field.toString().toLowerCase().includes(term)
+            );
+
+            // Search in transaction products
+            const productsMatch = transaction.products && transaction.products.some(product =>
+                [
+                    product.itemID,
+                    product.itemName,
+                    product.areaName,
+                    product.purchasedFromSupp,
+                    product.returnToSupplier,
+                    product.transferFromWH,
+                    product.transferToWH,
+                    product.issuedQty,
+                    product.returnedQty,
+                    product.consumption
+                ].some(field =>
+                    field && field.toString().toLowerCase().includes(term)
+                )
+            );
+
+            return mainFieldsMatch || productsMatch;
+        });
+
+        setFilteredTransactions(filtered);
+    };
+
+    // Determine which transactions to display
+    const displayTransactions = searchTerm ? filteredTransactions : transactions;
 
     // Handle modal toggling
     const handleShowTransactionModal = () => setShowTransactionModal(true);
@@ -437,13 +509,23 @@ const Transactions = () => {
 
             <Row>
                 <Col>
-                    <MonthYearPicker />
+                    <MonthYearPicker
+                        onMonthYearChange={handleMonthYearChange}
+                        initialMonth={selectedMonthYear.month}
+                        initialYear={selectedMonthYear.year}
+                    />
                 </Col>
             </Row>
 
             <Row>
                 <Col className="d-flex justify-content-end mt-3">
-                    <input type="search" className="" placeholder="Search" style={{ width: "300px" }} />
+                    <input
+                        type="search"
+                        placeholder="Search transactions"
+                        style={{ width: "300px" }}
+                        value={searchTerm}
+                        onChange={handleSearch}
+                    />
                 </Col>
             </Row>
 
@@ -475,8 +557,8 @@ const Transactions = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {Array.isArray(transactions) && transactions.length > 0 ? (
-                                transactions.map((transaction, tIndex) => (
+                            {filteredTransactions.length > 0 ? (
+                                filteredTransactions.map((transaction, tIndex) => (
                                     <React.Fragment key={tIndex}>
                                         <tr>
                                             <td rowSpan={transaction.products?.length + 1 || 2}>{transaction.date}</td>
@@ -527,7 +609,9 @@ const Transactions = () => {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="20" className="text-center">No transactions available</td>
+                                    <td colSpan="20" className="text-center">
+                                        No transactions found for {new Date(selectedMonthYear.year, selectedMonthYear.month - 1).toLocaleString('default', { month: 'long', year: 'numeric' })}
+                                    </td>
                                 </tr>
                             )}
                         </tbody>

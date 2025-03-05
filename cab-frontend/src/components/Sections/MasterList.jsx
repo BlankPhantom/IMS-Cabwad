@@ -8,11 +8,13 @@ import EditMasterModal from "../Modals/EditMasterModal.jsx";
 
 const Masterlist = () => {
     const [items, setItems] = useState([]);
+    const [filteredItems, setFilteredItems] = useState([]);
     const [classifications, setClassifications] = useState([]);
     const [measurements, setMeasurements] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [currentItem, setCurrentItem] = useState([]);
     const [successMessage, setSuccessMessage] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
 
     const fetchClassifications = async() => {
         const token = localStorage.getItem('access_token');  
@@ -31,7 +33,6 @@ const Masterlist = () => {
             } else {
                 const data = await response.json();
                 setClassifications(data);
-                
             }
         } catch (e) {
             console.error("Error fetching classifications:", e);
@@ -57,7 +58,7 @@ const Masterlist = () => {
                 setMeasurements(data);
             }
         }
-        catch{
+        catch(e){
             console.error("Error fetching measurements:", e);
         }
     }
@@ -83,6 +84,7 @@ const Masterlist = () => {
           if (response.ok) {
             const data = await response.json();
             setItems(data);
+            setFilteredItems(data);
           } else {
             console.error('Failed to fetch items');
           }
@@ -95,6 +97,21 @@ const Masterlist = () => {
         fetchItems();
     }, []);
 
+    // Search handler
+    const handleSearchChange = (e) => {
+        const term = e.target.value;
+        setSearchTerm(term);
+
+        // Filter items based on search term
+        const filtered = items.filter((item) => 
+            item.itemID.toLowerCase().includes(term.toLowerCase()) ||
+            item.itemName.toLowerCase().includes(term.toLowerCase()) ||
+            item.classificationName.toLowerCase().includes(term.toLowerCase())
+        );
+
+        setFilteredItems(filtered);
+    };
+
     const handleDelete = (id) => {
         console.log('button clicked');
         
@@ -102,9 +119,8 @@ const Masterlist = () => {
         console.log(item);
         if (item){
             setCurrentItem(item);
-            deleteItem(currentItem?.itemID);
+            deleteItem(item.itemID);
         };
-        
     }
 
     const deleteItem = async (id) => {
@@ -182,7 +198,14 @@ const Masterlist = () => {
             </Row>
             <Row>
                 <Col className="d-flex justify-content-end mt-3">
-                    <input type="search" className="" placeholder="Search" style={{ width: '300px' }} />
+                    <input 
+                        type="search" 
+                        className="form-control" 
+                        placeholder="Search by Item ID, Product Name, or Classification" 
+                        style={{ width: '300px' }}
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                    />
                 </Col>
             </Row>
 
@@ -207,7 +230,7 @@ const Masterlist = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {items.map((item) => (
+                        {filteredItems.map((item) => (
                             <tr key={item.id}>
                                 <td>{item.itemID}</td>
                                 <td>{item.itemName}</td>
