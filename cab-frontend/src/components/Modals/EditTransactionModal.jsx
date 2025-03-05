@@ -30,6 +30,8 @@ const EditTransactionModal = ({
     const [selectedArea, setSelectedArea] = useState(0);
     const [transactions, setTransactions] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
+    const [selectedExistingProduct, setSelectedExistingProduct] = useState(null);
+    const [showEditExistingProductModal, setShowEditExistingProductModal] = useState(false);
     const [productData, setProductData] = useState({
         transactionType: "",
         productName: "",
@@ -124,13 +126,20 @@ const EditTransactionModal = ({
 
     const fetchProductsForTransaction = async (transactionDetailsID) => {
         try {
-            const response = await fetch(API_ENDPOINTS.TRANSACTION_PRODUCTS_ALL); // Fetch all transaction products
+            const response = await fetch(API_ENDPOINTS.TRANSACTION_PRODUCTS_ALL);
             const data = await response.json();
 
-            // ✅ **Filter products based on transactionDetailsID**
-            const filteredProducts = data.filter(product => product.transactionDetailsID === transactionDetailsID);
+            const filteredProducts = data.filter(product =>
+                product.transactionDetailsID === transactionDetailsID
+            );
 
-            setTransactionProducts(filteredProducts); // ✅ Store only matching products
+            // Add transaction type to each product
+            const productsWithType = filteredProducts.map(product => ({
+                ...product,
+                transactionType: determineTransactionType(product)
+            }));
+
+            setTransactionProducts(productsWithType);
         } catch (error) {
             console.error("Error fetching transaction products:", error);
         }
@@ -187,7 +196,27 @@ const EditTransactionModal = ({
         }
     };
 
-    const handleShowProductModal = () => setShowProductModal(true);
+    const handleShowProductModal = () => {
+        setShowProductModal(true);
+        setTransactionType(''); // Reset transaction type
+        setProductData({
+            transactionType: "",
+            productName: "",
+            itemID: "",
+            area: "",
+            purchasedFromSupplier: "",
+            returnToSupplier: "",
+            transferFromWarehouse: "",
+            transferToWarehouse: "",
+            issuedQuantity: "",
+            returnedQuantity: "",
+            consumption: "",
+            cost: "",
+            total: ""
+        });
+        setSelectedProduct('');
+        setSelectedArea('');
+    };
 
     const handleCloseProductModal = () => {
         setShowProductModal(false);
@@ -338,7 +367,7 @@ const EditTransactionModal = ({
         // ✅ Create a new product object with proper data types
         const newProduct = {
             ...productData,
-            transactionType: transactionType, // ✅ Save transactionType
+             transactionType: determineTransactionType(productData),
             areaID: parseInt(selectedArea, 10) || 0, // ✅ Convert to number
             purchasedFromSupplier: parseInt(productData.purchasedFromSupplier, 10) || 0, // ✅ Convert to number
             returnToSupplier: parseInt(productData.returnToSupplier, 10) || 0,
@@ -474,6 +503,135 @@ const EditTransactionModal = ({
         handleCloseProductModal(); // ✅ Close the modal after saving
     };
 
+    const handleEditExistingProduct = (product) => {
+        setSelectedExistingProduct(product);
+        setEditProductData({
+            transactionProductID: product.transactionProductID,
+            itemID: product.itemID,
+            productName: product.itemName,
+            transactionType: product.transactionType,
+            areaID: product.areaID,
+            purchasedFromSupplier: product.purchasedFromSupp,
+            returnToSupplier: product.returnToSupplier,
+            transferFromWarehouse: product.transferFromWH,
+            transferToWarehouse: product.transferToWH,
+            issuedQuantity: product.issuedQty,
+            returnedQuantity: product.returnedQty,
+            cost: product.cost
+        });
+        setTransactionType(product.transactionType);
+        setShowEditExistingProductModal(true);
+        handleClose(); // Close the main edit transaction modal
+    };
+
+    const handleSaveExistingProduct = async (e) => {
+        e.preventDefault();
+        try {
+            const token = localStorage.getItem("access_token");
+
+            // Prepare payload for updating the existing product
+            const productPayload = {
+                transactionType: editProductData.transactionType,
+                itemID: editProductData.itemID,
+                areaID: editProductData.areaID,
+                purchasedFromSupp: parseInt(editProductData.purchasedFromSupplier, 10) || 0,
+                returnToSupplier: parseInt(editProductData.returnToSupplier, 10) || 0,
+                transferFromWH: parseInt(editProductData.transferFromWarehouse, 10) || 0,
+                transferToWH: parseInt(editProductData.transferToWarehouse, 10) || 0,
+                issuedQty: parseInt(editProductData.issuedQuantity, 10) || 0,
+                returnedQty: parseInt(editProductData.returnedQuantity, 10) || 0,
+                cost: parseFloat(editProductData.cost) || 0,
+            };
+
+            // Send PUT request to update the existing product
+            const response = await fetch(
+                API_ENDPOINTS.UPDATE_TRANSACTION_PRODUCT(
+                    transactionData.transactionDetailsID,
+                    selectedExistingProduct.transactionProductID
+                ),
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Token ${token}`,
+                    },
+                    body: JSON.stringify(productPayload),
+                }
+            );
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Failed to update product: ${errorText}`);
+            }
+
+            // Refresh transaction products after successful update
+            await fetchProductsForTransaction(transactionData.transactionDetailsID);
+
+            alert("Product updated successfully!");
+            setShowEditExistingProductModal(false);
+            handleShow(); // Reopen the main edit transaction modal
+        } catch (error) {
+            console.error("Error updating product:", error);
+            alert(`Failed to update product: ${error.message}`);
+        }
+    };
+
+    const handleDeleteExistingProduct = async (product) => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this product?");
+
+        if (!confirmDelete) return;
+
+        try {
+            const token = localStorage.getItem("access_token");
+
+            const response = await fetch(
+                API_ENDPOINTS.DELETE_TRANSACTION_PRODUCT(
+                    transactionData.transactionDetailsID,
+                    product.transactionProductID
+                ),
+                {
+                    method: "DELETE",
+                    headers: {
+                        "Authorization": `Token ${token}`,
+                    },
+                }
+            );
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Failed to delete product: ${errorText}`);
+            }
+
+            // Refresh transaction products after successful deletion
+            await fetchProductsForTransaction(transactionData.transactionDetailsID);
+
+            alert("Product deleted successfully!");
+        } catch (error) {
+            console.error("Error deleting product:", error);
+            alert(`Failed to delete product: ${error.message}`);
+        }
+    };
+
+    const determineTransactionType = (product) => {
+        // Check conditions in order of specificity
+        if (product.purchasedFromSupp > 0) {
+            return 'PurchaseSupply';
+        }
+
+        if (product.returnToSupplier > 0) {
+            return 'ReturnSupply';
+        }
+
+        if (product.issuedQty > 0 || product.returnedQty > 0) {
+            return 'Issue/Return';
+        }
+
+        if (product.transferFromWH > 0 || product.transferToWH > 0) {
+            return 'Warehouse Transfer';
+        }
+
+        return 'Unknown'; // Fallback if no type can be determined
+    };
     return (
         <>
             <Modal show={show} size="lg" onHide={handleClose} centered>
@@ -551,11 +709,13 @@ const EditTransactionModal = ({
                                         {product.itemName} {/* ✅ Display product name instead of itemID */}
                                         <span
                                             style={{ color: "#ffcc00", marginRight: '5px', marginLeft: '5px', cursor: "pointer" }}
+                                            onClick={() => handleEditExistingProduct(product)}
                                         >
                                             <FontAwesomeIcon icon={faPenToSquare} />
                                         </span>
                                         <span
                                             style={{ color: "red", cursor: "pointer" }}
+                                            onClick={() => handleDeleteExistingProduct(product)}
                                         >
                                             <FontAwesomeIcon icon={faTrashAlt} />
                                         </span>
@@ -717,7 +877,7 @@ const EditTransactionModal = ({
             </Modal>
 
             {/* EDIT PRODUCT MODAL */}
-            <Modal show={showEditProductModal} onHide={() => setShowEditProductModal(false)} centered>
+            <Modal show={showEditProductModal} onHide={() => { setShowEditProductModal(false); handleShow(); }} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>Edit Product</Modal.Title>
                 </Modal.Header>
@@ -829,6 +989,125 @@ const EditTransactionModal = ({
                                 Cancel
                             </Button>
                             <Button type="submit" onClick={() => { handleShow(); setShowEditProductModal(false); }} variant="primary">
+                                Save Changes
+                            </Button>
+                        </div>
+                    </Form>
+                </Modal.Body>
+            </Modal>
+
+            <Modal show={showEditExistingProductModal} onHide={() => { setShowEditExistingProductModal(false); handleShow(); }} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Edit Existing Product</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form onSubmit={handleSaveExistingProduct}>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Transaction Type</Form.Label>
+                            <Form.Select name="transactionType" value={editProductData.transactionType} onChange={handleTransactionTypeChange} required>
+                                <option value="">Select Transaction Type</option>
+                                <option value="PurchaseSupply">Purchased from Supplier</option>
+                                <option value="ReturnSupply">Return to Supplier</option>
+                                <option value="Issue/Return">Issue/Return</option>
+                            </Form.Select>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Product Name</Form.Label>
+                            <Form.Control
+                                type="text"
+                                name="productName"
+                                value={editProductData.productName}
+                                onChange={handleEditProductNameChange}
+                                required
+                            />
+                            {filteredProducts.length > 0 && (
+                                <div className="dropdown-menu show">
+                                    {filteredProducts.map((product) => (
+                                        <div
+                                            key={product.itemID}
+                                            className="dropdown-item"
+                                            onClick={() => handleEditProductSelect(product)}
+                                        >
+                                            {product.itemName} ({product.itemID})
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Item ID</Form.Label>
+                            <Form.Control type="text" name="itemID" value={editProductData.itemID} required onChange={handleEditProductChange} />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Area</Form.Label>
+                            <Form.Select name="areaID" value={editProductData.areaID || ""} onChange={handleEditAreaChange}>
+                                {area.map((area) => (
+                                    <option key={area.areaID} value={area.areaID}>
+                                        {area.areaName}
+                                    </option>
+                                ))}
+                            </Form.Select>
+                        </Form.Group>
+
+                        {transactionType === 'PurchaseSupply' && (
+                            <>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Purchased from Supplier</Form.Label>
+                                    <Form.Control type="number" name="purchasedFromSupplier" value={editProductData.purchasedFromSupplier} onChange={handleEditProductChange} min="0" />
+                                </Form.Group>
+                            </>
+                        )}
+
+                        {transactionType === 'ReturnSupply' && (
+                            <Form.Group className="mb-3">
+                                <Form.Label>Return to Supplier</Form.Label>
+                                <Form.Control type="number" name="returnToSupplier" value={editProductData.returnToSupplier} onChange={handleEditProductChange} min="0" />
+                            </Form.Group>
+                        )}
+
+                        {transactionType === 'Issue/Return' && (
+                            <>
+                                <Row>
+                                    <Col>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>Issued Quantity</Form.Label>
+                                            <Form.Control type="number" name="issuedQuantity" value={editProductData.issuedQuantity} onChange={handleEditProductChange} min="0" />
+                                        </Form.Group>
+                                    </Col>
+                                    <Col>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>Returned Quantity</Form.Label>
+                                            <Form.Control type="number" name="returnedQuantity" value={editProductData.returnedQuantity} onChange={handleEditProductChange} min="0" />
+                                        </Form.Group>
+                                    </Col>
+                                </Row>
+
+                            </>
+                        )}
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Transfer from other Warehouse</Form.Label>
+                            <Form.Control type="text" name="transferFromWarehouse" value={editProductData.transferFromWarehouse} onChange={handleEditProductChange} />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Transfer to other Warehouse</Form.Label>
+                            <Form.Control type="text" name="transferToWarehouse" value={editProductData.transferToWarehouse} onChange={handleEditProductChange} />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Cost</Form.Label>
+                            <Form.Control type="number" name="cost" value={editProductData.cost} onChange={handleEditProductChange} min="0" />
+                        </Form.Group>
+
+                        <div className="d-flex justify-content-end gap-2">
+                            <Button variant="danger" onClick={() => { setShowEditExistingProductModal(false); handleShow(); }}>
+                                Cancel
+                            </Button>
+                            <Button type="submit" onClick={() => { handleShow(); setShowEditExistingProductModal(false); }} variant="primary">
                                 Save Changes
                             </Button>
                         </div>
