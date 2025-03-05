@@ -431,13 +431,30 @@ def get_monthly_consumption(request):
     if section_id:
         monthly_consumption = monthly_consumption.filter(sectionID=section_id)
 
+    # Order by week to ensure proper weekly breakdown
+    monthly_consumption = monthly_consumption.order_by('week')
+
     # Serialize the filtered data
     serializer = MonthlyConsumptionSerializer(monthly_consumption, many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
 def get_monthly_total(request):
+    # Get query parameters
+    month = request.query_params.get('month')
+    year = request.query_params.get('year')
+    section_id = request.query_params.get('sectionID')
+
+    # Filter MonthlyConsumptionTotal based on the provided parameters
     monthly_total = MonthlyConsumptionTotal.objects.all()
+
+    if month:
+        monthly_total = monthly_total.filter(updated_at__month=month)
+    if year:
+        monthly_total = monthly_total.filter(updated_at__year=year)
+    if section_id:
+        monthly_total = monthly_total.filter(sectionID=section_id)
+
     serializer = MonthlyConsumptionTotalSerializer(monthly_total, many=True)
     return Response(serializer.data)
 
