@@ -128,40 +128,81 @@ class TransactionProductSerializer(serializers.ModelSerializer):
     itemQuantity = serializers.SerializerMethodField()
     itemName = serializers.CharField(source='itemID.itemName', read_only=True)
     areaName = serializers.CharField(source='areaID.areaName', read_only=True)
-    cost = serializers.CharField(source='itemID.unitCost', read_only=True)
+    cost = serializers.FloatField(write_only=True, required=False)
     total = serializers.SerializerMethodField()
 
     class Meta:
         model = TransactionProduct
         fields = (
             'transactionDetailsID', 'transactionProductID', 'itemID', 'itemName',
-            'itemQuantity', 'areaID', 'areaName' , 'purchasedFromSupp', 'returnToSupplier',
+            'itemQuantity', 'areaID', 'areaName', 'purchasedFromSupp', 'returnToSupplier',
             'transferFromWH', 'transferToWH', 'issuedQty', 'returnedQty', 'consumption',
             'cost', 'total'
         )
 
     def get_total(self, instance):
-        total = instance.consumption * instance.itemID.unitCost
-        return total
+        return instance.consumption * instance.itemID.unitCost
     
     def get_itemQuantity(self, instance):
         item = Item.objects.get(pk=instance.itemID.pk)
         return item.itemQuantity
 
     def create(self, validated_data):
+        # Extract cost if provided, otherwise use existing item cost
+        cost = validated_data.pop('cost', None)
+        
+        # Create the transaction product
         instance = super().create(validated_data)
+        
+        # Update item cost if a new cost is provided
+        if cost is not None:
+            self.update_unit_cost(instance, cost)
+        
+        # Update item quantity
         self.update_item_quantity(instance)
+        
         return instance
 
     def update(self, instance, validated_data):
+        # Extract cost if provided
+        cost = validated_data.pop('cost', None)
+        
+        # Update the transaction product
         instance = super().update(instance, validated_data)
+        
+        # Update item cost if a new cost is provided
+        if cost is not None:
+            self.update_unit_cost(instance, cost)
+        
+        # Update item quantity
         self.update_item_quantity(instance)
+        
         return instance
 
     def update_item_quantity(self, instance):
         item = Item.objects.get(pk=instance.itemID.pk)
-        item.itemQuantity += instance.purchasedFromSupp - instance.issuedQty + instance.returnedQty
+        
+        # Calculate new quantity based on transaction details
+        item.itemQuantity += (
+            instance.purchasedFromSupp 
+            - instance.issuedQty 
+            + instance.returnedQty
+        )
+        
         item.save(update_fields=['itemQuantity'])
+    
+    def update_unit_cost(self, instance, cost):
+        # Fetch the associated item
+        item = Item.objects.get(pk=instance.itemID.pk)
+        
+        # Update the unit cost
+        item.unitCost = cost
+        
+        # Recalculate total cost
+        item.totalCost = item.itemQuantity * item.unitCost
+        
+        # Save the item with updated cost and total cost
+        item.save(update_fields=['unitCost', 'totalCost'])
 
     def validate(self, data):
         issuedQty = data.get('issuedQty', 0)
@@ -171,7 +212,6 @@ class TransactionProductSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Insufficient itemQuantity to issue the requested quantity.")
 
         return data
-
 
 def compute_sums_by_itemID(item_id):
     sums = TransactionProduct.objects.filter(itemID=item_id).aggregate(

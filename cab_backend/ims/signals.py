@@ -48,9 +48,9 @@ def create_monthly_consumption(sender, instance, created, **kwargs):
 
             # Create a new MonthlyConsumption entry
             MonthlyConsumption.objects.create(
-                sectionID=instance.transactionDetailsID.sectionID if instance.transactionDetailsID.sectionID else None,
+                sectionID=instance.transactionDetailsID.sectionID or None,
                 date=instance.transactionDetailsID.date,
-                week=instance.transactionDetailsID.week if instance.transactionDetailsID.week else 0,
+                week=instance.transactionDetailsID.week or 0,
                 itemID=instance.itemID,
                 itemName=item.itemName,
                 consumption=instance.consumption,

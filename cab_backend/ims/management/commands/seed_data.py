@@ -25,26 +25,17 @@ class Command(BaseCommand):
         for name in measure:
             Measurement.objects.get_or_create(measureName=name)
 
-        # Seed items from JSON
-        with open(os.path.join(settings.BASE_DIR, 'ims/fixtures/items_data.json'), 'r') as file:
-            items_data = json.loads(file.read())
-            
-        items_to_create = []
-        for item in items_data:
-            try:
-                classification = Classification.objects.get(classification=item['classificationName'])
-                measurement = Measurement.objects.get(measureName=item['measurementName'])
-                
-                items_to_create.append(Item(
-                    itemName=item['itemName'],
-                    classificationID=classification,
-                    measurementID=measurement,
-                    itemQuantity=0,  # Default quantity if not specified
-                    unitCost=0,  # Default unit cost if not specified
-                ))
-            except (Classification.DoesNotExist, Measurement.DoesNotExist) as e:
-                self.stdout.write(self.style.WARNING(f"Skipping item {item['itemName']}: {str(e)}"))
+        #seed data for section
+        section = ['N/A',"NSC","Production","Meter Maintenance","Special Project","Construction","Commercial","Sales","Gen.Services",]
+        for name in section:
+            Section.objects.get_or_create(sectionName=name)
+        
+        #seed data for purpose
+        purpose = ["N/A","Construction","Disconnection","New Service Connection","Project","Repairs and Maintenance","Transfer,""Defective","Re-connect","Physical Count Adjustment","Sales","Repair of Service Vehicle",]
+        for name in purpose:
+            Purpose.objects.get_or_create(purposeName=name)
 
-        if items_to_create:
-            Item.objects.bulk_create(items_to_create)
-            self.stdout.write(self.style.SUCCESS(f'Successfully created {len(items_to_create)} items'))
+        #seed data for Area
+        area = ["N/A","Casile","Diezmo","PS1","PS2","PS3"]
+        for name in area:
+            Area.objects.get_or_create(areaName=name)
