@@ -1,28 +1,51 @@
 from docx import Document
 from django.conf import settings
 import os
-import pythoncom
-from docx2pdf import convert
+import subprocess
 from datetime import datetime
+import logging
+
+logger = logging.getLogger(__name__)
 
 def convert_docx_to_pdf(docx_path):
+    """
+    Convert DOCX to PDF using subprocess method (Windows-specific)
+    
+    Args:
+        docx_path (str): Path to the DOCX file
+    
+    Returns:
+        str or None: Path to the converted PDF, or None if conversion fails
+    """
+    # Ensure the input is a string path
     if isinstance(docx_path, tuple):
         docx_path = docx_path[0]
-    pythoncom.CoInitialize()
+    
+    pdf_path = docx_path.replace('.docx', '.pdf')
+    
     try:
-        # Define the output path for the PDF
-        pdf_output_path = docx_path.replace('.docx', '.pdf')
+        subprocess.run([
+            'powershell', 
+            '-command', 
+            f'$word = New-Object -ComObject Word.Application; ' +
+            f'$doc = $word.Documents.Open("{docx_path}"); ' +
+            f'$doc.SaveAs("{pdf_path}", 17); ' +
+            '$doc.Close(); $word.Quit()'
+        ], check=True, capture_output=True)
         
-        # Perform the conversion
-        convert(docx_path, pdf_output_path)
-        
-        # for debugging
-        print(f"DOCX Path: {docx_path}")
-        print(f"PDF Path: {pdf_output_path}")
-        
-        return pdf_output_path
-    finally:
-        pythoncom.CoUninitialize()
+        if os.path.exists(pdf_path):
+            logger.info(f"Successfully converted {docx_path} to PDF")
+            return pdf_path
+        else:
+            logger.error("PDF conversion completed but file not found")
+            return None
+    
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Subprocess conversion error: {str(e)}")
+        return None
+    except Exception as e:
+        logger.error(f"Unexpected error during PDF conversion: {str(e)}")
+        return None
 
 def replace_text_in_table(table, placeholders):
     """Replaces placeholders in a Word table while preserving formatting (bold, italics, etc.)."""
@@ -48,10 +71,8 @@ def replace_text_in_table(table, placeholders):
                         run_length = len(run.text)  # Get the original length of this run
                         run.text = modified_text[index: index + run_length]  # Replace only this part
                         index += run_length  # Move to the next part
-
-
-
-def generate_reports_doc(report):
+                        
+def generate_reports_doc(report, use_async_conversion=True):
     template_path = os.path.join(settings.BASE_DIR, 'Document Format', 'MONTHLY SUMMARY REPORT.docx')
     doc = Document(template_path)
 
@@ -123,7 +144,6 @@ def generate_reports_doc(report):
     for table in doc.tables:
         replace_text_in_table(table, placeholders)
 
-    # Save the generated document
     output_dir = os.path.join(settings.MEDIA_ROOT, 'generated_reports')
     os.makedirs(output_dir, exist_ok=True)
 
@@ -136,6 +156,7 @@ def generate_reports_doc(report):
         print(f"Permission denied: {e}")
         raise
 
-    # Optionally convert to PDF
+    # Use the subprocess method for PDF conversion
     pdf_path = convert_docx_to_pdf(output_path)
+    
     return output_path, pdf_path

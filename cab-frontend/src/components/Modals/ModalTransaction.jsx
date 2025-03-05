@@ -160,6 +160,7 @@ const ModalTransaction = ({
         setProductData({
             itemID: product.itemID,
             productName: product.itemName,
+            itemQuantity: product.itemQuantity,
             cost: product.unitCost
         });
         setFilteredProducts([]);
@@ -375,6 +376,11 @@ const ModalTransaction = ({
                         <Form.Group className="mb-3">
                             <Form.Label>Item ID</Form.Label>
                             <Form.Control type="text" name="itemID" value={productData.itemID} readOnly />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Item Quantity</Form.Label>
+                            <Form.Control type="text" name="itemID" value={productData.itemQuantity} readOnly/>
                         </Form.Group>
 
                         <Form.Group className="mb-3">

@@ -40,6 +40,7 @@ const Transactions = () => {
         transactionType: "",
         productName: "",
         itemID: "",
+        itemQuantity: "",
         area: "",
         purchasedFromSupplier: "",
         returnToSupplier: "",
@@ -56,7 +57,6 @@ const Transactions = () => {
         fetchProducts();
         fetchTransactions();
         fetchTransactionsWithProducts();
-        createRunningBal();
     }, []);
 
     useEffect(() => {
@@ -242,6 +242,7 @@ const Transactions = () => {
             transactionType: "",
             productName: "",
             itemID: "",
+            itemQuantity: "",
             area: "",
             purchasedFromSupplier: "",
             returnToSupplier: "",
@@ -297,6 +298,7 @@ const Transactions = () => {
                 transactionType: value,
                 productName: "",
                 itemID: "",
+                itemQuantity: "",
                 area: "",
                 purchasedFromSupplier: "",
                 returnToSupplier: "",
@@ -308,27 +310,6 @@ const Transactions = () => {
                 cost: "",
                 total: ""
             }));
-        }
-    };
-
-    const createRunningBal = () => {
-        const token = localStorage.getItem("access_token");
-        if (!token) {
-            console.error("Authorization token is missing.");
-            alert("Authorization token is missing. Please log in again.");
-            return;
-        }
-        try {
-            return fetch(API_ENDPOINTS.RUNNING_BAL_CREATE, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Token ${token}`,
-                },
-            });
-        } catch (error) {
-            console.error("Error adding products:", error);
-            alert("Some products could not be added. Please check your data.");
         }
     };
 

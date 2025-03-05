@@ -43,8 +43,30 @@ const RunningBalance = () => {
     };
 
     useEffect(() => {
+        createRunningBal();
         fetchRunningBalance();
     }, [selectedMonth, selectedYear]);
+
+    const createRunningBal = () => {
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+            console.error("Authorization token is missing.");
+            alert("Authorization token is missing. Please log in again.");
+            return;
+        }
+        try {
+            return fetch(API_ENDPOINTS.RUNNING_BAL_CREATE, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Token ${token}`,
+                },
+            });
+        } catch (error) {
+            console.error("Error adding products:", error);
+            alert("Some products could not be added. Please check your data.");
+        }
+    };
 
     const handleMonthYearChange = (month, year) => {
         setSelectedMonth(month);

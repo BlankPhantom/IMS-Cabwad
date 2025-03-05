@@ -338,32 +338,62 @@ def get_running_balance(request):
     serializer = RunningBalanceSerializer(running_balances, many=True)
     return Response(serializer.data)
 
+import logging
+from django.utils import timezone
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Sum
+from django.db.models import Prefetch
+
+logger = logging.getLogger(__name__)
+
 @csrf_exempt 
 @api_view(['POST']) 
 def create_update_runbal(request): 
     current_month = timezone.now().month 
     current_year = timezone.now().year 
- 
-    for item in Item.objects.all(): 
-        sums = TransactionProduct.objects.filter(itemID=item.itemID).aggregate( 
-            purchasedFromSupp_sum=Sum('purchasedFromSupp'), 
-            returnToSupplier_sum=Sum('returnToSupplier'), 
-            transferFromWH_sum=Sum('transferFromWH'), 
-            transferToWH_sum=Sum('transferToWH'), 
-            issuedQty_sum=Sum('issuedQty'), 
-            returnedQty_sum=Sum('returnedQty'), 
-            consumption_sum=Sum('consumption'), 
-        ) 
- 
-        # First, try to get the existing RunningBalance or create a new one
-        try:
-            running_balance = RunningBalance.objects.get( 
-                itemID=item, 
-                created_at__month=current_month, 
+
+    # Get unique items from recent transactions with limit
+    item_ids = TransactionProduct.objects.values_list('itemID', flat=True).distinct().order_by('-created_at')[:20]
+    items = Item.objects.filter(itemID__in=item_ids).prefetch_related(
+        Prefetch('transactionproduct_set', 
+            queryset=TransactionProduct.objects.filter(
+                created_at__month=current_month,
                 created_at__year=current_year
-            )
-        except RunningBalance.DoesNotExist:
-            # If no object exists, create a new one
+            ), 
+            to_attr='transactions'
+        )
+    )
+
+    for item in items:
+        # Aggregate sums using the prefetched transactions
+        sums = {
+            'purchasedFromSupp_sum': sum(tp.purchasedFromSupp for tp in item.transactions),
+            'returnToSupplier_sum': sum(tp.returnToSupplier for tp in item.transactions),
+            'transferFromWH_sum': sum(tp.transferFromWH for tp in item.transactions),
+            'transferToWH_sum': sum(tp.transferToWH for tp in item.transactions),
+            'issuedQty_sum': sum(tp.issuedQty for tp in item.transactions),
+            'returnedQty_sum': sum(tp.returnedQty for tp in item.transactions),
+            'consumption_sum': sum(tp.consumption for tp in item.transactions)
+        }
+
+        # Handle multiple objects scenario
+        running_balances = RunningBalance.objects.filter( 
+            itemID=item, 
+            created_at__month=current_month, 
+            created_at__year=current_year
+        )
+
+        if running_balances.count() > 1:
+            # Delete duplicates, keep the most recent one
+            latest_balance = running_balances.order_by('-created_at').first()
+            running_balances.exclude(pk=latest_balance.pk).delete()
+            running_balance = latest_balance
+        elif running_balances.exists():
+            running_balance = running_balances.first()
+        else:
+            # Create new if no existing balance
             running_balance = RunningBalance(
                 itemID=item,
                 itemName=item.itemName, 
@@ -381,26 +411,19 @@ def create_update_runbal(request):
                 totalCost=0,
                 created_at=timezone.now()
             )
-        except RunningBalance.MultipleObjectsReturned:
-            # If multiple objects exist, get the first one and log a warning
-            running_balance = RunningBalance.objects.filter( 
-                itemID=item, 
-                created_at__month=current_month, 
-                created_at__year=current_year
-            )
-            
- 
+
         # Determine beginning balance
         last_month, last_year = (12, current_year - 1) if current_month == 1 else (current_month - 1, current_year) 
         last_month_bb = BeginningBalance.objects.filter( 
             itemID=item.itemID, 
             created_at__month=last_month, 
             created_at__year=last_year 
-        ).order_by('-created_at').first() 
- 
+        ).first() 
+
         running_balance.beginningBalance = last_month_bb.itemQuantity if last_month_bb else 0 
- 
+
         # Update summary fields
+        running_balance.itemQuantity = item.itemQuantity
         running_balance.purchasedFromSupp = sums['purchasedFromSupp_sum'] or 0 
         running_balance.returnToSupplier = sums['returnToSupplier_sum'] or 0 
         running_balance.transferFromWH = sums['transferFromWH_sum'] or 0 
@@ -408,11 +431,11 @@ def create_update_runbal(request):
         running_balance.issuedQty = sums['issuedQty_sum'] or 0 
         running_balance.returnedQty = sums['returnedQty_sum'] or 0 
         running_balance.consumption = sums['consumption_sum'] or 0 
- 
-        running_balance.totalCost = running_balance.unitCost * running_balance.itemQuantity 
-        running_balance.save() 
- 
-    return Response({"detail": "Running balance processed successfully."})
+        running_balance.unitCost = item.unitCost
+        running_balance.totalCost = item.unitCost * running_balance.itemQuantity 
+        running_balance.save()
+
+    return Response({"detail": "Running balance processed successfully for recent transactions."})
 
 @api_view(['GET'])
 def get_monthly_consumption(request):
@@ -506,43 +529,104 @@ def xlsm_to_json(request):
     return JsonResponse({"error": "Invalid request"}, status=400)
 
 
-from django.http import HttpResponse
+from django.http import FileResponse
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from .utils import generate_reports_doc, convert_docx_to_pdf # Assuming the function is in a utils.py file
-import os
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from django.http import HttpResponse
-from ims.models import MonthlyConsumptionTotal
+from django.views.decorators.csrf import csrf_exempt
 import os
+import logging
+from ims.utils import generate_reports_doc
+
+logger = logging.getLogger(__name__)
 
 @csrf_exempt
 @api_view(['GET'])
 def download_report_doc(request, year, month):
     try:
+        # Validate input parameters
+        try:
+            year = int(year)
+            month = int(month)
+            
+            # Ensure valid month range
+            if month < 1 or month > 12:
+                return Response({"error": "Invalid month. Must be between 1 and 12."}, status=400)
+        except ValueError:
+            return Response({"error": "Invalid year or month format"}, status=400)
+
         # Query the report by year and month
-        report = MonthlyConsumptionTotal.objects.get(updated_at__year=year, updated_at__month=month)
-    except MonthlyConsumptionTotal.DoesNotExist:
-        return Response({"error": "Report not found for the specified year and month"}, status=404)
-    
-    # Generate the DOCX report
-    doc_path = generate_reports_doc(report)
-    
-    # Convert the DOCX to PDF
-    pdf_path = convert_docx_to_pdf(doc_path)
-    
-    # Serve the PDF file for download
-    if os.path.exists(pdf_path):
-        with open(pdf_path, 'rb') as pdf_file:
-            response = HttpResponse(pdf_file.read(), content_type='application/pdf')
-            response['Content-Disposition'] = f'attachment; filename="report_{year}_{month}.pdf"'
+        try:
+            report = MonthlyConsumptionTotal.objects.get(
+                updated_at__year=year, 
+                updated_at__month=month
+            )
+        except MonthlyConsumptionTotal.DoesNotExist:
+            logger.warning(f"Report not found for year {year}, month {month}")
+            return Response({
+                "error": "Report not found for the specified year and month",
+                "details": {
+                    "year": year,
+                    "month": month
+                }
+            }, status=404)
+        
+        # Generate the report
+        try:
+            doc_path, pdf_path = generate_reports_doc(report)
+        except Exception as doc_gen_error:
+            logger.error(f"Failed to generate report: {str(doc_gen_error)}", exc_info=True)
+            return Response({
+                "error": "Failed to generate report document",
+                "details": str(doc_gen_error)
+            }, status=500)
+        
+        # Determine file to serve (PDF preferred, fallback to DOCX)
+        if pdf_path and os.path.exists(pdf_path):
+            file_path = pdf_path
+            filename = f"report_{year}_{month}.pdf"
+            content_type = 'application/pdf'
+        elif os.path.exists(doc_path):
+            file_path = doc_path
+            filename = f"report_{year}_{month}.docx"
+            content_type = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        else:
+            logger.error("No valid file generated")
+            return Response({
+                "error": "No valid report file found",
+                "details": {
+                    "docx_path": doc_path,
+                    "pdf_path": pdf_path
+                }
+            }, status=500)
+        
+        # Serve the file for download
+        try:
+            response = FileResponse(
+                open(file_path, 'rb'), 
+                as_attachment=True, 
+                filename=filename,
+                content_type=content_type
+            )
+            
+            # Basic caching headers
             response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
             response['Pragma'] = 'no-cache'
             response['Expires'] = '0'
             
+            logger.info(f"Report downloaded: Year {year}, Month {month}, Format: {filename.split('.')[-1].upper()}")
+            
             return response
-    else:
-        return Response({"error": "Document generation failed"}, status=500)
-
-
+        
+        except Exception as file_error:
+            logger.error(f"Error serving file: {str(file_error)}", exc_info=True)
+            return Response({
+                "error": "Unexpected error serving file",
+                "details": str(file_error)
+            }, status=500)
+    
+    except Exception as unexpected_error:
+        logger.critical(f"Unexpected error in report download: {str(unexpected_error)}", exc_info=True)
+        return Response({
+            "error": "An unexpected error occurred",
+            "details": str(unexpected_error)
+        }, status=500)
