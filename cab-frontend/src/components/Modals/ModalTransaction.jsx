@@ -113,16 +113,32 @@ const ModalTransaction = ({
         }
     };
 
+    const handleEditProductNameChange = (e) => {
+        const { value } = e.target;
+
+        setEditProductData((prevData) => ({
+            ...prevData,
+            productName: value,
+        }));
+
+        if (value) {
+            const filtered = products.filter(product =>
+                product.itemName.toLowerCase().includes(value.toLowerCase())
+            );
+            setFilteredProducts(filtered);
+        } else {
+            setFilteredProducts([]);
+        }
+    };
+
     const handleEditAreaChange = (e) => {
         const selectedId = parseInt(e.target.value, 10);
         setSelectedEditArea(selectedId);
-        console.log(setEditSelectedArea)
-        handleProductChange({
-            target: {
-                name: 'areaID',
-                value: selectedId,
-            }
-        });
+
+        setEditProductData((prevData) => ({
+            ...prevData,
+            areaID: selectedId, // ✅ Update areaID directly
+        }));
     };
 
     const handleAreaChange = (event) => {
@@ -149,10 +165,21 @@ const ModalTransaction = ({
         setFilteredProducts([]);
     };
 
+    const handleEditProductSelect = (product) => {
+        setSelectedProduct(product.itemID);
+        setEditProductData((prevData) => ({
+            ...prevData,
+            itemID: product.itemID,
+            productName: product.itemName,
+            cost: product.unitCost,
+        }));
+        setFilteredProducts([]); // Clear the filtered list after selection
+    };
+
     const handleTransactionTypeChange = (e) => {
         const { value } = e.target;
         setTransactionType(value); // Always update state
-    
+
         setEditProductData((prevData) => ({
             ...prevData,
             transactionType: value,
@@ -445,7 +472,26 @@ const ModalTransaction = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Product Name</Form.Label>
-                            <Form.Control type="text" name="productName" value={editProductData.productName} required onChange={handleEditProductChange} />
+                            <Form.Control
+                                type="text"
+                                name="productName"
+                                value={editProductData.productName}
+                                onChange={handleEditProductNameChange}
+                                required
+                            />
+                            {filteredProducts.length > 0 && (
+                                <div className="dropdown-menu show">
+                                    {filteredProducts.map((product) => (
+                                        <div
+                                            key={product.itemID}
+                                            className="dropdown-item"
+                                            onClick={() => handleEditProductSelect(product)}
+                                        >
+                                            {product.itemName} ({product.itemID})
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </Form.Group>
 
                         <Form.Group className="mb-3">
@@ -455,7 +501,7 @@ const ModalTransaction = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Area</Form.Label>
-                            <Form.Select name="area" value={editProductData.selectedArea} onChange={handleEditAreaChange}>
+                            <Form.Select name="area" value={editProductData.areaID || ""} onChange={handleEditAreaChange}>
                                 {area.map((area) => (
                                     <option key={area.areaID} value={area.areaID}>
                                         {area.areaName}

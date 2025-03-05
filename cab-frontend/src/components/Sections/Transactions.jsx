@@ -271,6 +271,7 @@ const Transactions = () => {
         // Create a new updated product object
         const updatedProduct = {
             ...productData,
+            transactionType: transactionType,
             areaID: selectedArea,
         };
         setProductData(updatedProduct);
@@ -567,7 +568,7 @@ const Transactions = () => {
 
             <EditTransactionModal
                 transactionData={transactionData}
-                fetchTransactionsWithProducts={fetchTransactionsWithProducts}
+                handleTransactionChange={handleTransactionChange}
             />
         </Container>
     );
