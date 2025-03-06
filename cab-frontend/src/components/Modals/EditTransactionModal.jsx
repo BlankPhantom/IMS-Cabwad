@@ -517,7 +517,7 @@ const EditTransactionModal = ({
             transferToWarehouse: product.transferToWH,
             issuedQuantity: product.issuedQty,
             returnedQuantity: product.returnedQty,
-            cost: product.cost
+            cost: product.unitCost
         });
         setTransactionType(product.transactionType);
         setShowEditExistingProductModal(true);
@@ -1100,7 +1100,7 @@ const EditTransactionModal = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Cost</Form.Label>
-                            <Form.Control type="number" name="cost" value={editProductData.cost} onChange={handleEditProductChange} min="0" />
+                            <Form.Control type="number" name="cost" value={editProductData.cost || ""} onChange={handleEditProductChange} min="0" />
                         </Form.Group>
 
                         <div className="d-flex justify-content-end gap-2">

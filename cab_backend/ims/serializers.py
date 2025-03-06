@@ -129,6 +129,7 @@ class TransactionProductSerializer(serializers.ModelSerializer):
     itemName = serializers.CharField(source='itemID.itemName', read_only=True)
     areaName = serializers.CharField(source='areaID.areaName', read_only=True)
     cost = serializers.FloatField(write_only=True, required=False)
+    unitCost = serializers.FloatField(source='itemID.unitCost', required=False)
     total = serializers.SerializerMethodField()
 
     class Meta:
@@ -137,7 +138,7 @@ class TransactionProductSerializer(serializers.ModelSerializer):
             'transactionDetailsID', 'transactionProductID', 'itemID', 'itemName',
             'itemQuantity', 'areaID', 'areaName', 'purchasedFromSupp', 'returnToSupplier',
             'transferFromWH', 'transferToWH', 'issuedQty', 'returnedQty', 'consumption',
-            'cost', 'total'
+            'cost','unitCost', 'total'
         )
 
     def get_total(self, instance):

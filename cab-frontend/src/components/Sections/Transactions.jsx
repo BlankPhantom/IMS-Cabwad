@@ -69,7 +69,7 @@ const Transactions = () => {
         transactionType: product.transactionType || "",
         itemID: product.itemID,
         productName: product.productName,
-        areaID: product.areaID, // Ensure areaID is included
+        areaID: product.areaID,
         purchasedFromSupp: parseInt(product.purchasedFromSupplier, 10) || 0,
         returnToSupplier: parseInt(product.returnToSupplier, 10) || 0,
         transferFromWH: parseInt(product.transferFromWarehouse, 10) || 0,
@@ -97,6 +97,7 @@ const Transactions = () => {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
+            console.log("API response for products:", data); // Check if unitCost is here
             setProducts(data);
         } catch (error) {
             console.error("Error fetching products:", error);
@@ -143,7 +144,12 @@ const Transactions = () => {
 
             const transactionsWithProducts = transactions.map(transaction => ({
                 ...transaction,
-                products: allProducts.filter(product => product.transactionDetailsID === transaction.transactionDetailsID),
+                products: allProducts.filter(product =>
+                    product.transactionDetailsID === transaction.transactionDetailsID
+                ).map(product => ({
+                    ...product,
+                    unitCost: product.unitCost || 0 // Make sure unitCost is included
+                })),
             }));
 
             setTransactions(transactionsWithProducts);
@@ -165,7 +171,7 @@ const Transactions = () => {
 
             // Otherwise filter by both month and year
             return (
-                transactionDate.getMonth() + 1  === selectedMonthYear.month &&
+                transactionDate.getMonth() + 1 === selectedMonthYear.month &&
                 transactionDate.getFullYear() === selectedMonthYear.year
             );
         });
@@ -326,7 +332,7 @@ const Transactions = () => {
         }
     };
 
-    const handleAddProduct = (e) => {
+    const handleAddProduct = async (e) => {
         e.preventDefault();
 
         if (!selectedArea) {
@@ -346,7 +352,7 @@ const Transactions = () => {
             products: [...(prevData.products || []), updatedProduct],
         }));
 
-        console.log("Submitting Product:", updatedProduct);
+            console.log("Submitting Product:", updatedProduct);
 
         handleCloseProductModal();
         handleShowTransactionModal();
@@ -516,7 +522,7 @@ const Transactions = () => {
                 <Col className="d-flex justify-content-end mt-3">
                     <input
                         type="search"
-                        className="form-control" 
+                        className="form-control"
                         placeholder="Search"
                         style={{ width: "300px" }}
                         value={searchTerm}
@@ -592,8 +598,8 @@ const Transactions = () => {
                                                     <td>{product.issuedQty || 0}</td>
                                                     <td>{product.returnedQty || 0}</td>
                                                     <td>{product.consumption || 0}</td>
-                                                    <td>{product.cost || 0}</td>
-                                                    <td>{product.total || 0}</td>
+                                                    <td>₱{product.unitCost}</td>
+                                                    <td>₱{product.total || 0}</td>
                                                 </tr>
                                             ))
                                         ) : (
