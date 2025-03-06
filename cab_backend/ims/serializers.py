@@ -5,6 +5,7 @@ from datetime import datetime
 from ims.models import (Item, BeginningBalance, Classification, Measurement, Section, Purpose, TransactionDetails, TransactionProduct, RunningBalance, Area, MonthlyConsumption, MonthlyConsumptionTotal) 
                         # , MonthlyConsumption)
 from django.db.models import Sum
+from django.db.models import F
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -59,8 +60,7 @@ class ItemSerializer(serializers.ModelSerializer):
     def get_totalCost(self, instance):
         instance.totalCost = instance.itemQuantity * instance.unitCost
         instance.save(update_fields=['totalCost'])
-        representation = super().to_representation(instance)
-        return representation
+        return super().to_representation(instance)
 
     def get_month(self, instance):
         return instance.created_at.strftime('%B')
@@ -128,17 +128,18 @@ class TransactionProductSerializer(serializers.ModelSerializer):
     itemQuantity = serializers.SerializerMethodField()
     itemName = serializers.CharField(source='itemID.itemName', read_only=True)
     areaName = serializers.CharField(source='areaID.areaName', read_only=True)
+    unitCost = serializers.FloatField(source='itemID.unitCost', read_only=True)
     cost = serializers.FloatField(write_only=True, required=False)
     unitCost = serializers.FloatField(source='itemID.unitCost', required=False)
     total = serializers.SerializerMethodField()
-
+    
     class Meta:
         model = TransactionProduct
         fields = (
             'transactionDetailsID', 'transactionProductID', 'itemID', 'itemName',
             'itemQuantity', 'areaID', 'areaName', 'purchasedFromSupp', 'returnToSupplier',
             'transferFromWH', 'transferToWH', 'issuedQty', 'returnedQty', 'consumption',
-            'cost','unitCost', 'total'
+            'cost','unitCost', 'unitCost', 'total'
         )
 
     def get_total(self, instance):
@@ -147,6 +148,13 @@ class TransactionProductSerializer(serializers.ModelSerializer):
     def get_itemQuantity(self, instance):
         item = Item.objects.get(pk=instance.itemID.pk)
         return item.itemQuantity
+
+    def to_internal_value(self, data):
+        # For updates, store the original object before any changes
+        if self.instance and self.context.get('request').method == 'PUT':
+            # Get a fresh copy from the database to ensure we have original values
+            self.original_instance = TransactionProduct.objects.get(pk=self.instance.pk)
+        return super().to_internal_value(data)
 
     def create(self, validated_data):
         # Extract cost if provided, otherwise use existing item cost
@@ -159,38 +167,40 @@ class TransactionProductSerializer(serializers.ModelSerializer):
         if cost is not None:
             self.update_unit_cost(instance, cost)
         
-        # Update item quantity
-        self.update_item_quantity(instance)
-        
-        return instance
-
-    def update(self, instance, validated_data):
-        # Extract cost if provided
-        cost = validated_data.pop('cost', None)
-        
-        # Update the transaction product
-        instance = super().update(instance, validated_data)
-        
-        # Update item cost if a new cost is provided
-        if cost is not None:
-            self.update_unit_cost(instance, cost)
-        
-        # Update item quantity
-        self.update_item_quantity(instance)
-        
-        return instance
-
-    def update_item_quantity(self, instance):
-        item = Item.objects.get(pk=instance.itemID.pk)
-        
-        # Calculate new quantity based on transaction details
-        item.itemQuantity += (
-            instance.purchasedFromSupp 
-            - instance.issuedQty 
-            + instance.returnedQty
+        # Calculate adjustment for a new transaction
+        qty_adjustment = (
+            instance.purchasedFromSupp +    # Items coming in
+            instance.returnedQty +          # Items coming back
+            instance.transferFromWH -       # Items coming in from warehouse
+            instance.issuedQty -            # Items going out
+            instance.returnToSupplier -     # Items going back to supplier
+            instance.transferToWH           # Items going to warehouse
         )
         
+        # Print debug information
+        print(f"New transaction - Calculated adjustment: {qty_adjustment}")
+        
+        # Update the item quantity
+        self.update_item_quantity(instance.itemID.pk, qty_adjustment)
+        
+        return instance
+            
+    def update_item_quantity(self, item_id, qty_adjustment):
+        """
+        Update item quantity by the given adjustment amount
+        """
+        item = Item.objects.get(pk=item_id)
+        
+        # Apply the adjustment
+        item.itemQuantity += qty_adjustment
         item.save(update_fields=['itemQuantity'])
+        
+        # Refresh the item object from the database
+        item.refresh_from_db()
+        
+        # Print debug information
+        print(f"Item quantity after adjustment: {item.itemQuantity}")
+        print(f"Item quantity after save (from database): {item.itemQuantity}")  
     
     def update_unit_cost(self, instance, cost):
         # Fetch the associated item
@@ -205,6 +215,48 @@ class TransactionProductSerializer(serializers.ModelSerializer):
         # Save the item with updated cost and total cost
         item.save(update_fields=['unitCost', 'totalCost'])
 
+    def update(self, instance, validated_data):
+        # Extract cost if provided
+        cost = validated_data.pop('cost', None)
+        
+        # Get the original values (using the original_instance stored in to_internal_value)
+        original = self.original_instance
+        
+        # Print debug information for old values
+        print(f"Previous values: purchasedFromSupp={original.purchasedFromSupp}, returnedQty={original.returnedQty},\n "
+              f"transferFromWH={original.transferFromWH}, issuedQty={original.issuedQty}, \n"
+              f"returnToSupplier={original.returnToSupplier}, transferToWH={original.transferToWH}\n")
+        
+        # Update the instance
+        instance = super().update(instance, validated_data)
+        
+        # Print debug information for new values
+        print(f"New values: purchasedFromSupp={instance.purchasedFromSupp}, returnedQty={instance.returnedQty}, \n"
+              f"transferFromWH={instance.transferFromWH}, issuedQty={instance.issuedQty}, \n"
+              f"returnToSupplier={instance.returnToSupplier}, transferToWH={instance.transferToWH}\n")
+        
+        # Calculate the adjustment using original values and updated instance
+        qty_adjustment = (
+            (instance.purchasedFromSupp - original.purchasedFromSupp) +
+            (instance.returnedQty - original.returnedQty) +
+            (instance.transferFromWH - original.transferFromWH) - 
+            (instance.issuedQty - original.issuedQty) -
+            (instance.returnToSupplier - original.returnToSupplier) -
+            (instance.transferToWH - original.transferToWH)
+        )
+        
+        # Print debug information for the adjustment
+        print(f"Calculated adjustment: {qty_adjustment}")
+        
+        # Update item cost if a new cost is provided
+        if cost is not None:
+            self.update_unit_cost(instance, cost)
+        
+        # Update item quantity
+        self.update_item_quantity(instance.itemID.pk, qty_adjustment)
+        
+        return instance
+    
     def validate(self, data):
         issuedQty = data.get('issuedQty', 0)
         item = Item.objects.get(pk=data['itemID'].pk)
@@ -214,14 +266,13 @@ class TransactionProductSerializer(serializers.ModelSerializer):
 
         return data
 
-def compute_sums_by_itemID(item_id):
-    sums = TransactionProduct.objects.filter(itemID=item_id).aggregate(
-        purchasedFromSupp_sum=Sum('purchasedFromSupp'),
-        returnToSupplier_sum=Sum('returnToSupplier'),
-        transferFromWH_sum=Sum('transferFromWH'),
-        transferToWH_sum=Sum('transferToWH'),
-        issuedQty_sum=Sum('issuedQty'),
-        returnedQty_sum=Sum('returnedQty'),
-        consumption_sum=Sum('consumption')
-    )
-    return sums
+    def compute_sums_by_itemID(self):
+        return TransactionProduct.objects.filter(itemID=self).aggregate(
+            purchasedFromSupp_sum=Sum('purchasedFromSupp'),
+            returnToSupplier_sum=Sum('returnToSupplier'),
+            transferFromWH_sum=Sum('transferFromWH'),
+            transferToWH_sum=Sum('transferToWH'),
+            issuedQty_sum=Sum('issuedQty'),
+            returnedQty_sum=Sum('returnedQty'),
+            consumption_sum=Sum('consumption')
+        )

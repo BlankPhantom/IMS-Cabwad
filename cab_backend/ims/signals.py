@@ -71,32 +71,14 @@ def create_monthly_consumption(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=TransactionProduct)
 def update_monthly_consumption(sender, instance, **kwargs):
-    """
-    Signal to update existing MonthlyConsumption entries when TransactionProduct is updated.
-    This complements the create_monthly_consumption signal which only handles new entries.
-    """
-    print(f"\n--- DEBUG: update_monthly_consumption signal triggered ---")
-    print(f"TransactionProduct ID: {instance.pk}")
-    print(f"Created: {kwargs.get('created', False)}")
-    
     # Skip if this is a new record (already handled by create_monthly_consumption)
     if kwargs.get('created', False):
         print("This is a new record, skipping (should be handled by create_monthly_consumption)")
         return
     
-    print(f"Processing existing TransactionProduct record: {instance}")
-    print(f"Item ID: {instance.itemID}")
-    print(f"Transaction Details ID: {instance.transactionDetailsID}")
-    
     try:
         # Get the related item
         item = Item.objects.get(itemID=instance.itemID.itemID)
-        print(f"Found related Item: {item.itemName} (ID: {item.itemID})")
-        
-        # Log transaction details values
-        print(f"Transaction details - Section ID: {instance.transactionDetailsID.sectionID}")
-        print(f"Transaction details - Date: {instance.transactionDetailsID.date}")
-        print(f"Transaction details - Week: {instance.transactionDetailsID.week}")
         
         # Find the matching MonthlyConsumption entry
         query_params = {
@@ -105,7 +87,6 @@ def update_monthly_consumption(sender, instance, **kwargs):
             'week': instance.transactionDetailsID.week,
             'itemID': instance.itemID
         }
-        print(f"Searching for MonthlyConsumption with params: {query_params}")
         
         monthly_consumption = MonthlyConsumption.objects.filter(
             sectionID=instance.transactionDetailsID.sectionID,
@@ -115,21 +96,15 @@ def update_monthly_consumption(sender, instance, **kwargs):
         ).first()
         
         if monthly_consumption:
-            print(f"Found existing MonthlyConsumption record ID: {monthly_consumption.pk}")
-            print(f"Previous values - Consumption: {monthly_consumption.consumption}, Total: {monthly_consumption.total}")
             
             # Update the record
             monthly_consumption.consumption = instance.consumption
             monthly_consumption.total = instance.consumption * item.unitCost
             monthly_consumption.updated_at = timezone.now()
             
-            print(f"Updated values - Consumption: {monthly_consumption.consumption}, Total: {monthly_consumption.total}")
-            
             monthly_consumption.save()
-            print(f"MonthlyConsumption successfully updated for ItemID={instance.itemID}")
             
             # Make sure totals are recalculated
-            print("Calling calculate_totals_for_week_and_month()")
             calculate_totals_for_week_and_month()
         else:
             print(f"No matching MonthlyConsumption record found, creating new one")
@@ -137,8 +112,6 @@ def update_monthly_consumption(sender, instance, **kwargs):
             # Check for potential None values before creating
             section_id = instance.transactionDetailsID.sectionID
             week = instance.transactionDetailsID.week
-            print(f"Creating with - Section ID: {section_id} (None? {section_id is None})")
-            print(f"Creating with - Week: {week} (None? {week is None})")
             
             # Create new record
             new_record = MonthlyConsumption.objects.create(
@@ -242,9 +215,6 @@ def calculate_totals_for_week_and_month():
             setattr(monthly_total, field, value)
         monthly_total.updated_at = now()
         monthly_total.save()
-
-    # Debugging information
-    print(f"Monthly Total: {monthly_total}, Created: {created}, Week: {current_week}, Month: {current_month}, Year: {current_year}")
 
 # Signal to update or create MonthlyConsumptionTotal when MonthlyConsumption is created
 @receiver(post_save, sender=MonthlyConsumption)
