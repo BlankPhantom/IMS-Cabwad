@@ -157,7 +157,7 @@ const Transactions = () => {
         const filtered = transactions.filter(transaction => {
             const transactionDate = new Date(transaction.date);
             return (
-                transactionDate.getMonth() + 1 === selectedMonthYear.month &&
+                transactionDate.getMonth() + 1  === selectedMonthYear.month &&
                 transactionDate.getFullYear() === selectedMonthYear.year
             );
         });

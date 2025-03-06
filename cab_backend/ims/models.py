@@ -116,6 +116,7 @@ class RunningBalance(models.Model):
     updated_at = models.DateTimeField(default= timezone.now)
 
 class MonthlyConsumption(models.Model):
+    transactionProductID = models.ForeignKey(TransactionProduct, null=True, blank=True, on_delete=models.CASCADE)
     monthlyConsumptionID = models.AutoField(primary_key=True)
     sectionID = models.ForeignKey(Section, null=True, blank=True, on_delete=models.CASCADE)
     date = models.DateField(blank=True, null=True)
@@ -129,7 +130,6 @@ class MonthlyConsumption(models.Model):
 
 class MonthlyConsumptionTotal(models.Model):
     id = models.AutoField(primary_key=True)
-
     totalNSC = models.IntegerField(default=0)
     totalProd = models.IntegerField(default=0)
     totalMeterMaintenance = models.IntegerField(default=0)
