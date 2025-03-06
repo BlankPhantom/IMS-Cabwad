@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../table.css";
 import { API_ENDPOINTS } from "../../config.js";
-import { Container, Table, Col, Row } from "react-bootstrap";
+import { Container, Table, Col, Row, Pagination } from "react-bootstrap";
 import BtnAddNewItem from "../Button/BtnAddNewItem.jsx";
 import BtnEditDeleteMaster from "../Button/BtnEditDeleteMaster.jsx";
 import EditMasterModal from "../Modals/EditMasterModal.jsx";
@@ -14,6 +14,10 @@ const Masterlist = () => {
     const [showModal, setShowModal] = useState(false);
     const [currentItem, setCurrentItem] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
+    
+    // Pagination states
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(20);
 
     const fetchClassifications = async() => {
         const token = localStorage.getItem('access_token');  
@@ -109,6 +113,7 @@ const Masterlist = () => {
         );
 
         setFilteredItems(filtered);
+        setCurrentPage(1); // Reset to first page when searching
     };
 
     const handleDelete = (id) => {
@@ -189,6 +194,76 @@ const Masterlist = () => {
         }));
     };
 
+    // Pagination logic
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
+    
+    const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+    // Generate pagination items
+    const renderPaginationItems = () => {
+        const items = [];
+        
+        // Previous button
+        items.push(
+            <Pagination.Prev 
+                key="prev" 
+                onClick={() => currentPage > 1 && paginate(currentPage - 1)}
+                disabled={currentPage === 1}
+            />
+        );
+        
+        // Show first page
+        if (currentPage > 2) {
+            items.push(
+                <Pagination.Item key={1} onClick={() => paginate(1)}>
+                    1
+                </Pagination.Item>
+            );
+            
+            // Show ellipsis if needed
+            if (currentPage > 3) {
+                items.push(<Pagination.Ellipsis key="ellipsis1" disabled />);
+            }
+        }
+        
+        // Current page and neighbors
+        for (let i = Math.max(1, currentPage - 1); i <= Math.min(totalPages, currentPage + 1); i++) {
+            items.push(
+                <Pagination.Item key={i} active={i === currentPage} onClick={() => paginate(i)}>
+                    {i}
+                </Pagination.Item>
+            );
+        }
+        
+        // Show ellipsis and last page if needed
+        if (currentPage < totalPages - 1) {
+            if (currentPage < totalPages - 2) {
+                items.push(<Pagination.Ellipsis key="ellipsis2" disabled />);
+            }
+            
+            items.push(
+                <Pagination.Item key={totalPages} onClick={() => paginate(totalPages)}>
+                    {totalPages}
+                </Pagination.Item>
+            );
+        }
+        
+        // Next button
+        items.push(
+            <Pagination.Next 
+                key="next" 
+                onClick={() => currentPage < totalPages && paginate(currentPage + 1)}
+                disabled={currentPage === totalPages}
+            />
+        );
+        
+        return items;
+    };
+
     return (
         <Container style={{ width: '100%' }} fluid className="d-flex flex-column justify-content-center mt-2">
             <Row className="sectionTitle">
@@ -220,21 +295,41 @@ const Masterlist = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredItems.map((item) => (
-                            <tr key={item.id}>
-                                <td>{item.itemID}</td>
-                                <td>{item.itemName}</td>
-                                <td>{item.classificationName}</td>
-                                <td>  
-                                    <BtnEditDeleteMaster
-                                        onEdit={() => handleEdit(item.itemID)}
-                                        onDelete={() => handleDelete(item.itemID)}
-                                    />
-                                </td>
+                        {currentItems.length > 0 ? (
+                            currentItems.map((item) => (
+                                <tr key={item.id}>
+                                    <td>{item.itemID}</td>
+                                    <td>{item.itemName}</td>
+                                    <td>{item.classificationName}</td>
+                                    <td>  
+                                        <BtnEditDeleteMaster
+                                            onEdit={() => handleEdit(item.itemID)}
+                                            onDelete={() => handleDelete(item.itemID)}
+                                        />
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="4" className="text-center">No items found</td>
                             </tr>
-                        ))}
+                        )}
                     </tbody>
                 </Table>
+            </Row>
+
+            {/* Pagination */}
+            <Row>
+                <Col className="d-flex justify-content-center mt-3">
+                    {filteredItems.length > 0 && (
+                        <div className="d-flex align-items-center">
+                            <span className="me-3">
+                                Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, filteredItems.length)} of {filteredItems.length} items
+                            </span>
+                            <Pagination>{renderPaginationItems()}</Pagination>
+                        </div>
+                    )}
+                </Col>
             </Row>
 
             <Row>
