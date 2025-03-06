@@ -13,6 +13,7 @@ const WeeklyConsumption = () => {
     const [error, setError] = useState(null);
     const [selectedSection, setSelectedSection] = useState("");
     const [sections, setSections] = useState([]);
+    const [selectedWeek, setSelectedWeek] = useState(1); // New state for selected week
 
     // Fetch sections
     const fetchSections = async () => {
@@ -61,7 +62,6 @@ const WeeklyConsumption = () => {
         }
     };
 
-
     // Handle Month-Year Change
     const handleMonthYearChange = (month, year) => {
         setSelectedMonth(month);
@@ -71,6 +71,11 @@ const WeeklyConsumption = () => {
     // Handle Section Change
     const handleSectionChange = (event) => {
         setSelectedSection(event.target.value);
+    };
+
+    // Handle Week Change
+    const handleWeekChange = (event) => {
+        setSelectedWeek(parseInt(event.target.value, 10));
     };
 
     // Effect to fetch data on component mount and when filters change
@@ -83,36 +88,33 @@ const WeeklyConsumption = () => {
     const prepareChartData = () => {
         if (!monthlyConsumptionData.length) return null;
     
-        // Group and aggregate data by item name for Week 1
+        // Group and aggregate data by item name for the selected week
         const aggregatedData = monthlyConsumptionData.reduce((acc, item) => {
-            const existingItem = acc.find(i => i.itemName === item.itemName);
-    
-            if (existingItem) {
-                existingItem.week1 += item.week === 1 ? item.consumption : 0;
-                existingItem.week2 += item.week === 2 ? item.consumption : 0;
-                existingItem.week3 += item.week === 3 ? item.consumption : 0;
-                existingItem.week4 += item.week === 4 ? item.consumption : 0;
-            } else {
-                acc.push({
-                    itemName: item.itemName,
-                    week1: item.week === 1 ? item.consumption : 0,
-                    week2: item.week === 2 ? item.consumption : 0,
-                    week3: item.week === 3 ? item.consumption : 0,
-                    week4: item.week === 4 ? item.consumption : 0,
-                });
+            if (item.week === selectedWeek) {
+                const existingItem = acc.find(i => i.itemName === item.itemName);
+                
+                if (existingItem) {
+                    existingItem.consumption += item.consumption;
+                } else {
+                    acc.push({
+                        itemName: item.itemName,
+                        consumption: item.consumption,
+                    });
+                }
             }
-    
             return acc;
         }, []);
     
-        const traces = aggregatedData.map(productData => ({
-            x: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
-            y: [-productData.week1, -productData.week2, -productData.week3, -productData.week3], // Show data only in Week 1
-            type: 'bar',
-            name: productData.itemName
-        }));
+        // Sort by consumption amount (optional)
+        aggregatedData.sort((a, b) => b.consumption - a.consumption);
     
-        return traces;
+        // Create individual traces for each product to have them in the legend
+        return aggregatedData.map(item => ({
+            x: [item.itemName],
+            y: [-item.consumption], // Negative values for consumption
+            type: 'bar',
+            name: item.itemName
+        }));
     };
 
     const chartData = prepareChartData();
@@ -126,7 +128,7 @@ const WeeklyConsumption = () => {
             </Row>
 
             <Row className="mt-3 d-flex align-items-center justify-content-between">
-                <Col md={6}>
+                <Col md={4}>
                     <MonthYearPicker onMonthYearChange={handleMonthYearChange} />
                 </Col>
                 <Col md={4}>
@@ -148,6 +150,20 @@ const WeeklyConsumption = () => {
                         </Form.Select>
                     </Form.Group>
                 </Col>
+                <Col md={3}>
+                    <Form.Group controlId="weekSelect">
+                        <Form.Select
+                            name="week"
+                            value={selectedWeek}
+                            onChange={handleWeekChange}
+                        >
+                            <option value="1">Week 1</option>
+                            <option value="2">Week 2</option>
+                            <option value="3">Week 3</option>
+                            <option value="4">Week 4</option>
+                        </Form.Select>
+                    </Form.Group>
+                </Col>
             </Row>
 
             <Row className="mt-4 w-100 justify-content-center">
@@ -160,18 +176,34 @@ const WeeklyConsumption = () => {
                         <Plot
                             data={chartData}
                             layout={{
-                                title: 'Estimated Weekly Product Consumption',
+                                title: `Week ${selectedWeek} Estimated Product Consumption`,
                                 barmode: 'group',
-                                xaxis: { title: 'Weeks' },
-                                yaxis: { title: 'Estimated Consumption Quantity' },
+                                xaxis: { 
+                                    title: 'Products',
+                                    visible: true, // Hide x-axis labels as they're in the legend
+                                    showticklabels: true
+                                },
+                                yaxis: { 
+                                    title: 'Estimated Consumption Quantity',
+                                    tickformat: ',d', // Format tick labels without negative sign
+                                    tickprefix: '-'   // Add negative prefix to tick labels
+                                },
                                 height: 500,
                                 width: 1000, // Adjust width as needed
+                                showlegend: true,
+                                legend: {
+                                    orientation: 'v',
+                                    xanchor: 'right',
+                                    yanchor: 'top',
+                                    x: 5,
+                                    y: 1
+                                }
                             }}
                             config={{ responsive: true }}
                         />
                     </Col>
                 ) : (
-                    <Col className="text-center">No consumption data available</Col>
+                    <Col className="text-center">No consumption data available for Week {selectedWeek}</Col>
                 )}
             </Row>
         </Container>

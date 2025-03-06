@@ -667,7 +667,7 @@ const EditTransactionModal = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Requested By</Form.Label>
-                            <Form.Control type="text" name="requestedBy" value={transactionData.requestedBy} onChange={handleChange} required />
+                            <Form.Control type="text" name="requestedBy" value={transactionData.requestedBy} onChange={handleChange} />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
