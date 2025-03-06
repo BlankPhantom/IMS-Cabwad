@@ -36,6 +36,7 @@ const EditTransactionModal = ({
         transactionType: "",
         productName: "",
         itemID: "",
+        itemQuantity: "",
         area: "",
         purchasedFromSupplier: "",
         returnToSupplier: "",
@@ -335,6 +336,7 @@ const EditTransactionModal = ({
         setProductData({
             itemID: product.itemID,
             productName: product.itemName,
+            itemQuantity: product.itemQuantity,
             cost: product.unitCost
         });
         setFilteredProducts([]);
@@ -346,6 +348,7 @@ const EditTransactionModal = ({
             ...prevData,
             itemID: product.itemID,
             productName: product.itemName,
+            itemQuantity: product.itemQuantity,
             cost: product.unitCost,
         }));
         setFilteredProducts([]); // Clear the filtered list after selection
@@ -367,7 +370,7 @@ const EditTransactionModal = ({
         // ✅ Create a new product object with proper data types
         const newProduct = {
             ...productData,
-             transactionType: determineTransactionType(productData),
+            transactionType: determineTransactionType(productData),
             areaID: parseInt(selectedArea, 10) || 0, // ✅ Convert to number
             purchasedFromSupplier: parseInt(productData.purchasedFromSupplier, 10) || 0, // ✅ Convert to number
             returnToSupplier: parseInt(productData.returnToSupplier, 10) || 0,
@@ -517,7 +520,8 @@ const EditTransactionModal = ({
             transferToWarehouse: product.transferToWH,
             issuedQuantity: product.issuedQty,
             returnedQuantity: product.returnedQty,
-            cost: product.unitCost
+            cost: product.unitCost,
+            itemQuantity: product.itemQuantity // Set from 
         });
         setTransactionType(product.transactionType);
         setShowEditExistingProductModal(true);
@@ -812,6 +816,10 @@ const EditTransactionModal = ({
                             </Form.Select>
                         </Form.Group>
 
+                        <Form.Group className="mb-3">
+                            <Form.Label>Item Quantity</Form.Label>
+                            <Form.Control type="text" name="itemID" value={productData.itemQuantity} readOnly />
+                        </Form.Group>
 
                         {transactionType === 'PurchaseSupply' && (
                             <>
@@ -933,6 +941,11 @@ const EditTransactionModal = ({
                             </Form.Select>
                         </Form.Group>
 
+                        <Form.Group className="mb-3">
+                            <Form.Label>Item Quantity</Form.Label>
+                            <Form.Control type="text" name="itemID" value={editProductData.itemQuantity} readOnly />
+                        </Form.Group>
+
                         {transactionType === 'PurchaseSupply' && (
                             <>
                                 <Form.Group className="mb-3">
@@ -1050,6 +1063,11 @@ const EditTransactionModal = ({
                                     </option>
                                 ))}
                             </Form.Select>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Item Quantity</Form.Label>
+                            <Form.Control type="text" name="itemID" value={editProductData.itemQuantity} readOnly />
                         </Form.Group>
 
                         {transactionType === 'PurchaseSupply' && (

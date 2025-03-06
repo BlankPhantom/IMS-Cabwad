@@ -172,6 +172,7 @@ const ModalTransaction = ({
             ...prevData,
             itemID: product.itemID,
             productName: product.itemName,
+            itemQuantity: product.itemQuantity,
             cost: product.unitCost,
         }));
         setFilteredProducts([]); // Clear the filtered list after selection
@@ -379,11 +380,6 @@ const ModalTransaction = ({
                         </Form.Group>
 
                         <Form.Group className="mb-3">
-                            <Form.Label>Item Quantity</Form.Label>
-                            <Form.Control type="text" name="itemID" value={productData.itemQuantity} readOnly/>
-                        </Form.Group>
-
-                        <Form.Group className="mb-3">
                             <Form.Label>Area</Form.Label>
                             <Form.Select name="area" value={selectedArea} onChange={handleAreaChange}>
                                 <option value="">Select Area</option>
@@ -395,6 +391,10 @@ const ModalTransaction = ({
                             </Form.Select>
                         </Form.Group>
 
+                        <Form.Group className="mb-3">
+                            <Form.Label>Item Quantity</Form.Label>
+                            <Form.Control type="text" name="itemID" value={productData.itemQuantity} readOnly />
+                        </Form.Group>
 
                         {transactionType === 'PurchaseSupply' && (
                             <>
@@ -514,6 +514,11 @@ const ModalTransaction = ({
                                     </option>
                                 ))}
                             </Form.Select>
+                        </Form.Group>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Item Quantity</Form.Label>
+                            <Form.Control type="text" name="itemID" value={editProductData.itemQuantity} readOnly />
                         </Form.Group>
 
                         {transactionType === 'PurchaseSupply' && (
