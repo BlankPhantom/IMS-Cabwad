@@ -26,9 +26,9 @@ const MonthYearPicker = ({ onMonthYearChange }) => {
 
     return (
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <h2 style={{ color: "rgb(71, 71, 71)", fontWeight: '700' }}>
+            <h3 style={{ color: "rgb(71, 71, 71)", fontWeight: '600' }}>
                 {months[selectedMonth]} - {selectedYear}
-            </h2>
+            </h3>
             <select style={{padding: '3px', borderRadius: '4px', border: '.5px solid rgb(212, 212, 212)'}} value={selectedMonth} onChange={handleMonthChange}>
                 {months.map((month, index) => (
                     <option key={index} value={index}>{month}</option>

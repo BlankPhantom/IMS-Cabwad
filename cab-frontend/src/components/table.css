@@ -3,12 +3,13 @@
   color: #333 !important;
   width: 100%; /* Ensure the table takes up the full width */
   overflow-x: auto; /* Add horizontal scroll for smaller screens */
+  font-size: small;
 }
 
 .tableStyle th,
 .tableStyle td {
   white-space: nowrap; /* Prevent text wrapping */
-  padding: 5px;
+  padding: 0px;
   text-align: center !important;
   border: 2px solid #7e7e7e !important;
   vertical-align: middle;
