@@ -20,6 +20,7 @@ const Transactions = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredTransactions, setFilteredTransactions] = useState([]);
     const [transactionType, setTransactionType] = useState('');
+    const [isAllMonthSelected, setIsAllMonthSelected] = useState(false);
     const [selectedSection, setSelectedSection] = useState(0);
     const [selectedPurpose, setSelectedPurpose] = useState(0);
     const [selectedProduct, setSelectedProduct] = useState("");
@@ -156,6 +157,13 @@ const Transactions = () => {
 
         const filtered = transactions.filter(transaction => {
             const transactionDate = new Date(transaction.date);
+
+            // If "All" is selected, only filter by year
+            if (isAllMonthSelected) {
+                return transactionDate.getFullYear() === selectedMonthYear.year;
+            }
+
+            // Otherwise filter by both month and year
             return (
                 transactionDate.getMonth() + 1  === selectedMonthYear.month &&
                 transactionDate.getFullYear() === selectedMonthYear.year
@@ -165,8 +173,13 @@ const Transactions = () => {
         setFilteredTransactions(filtered);
     };
 
+
     const handleMonthYearChange = (month, year) => {
-        setSelectedMonthYear({ month, year });
+        setIsAllMonthSelected(month === 'all' || month === 0);
+        setSelectedMonthYear({
+            month: month === 'all' ? 0 : month,
+            year
+        });
     };
 
     const handleSearch = (e) => {
@@ -494,6 +507,7 @@ const Transactions = () => {
                         onMonthYearChange={handleMonthYearChange}
                         initialMonth={selectedMonthYear.month}
                         initialYear={selectedMonthYear.year}
+                        allowAllMonths={true}
                     />
                 </Col>
             </Row>
@@ -502,6 +516,7 @@ const Transactions = () => {
                 <Col className="d-flex justify-content-end mt-3">
                     <input
                         type="search"
+                        className="form-control" 
                         placeholder="Search"
                         style={{ width: "300px" }}
                         value={searchTerm}
@@ -591,7 +606,10 @@ const Transactions = () => {
                             ) : (
                                 <tr>
                                     <td colSpan="20" className="text-center">
-                                        No transactions found for {new Date(selectedMonthYear.year, selectedMonthYear.month - 1).toLocaleString('default', { month: 'long', year: 'numeric' })}
+                                        {isAllMonthSelected ?
+                                            `No transactions found for ${selectedMonthYear.year}` :
+                                            `No transactions found for ${new Date(selectedMonthYear.year, selectedMonthYear.month - 1).toLocaleString('default', { month: 'long', year: 'numeric' })}`
+                                        }
                                     </td>
                                 </tr>
                             )}

@@ -182,11 +182,6 @@ const MonthlyConsumption = () => {
       </Row>
 
       <Row>
-        <Col className="d-flex justify-content-center mt-3">
-          <Button className="shadow" onClick={handleGenerateReports}>
-            GENERATE MONTHLY REPORT
-          </Button>
-        </Col>
         <Col className="d-flex justify-content-end mt-4">
           <input
             type="search"
@@ -196,6 +191,14 @@ const MonthlyConsumption = () => {
             onChange={handleSearchChange}
             style={{ width: "300px" }}
           />
+        </Col>
+      </Row>
+
+      <Row>
+        <Col className="d-flex justify-content-center mt-3">
+          <Button className="shadow" onClick={handleGenerateReports}>
+            GENERATE MONTHLY REPORT
+          </Button>
         </Col>
       </Row>
 

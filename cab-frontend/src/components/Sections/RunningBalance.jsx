@@ -17,7 +17,7 @@ const RunningBalance = () => {
         const token = localStorage.getItem("access_token");
         try {
             let url = API_ENDPOINTS.RUNNING_BAL_LIST;
-            
+
             // If a specific month is selected (not the default 'All')
             if (selectedMonth !== 0) {
                 const queryParams = new URLSearchParams({
@@ -38,7 +38,7 @@ const RunningBalance = () => {
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
-            
+
             const data = await response.json();
             setRunningBalanceData(data);
             setFilteredData(data);
@@ -81,7 +81,7 @@ const RunningBalance = () => {
         const term = event.target.value.toLowerCase();
         setSearchTerm(term);
 
-        const filtered = runningBalanceData.filter(item => 
+        const filtered = runningBalanceData.filter(item =>
             item.itemID.toLowerCase().includes(term) ||
             item.itemName.toLowerCase().includes(term)
         );
@@ -110,20 +110,25 @@ const RunningBalance = () => {
             </Row>
 
             <Row className="mb-3">
-                <Col md={6}>
-                    <MonthYearPicker 
+                <Col>
+                    <MonthYearPicker
                         onMonthYearChange={handleMonthYearChange}
                         initialMonth={selectedMonth}
                         initialYear={selectedYear}
                     />
                 </Col>
-                <Col md={6} className="d-flex justify-content-end">
-                    <Form.Control 
-                        type="search" 
-                        placeholder="Search by Item ID or Product Name" 
+
+            </Row>
+
+            <Row>
+                <Col className="d-flex justify-content-end">
+                    <Form.Control
+                        type="search"
+                        className="form-control"
+                        placeholder="Search"
                         value={searchTerm}
                         onChange={handleSearch}
-                        style={{ width: "300px" }} 
+                        style={{ width: "300px" }}
                     />
                 </Col>
             </Row>
@@ -179,8 +184,8 @@ const RunningBalance = () => {
                         ) : (
                             <tr>
                                 <td colSpan="14" className="text-center">
-                                    {searchTerm 
-                                        ? `No results found for "${searchTerm}"` 
+                                    {searchTerm
+                                        ? `No results found for "${searchTerm}"`
                                         : "No records found."
                                     }
                                 </td>
