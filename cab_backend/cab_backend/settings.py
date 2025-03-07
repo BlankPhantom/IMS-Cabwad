@@ -127,6 +127,11 @@ DATABASES = {
     }
 }
 
+DB_HOST='localhost',
+DB_USER='root',
+DB_PASSWORD='Cloud5024',
+DB_NAME='ims_cabwad',
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

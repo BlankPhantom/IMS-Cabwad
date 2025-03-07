@@ -11,7 +11,7 @@ const RunningBalance = () => {
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [searchTerm, setSearchTerm] = useState("");
-    const [remarks, setRemarks] = useState("");
+    const [remarks, setRemarks] = useState(" ");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
@@ -98,12 +98,12 @@ const RunningBalance = () => {
 
     const handleRemarksFilter = (event) => {
         const remark = event.target.value.toLowerCase()
-        setRemarks(remark);
-
+       
         const filtered = runningBalanceData.filter(item => 
             item.remarks.toLowerCase().includes(remark)
         );
-       setFilteredData(filtered);
+        setRemarks(remark);
+        setFilteredData(filtered);
     }
 
     // Handle month and year change
@@ -161,7 +161,7 @@ const RunningBalance = () => {
                     value={remarks}
                     style={{width: '300px'}}
                     onChange={handleRemarksFilter}>
-                        <option value="">All</option>
+                        <option value=" ">All</option>
                         <option value="Non-Moving">Non-Moving</option>
                         <option value="Slow Moving">Slow Moving</option>
                         <option value="Fast Moving">Fast Moving</option>
