@@ -49,5 +49,9 @@ export const API_ENDPOINTS = {
     PURPOSE_LIST: `${BASE_URL}ims/purpose/`,
     PRODUCT_LIST: `${BASE_URL}ims/product/`,
     AREA_LIST: `${BASE_URL}ims/area/`,
-    DOWNLOAD_REPORTS:(year, month) => `${BASE_URL}ims/download-report/${year}/${month}/`
+    DOWNLOAD_REPORTS:(year, month) => `${BASE_URL}ims/download-report/${year}/${month}/`,
+
+    BACKUP: `${BASE_URL}backup/backup/`,
+    RESTORE: `${BASE_URL}backup/restore/`,
+
 };
