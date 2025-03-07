@@ -355,9 +355,9 @@ def create_update_runbal(request):
     current_year = timezone.now().year 
 
     # Get all items instead of just those with recent transactions
-    # Remove the limit and filtering by recent transactions
-    item_ids = TransactionProduct.objects.values_list('itemID', flat=True).distinct().order_by('-created_at')[:20]
-    items = Item.objects.filter(itemID__in=item_ids).prefetch_related(
+    # Remove the limit and filtering by recent transactionszz
+
+    items = Item.objects.all().prefetch_related(
         Prefetch('transactionproduct_set', 
             queryset=TransactionProduct.objects.filter(
                 created_at__month=current_month,
