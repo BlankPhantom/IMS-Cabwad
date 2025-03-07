@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'ims.apps.ImsConfig',
     'django_seed',
+    'backup.apps.BackupConfig',
 ]
 
 REST_FRAMEWORK = {

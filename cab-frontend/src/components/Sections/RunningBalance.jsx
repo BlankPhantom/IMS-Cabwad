@@ -3,6 +3,7 @@ import "../table.css";
 import { API_ENDPOINTS } from "../../config";
 import { Container, Table, Col, Row, Form } from "react-bootstrap";
 import MonthYearPicker from "../MonthYearPicker";
+import { Pagination } from "react-bootstrap";
 
 const RunningBalance = () => {
     const [runningBalanceData, setRunningBalanceData] = useState([]);
@@ -57,6 +58,7 @@ const RunningBalance = () => {
     useEffect(() => {
         createRunningBal();
         fetchRunningBalance();
+        
     }, [selectedMonth, selectedYear]);
 
     const createRunningBal = () => {
@@ -101,8 +103,7 @@ const RunningBalance = () => {
         const filtered = runningBalanceData.filter(item => 
             item.remarks.toLowerCase().includes(remark)
         );
-
-        setFilteredData(filtered);
+       setFilteredData(filtered);
     }
 
     // Handle month and year change
@@ -157,11 +158,12 @@ const RunningBalance = () => {
                     <Form.Select 
                     className="form-select"
                     value={remarks}
-                    onChange={handleRemarksFilter}>
+                    onChange={handleRemarksFilter}
+                    >
                         <option value="">All</option>
-                        <option value="non-moving">Non-Moving</option>
-                        <option value="slow moving">Slow Moving</option>
-                        <option value="fast moving">Fast Moving</option>
+                        <option value="Non-Moving">Non-Moving</option>
+                        <option value="Slow Moving">Slow Moving</option>
+                        <option value="Fast Moving">Fast Moving</option>
                     </Form.Select>
                 </Col>
             </Row>
