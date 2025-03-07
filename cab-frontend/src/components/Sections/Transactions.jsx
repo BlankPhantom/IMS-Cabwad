@@ -730,6 +730,7 @@ const Transactions = () => {
             <EditTransactionModal
                 transactionData={transactionData}
                 handleTransactionChange={handleTransactionChange}
+                onSuccess={fetchTransactionsWithProducts}
             />
         </Container>
     );

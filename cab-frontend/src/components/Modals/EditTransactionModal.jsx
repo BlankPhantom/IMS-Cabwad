@@ -11,6 +11,7 @@ const EditTransactionModal = ({
     handleChange,
     setEditTransactionData,
     handleShow,
+    onSuccess,
 }) => {
     const [editProductData, setEditProductData] = useState({});
     const [showEditProductModal, setShowEditProductModal] = useState(false);
@@ -51,7 +52,7 @@ const EditTransactionModal = ({
 
     // ✅ Fetch sections & purpose on mount
     useEffect(() => {
-        fetchTransactionsWithProducts();
+        // fetchTransactionsWithProducts();
         fetchTransactions();
         fetchSections();
         fetchPurpose();
@@ -146,56 +147,56 @@ const EditTransactionModal = ({
         }
     };
 
-    const fetchTransactionsWithProducts = async () => {
-        try {
-            const transactionsResponse = await fetch(API_ENDPOINTS.TRANSACTION_LIST, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Token ${localStorage.getItem("access_token")}`, // ✅ Ensure token is included
-                },
-            });
+    // const fetchTransactionsWithProducts = async () => {
+    //     try {
+    //         const transactionsResponse = await fetch(API_ENDPOINTS.TRANSACTION_LIST, {
+    //             method: "GET",
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //                 "Authorization": `Token ${localStorage.getItem("access_token")}`, // ✅ Ensure token is included
+    //             },
+    //         });
 
-            if (!transactionsResponse.ok) {
-                throw new Error(`Transactions API Error: ${transactionsResponse.status} ${transactionsResponse.statusText}`);
-            }
+    //         if (!transactionsResponse.ok) {
+    //             throw new Error(`Transactions API Error: ${transactionsResponse.status} ${transactionsResponse.statusText}`);
+    //         }
 
-            const transactions = await transactionsResponse.json();
+    //         const transactions = await transactionsResponse.json();
 
-            const productsResponse = await fetch(API_ENDPOINTS.TRANSACTION_PRODUCTS_ALL, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Token ${localStorage.getItem("access_token")}`,
-                },
-            });
+    //         const productsResponse = await fetch(API_ENDPOINTS.TRANSACTION_PRODUCTS_ALL, {
+    //             method: "GET",
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //                 "Authorization": `Token ${localStorage.getItem("access_token")}`,
+    //             },
+    //         });
 
-            if (!productsResponse.ok) {
-                throw new Error(`Products API Error: ${productsResponse.status} ${productsResponse.statusText}`);
-            }
+    //         if (!productsResponse.ok) {
+    //             throw new Error(`Products API Error: ${productsResponse.status} ${productsResponse.statusText}`);
+    //         }
 
-            const productsText = await productsResponse.text();
+    //         const productsText = await productsResponse.text();
 
-            // ✅ **Check if Response is Valid JSON**
-            let allProducts;
-            try {
-                allProducts = JSON.parse(productsText);
-            } catch (error) {
-                console.error("Invalid JSON from Products API:", productsText);
-                throw new Error("Products API did not return valid JSON.");
-            }
+    //         // ✅ **Check if Response is Valid JSON**
+    //         let allProducts;
+    //         try {
+    //             allProducts = JSON.parse(productsText);
+    //         } catch (error) {
+    //             console.error("Invalid JSON from Products API:", productsText);
+    //             throw new Error("Products API did not return valid JSON.");
+    //         }
 
-            // ✅ **Filter products correctly**
-            const transactionsWithProducts = transactions.map(transaction => ({
-                ...transaction,
-                products: allProducts.filter(product => product.transactionDetailsID === transaction.transactionDetailsID),
-            }));
+    //         // ✅ **Filter products correctly**
+    //         const transactionsWithProducts = transactions.map(transaction => ({
+    //             ...transaction,
+    //             products: allProducts.filter(product => product.transactionDetailsID === transaction.transactionDetailsID),
+    //         }));
 
-            setTransactions(transactionsWithProducts);
-        } catch (error) {
-            console.error("Error fetching transactions and products:", error);
-        }
-    };
+    //         setTransactions(transactionsWithProducts);
+    //     } catch (error) {
+    //         console.error("Error fetching transactions and products:", error);
+    //     }
+    // };
 
     const handleShowProductModal = () => {
         setShowProductModal(true);
@@ -456,9 +457,12 @@ const EditTransactionModal = ({
             setTransactions([]);  // ✅ Clear transactions before fetching new ones
             alert("Transaction and products have been successfully updated!");
 
-            setLocalProducts([]); // ✅ Clear local products before closing modal
-            handleClose(); // ✅ Close modal **only after table refreshes**
-            fetchTransactionsWithProducts(); // ✅ Ensure data is fully refreshed
+            if (typeof onSuccess === 'function') {
+                await onSuccess(); // Wait for refresh to complete
+            }
+
+            setLocalProducts([]);
+            handleClose();
         } catch (error) {
             console.error("❌ Error saving transaction:", error);
             alert("Failed to save changes. Please try again.");
@@ -661,17 +665,17 @@ const EditTransactionModal = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>MRIS/DR</Form.Label>
-                            <Form.Control type="text" name="mris" value={transactionData.mris} onChange={handleChange} required />
+                            <Form.Control type="text" name="mris" value={transactionData.mris} autoComplete='off' onChange={handleChange} required />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Label>Supplier</Form.Label>
-                            <Form.Control type="text" name="supplier" value={transactionData.supplier} onChange={handleChange} required />
+                            <Form.Control type="text" name="supplier" value={transactionData.supplier} autoComplete='off' onChange={handleChange} required />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Label>Requested By</Form.Label>
-                            <Form.Control type="text" name="requestedBy" value={transactionData.requestedBy} onChange={handleChange} />
+                            <Form.Control type="text" name="requestedBy" value={transactionData.requestedBy} autoComplete='off' onChange={handleChange} />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
@@ -783,6 +787,7 @@ const EditTransactionModal = ({
                                 value={productData.productName}
                                 onChange={handleProductNameChange}
                                 required
+                                autoComplete='off'
                             />
                             {filteredProducts.length > 0 && (
                                 <div className="dropdown-menu show">
@@ -859,12 +864,12 @@ const EditTransactionModal = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Transfer from other Warehouse</Form.Label>
-                            <Form.Control type="number" name="transferFromWarehouse" value={productData.transferFromWarehouse} onChange={handleProductChange} />
+                            <Form.Control type="number" name="transferFromWarehouse" value={productData.transferFromWarehouse} autoComplete='off' onChange={handleProductChange} />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Label>Transfer to other Warehouse</Form.Label>
-                            <Form.Control type="number" name="transferToWarehouse" value={productData.transferToWarehouse} onChange={handleProductChange} />
+                            <Form.Control type="number" name="transferToWarehouse" value={productData.transferToWarehouse} autoComplete='off' onChange={handleProductChange} />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
@@ -909,6 +914,7 @@ const EditTransactionModal = ({
                                 value={editProductData.productName}
                                 onChange={handleEditProductNameChange}
                                 required
+                                autoComplete='off'
                             />
                             {filteredProducts.length > 0 && (
                                 <div className="dropdown-menu show">
@@ -984,12 +990,12 @@ const EditTransactionModal = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Transfer from other Warehouse</Form.Label>
-                            <Form.Control type="text" name="transferFromWarehouse" value={editProductData.transferFromWarehouse} onChange={handleEditProductChange} />
+                            <Form.Control type="text" name="transferFromWarehouse" autoComplete='off' value={editProductData.transferFromWarehouse} onChange={handleEditProductChange} />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Label>Transfer to other Warehouse</Form.Label>
-                            <Form.Control type="text" name="transferToWarehouse" value={editProductData.transferToWarehouse} onChange={handleEditProductChange} />
+                            <Form.Control type="text" name="transferToWarehouse" autoComplete='off' value={editProductData.transferToWarehouse} onChange={handleEditProductChange} />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
@@ -1033,6 +1039,7 @@ const EditTransactionModal = ({
                                 value={editProductData.productName}
                                 onChange={handleEditProductNameChange}
                                 required
+                                autoComplete='off'
                             />
                             {filteredProducts.length > 0 && (
                                 <div className="dropdown-menu show">
@@ -1108,12 +1115,12 @@ const EditTransactionModal = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Transfer from other Warehouse</Form.Label>
-                            <Form.Control type="text" name="transferFromWarehouse" value={editProductData.transferFromWarehouse} onChange={handleEditProductChange} />
+                            <Form.Control type="text" name="transferFromWarehouse" autoComplete='off' value={editProductData.transferFromWarehouse} onChange={handleEditProductChange} />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Label>Transfer to other Warehouse</Form.Label>
-                            <Form.Control type="text" name="transferToWarehouse" value={editProductData.transferToWarehouse} onChange={handleEditProductChange} />
+                            <Form.Control type="text" name="transferToWarehouse" autoComplete='off' value={editProductData.transferToWarehouse} onChange={handleEditProductChange} />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
