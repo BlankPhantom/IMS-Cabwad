@@ -1,4 +1,4 @@
--- Database backup created on 2025-03-07 14:13:15
+-- Database backup created on 2025-03-07 16:06:42
 -- Database: ims_cabwad
 
 CREATE TABLE `auth_group` (
@@ -1056,7 +1056,7 @@ CREATE TABLE `ims_item` (
   CONSTRAINT `ims_item_measurementID_id_d7e55812_fk_ims_measu` FOREIGN KEY (`measurementID_id`) REFERENCES `ims_measurement` (`measurementID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-INSERT INTO `ims_item` VALUES ('01-001', 'Chlorine Dioxide - Liquid', 480, 255.0, 127500.0, '2025-03-07 05:25:14', '2025-03-07 05:25:14', 1, 22);
+INSERT INTO `ims_item` VALUES ('01-001', 'Chlorine Dioxide - Liquid', 0, 0.0, 0.0, '2025-03-07 05:25:14', '2025-03-07 05:25:14', 1, 22);
 INSERT INTO `ims_item` VALUES ('01-002', 'Chlorine Dioxide - Powder', 0, 0.0, 0.0, '2025-03-07 05:25:14', '2025-03-07 05:25:14', 1, 9);
 INSERT INTO `ims_item` VALUES ('01-003', 'Chlorine Granules', 0, 0.0, 0.0, '2025-03-07 05:25:14', '2025-03-07 05:25:14', 1, 9);
 INSERT INTO `ims_item` VALUES ('02-001', 'Asphalt', 0, 0.0, 0.0, '2025-03-07 05:25:14', '2025-03-07 05:25:14', 2, 10);
@@ -1960,7 +1960,7 @@ CREATE TABLE `ims_runningbalance` (
   CONSTRAINT `ims_runningbalance_measurementID_id_b265a0b8_fk_ims_measu` FOREIGN KEY (`measurementID_id`) REFERENCES `ims_measurement` (`measurementID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=771 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-INSERT INTO `ims_runningbalance` VALUES (2, 'Chlorine Dioxide - Liquid', 500, 0, 500, 0, 0, 0, 0, 0, 0, 255.0, '127500.00', 'Slow Moving', '2025-03-07 05:35:38', '2025-03-07 05:35:38', '01-001', 22);
+INSERT INTO `ims_runningbalance` VALUES (2, 'Chlorine Dioxide - Liquid', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.0, '0.00', 'Non-Moving', '2025-03-07 05:35:38', '2025-03-07 05:35:38', '01-001', 22);
 INSERT INTO `ims_runningbalance` VALUES (4, 'Chlorine Dioxide - Powder', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.0, '0.00', 'Non-Moving', '2025-03-07 05:35:38', '2025-03-07 05:35:38', '01-002', 9);
 INSERT INTO `ims_runningbalance` VALUES (6, 'Chlorine Granules', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.0, '0.00', 'Non-Moving', '2025-03-07 05:35:38', '2025-03-07 05:35:38', '01-003', 9);
 INSERT INTO `ims_runningbalance` VALUES (8, 'Asphalt', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.0, '0.00', 'Non-Moving', '2025-03-07 05:35:38', '2025-03-07 05:35:38', '02-001', 10);

@@ -1,44 +1,69 @@
 import React, { useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import { Container, Row, Col, Card, Button, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronLeft, faDatabase, faDownload, faUpload } from "@fortawesome/free-solid-svg-icons";
+import {
+  faChevronLeft,
+  faDatabase,
+  faDownload,
+  faUpload,
+} from "@fortawesome/free-solid-svg-icons";
 import { API_ENDPOINTS } from "../../config";
 
 const BackupRestore = () => {
   const [backupMessage, setBackupMessage] = useState("");
   const [restoreMessage, setRestoreMessage] = useState("");
   const [file, setFile] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   // Handle back navigation
   const handleBack = () => {
-    navigate(-1);  // Navigate to the previous page
+    navigate(-1); // Navigate to the previous page
   };
 
-  // Function to handle database backup
   const handleBackup = async () => {
     try {
+      setIsLoading(true);
+      setBackupMessage("Starting backup process...");
+  
       const token = localStorage.getItem("access_token"); // Get JWT token
+  
+      // First, request the backup file from the backend
       const response = await fetch(API_ENDPOINTS.BACKUP, {
         method: "GET",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Token ${token}`, // Include token in the header
+          Authorization: `Token ${token}`,
         },
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        setBackupMessage(data.message);
-      } else {
-        const errorData = await response.json();
-        setBackupMessage(errorData.error || "An error occurred during backup.");
+  
+      if (!response.ok) {
+        throw new Error("Backup failed. Ensure you are logged in with admin privileges.");
       }
+  
+      // Convert response into a blob for downloading
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+  
+      // Create a link element to trigger the download
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "database_backup.sql";  // Ensure the filename is correct
+      document.body.appendChild(a);
+      a.click();
+  
+      // Cleanup
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+  
+      setBackupMessage("Backup downloaded successfully!");
     } catch (error) {
-      setBackupMessage("An error occurred while connecting to the server.");
+      setBackupMessage("Error: " + error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
+  
 
   // Function to handle database restore
   const handleRestore = async () => {
@@ -47,10 +72,13 @@ const BackupRestore = () => {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("backup_file", file);
-
     try {
+      setIsLoading(true);
+      setRestoreMessage("Restoring database...");
+
+      const formData = new FormData();
+      formData.append("backup_file", file);
+
       const token = localStorage.getItem("access_token"); // Get JWT token
       const response = await fetch(API_ENDPOINTS.RESTORE, {
         method: "POST",
@@ -63,20 +91,32 @@ const BackupRestore = () => {
       if (response.ok) {
         const data = await response.json();
         setRestoreMessage(data.message);
+        setFile(null);
+        // Reset the file input
+        const fileInput = document.getElementById("fileUpload");
+        if (fileInput) fileInput.value = "";
       } else {
         const errorData = await response.json();
-        setRestoreMessage(errorData.error || "An error occurred during restore.");
+        setRestoreMessage(
+          errorData.error || "An error occurred during restore."
+        );
       }
     } catch (error) {
       setRestoreMessage("An error occurred while connecting to the server.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <Container fluid className="py-4 mt-5 d-flex flex-column justify-content-center me-0 ms-0">
+    <Container
+      fluid
+      className="py-4 mt-5 d-flex flex-column justify-content-center me-0 ms-0">
       <Row className="sectionTitle">
         <Col>
-          <h2 className="mb-5" style={{ fontWeight: '650' }}>Back Up and Restore</h2>
+          <h2 className="mb-5" style={{ fontWeight: "650" }}>
+            Back Up and Restore
+          </h2>
         </Col>
       </Row>
       {/* Backup and Restore Options */}
@@ -84,18 +124,40 @@ const BackupRestore = () => {
         {/* Backup Card */}
         <Col xs={12} className="d-flex justify-content-center">
           <Card
-            onClick={handleBackup}
-            className="clickable-card landCard text-center shadow p-3"
+            className="landCard text-center shadow p-3"
             style={{
-              cursor: "pointer",
               width: "90%",
               maxWidth: "300px",
               minHeight: "150px",
-            }}
-          >
+            }}>
             <Card.Body className="d-flex flex-column justify-content-center align-items-center">
-              <FontAwesomeIcon icon={faDownload} size="3x" className="mb-3" style={{ color: "#0042a5" }} />
-              <Card.Title className="mt-auto" style={{color: 'rgb(71, 71, 71)'}}>Backup Database</Card.Title>
+              <FontAwesomeIcon
+                icon={faDownload}
+                size="3x"
+                className="mb-3"
+                style={{ color: "#0042a5" }}
+              />
+              <Card.Title
+                className="mt-auto"
+                style={{ color: "rgb(71, 71, 71)" }}>
+                Backup Database
+              </Card.Title>
+
+              <Button
+                className="mt-3"
+                style={{
+                  backgroundColor: "#0d6efd",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                  width: "100%",
+                  padding: "8px 16px",
+                }}
+                onClick={handleBackup}
+                disabled={isLoading}>
+                {isLoading ? "Processing..." : "Download Backup"}
+              </Button>
             </Card.Body>
           </Card>
         </Col>
@@ -103,16 +165,24 @@ const BackupRestore = () => {
         {/* Restore Card */}
         <Col xs={12} className="d-flex justify-content-center">
           <Card
-            className="landCard text-center shadow  p-3"
+            className="landCard text-center shadow p-3"
             style={{
               width: "90%",
               maxWidth: "300px",
               minHeight: "150px",
-            }}
-          >
+            }}>
             <Card.Body className="d-flex flex-column justify-content-center align-items-center">
-              <FontAwesomeIcon icon={faUpload} size="3x" className="mb-3" style={{ color: "#0042a5" }} />
-              <Card.Title className="mt-auto" style={{color: 'rgb(71, 71, 71)'}}>Restore Database</Card.Title>
+              <FontAwesomeIcon
+                icon={faUpload}
+                size="3x"
+                className="mb-3"
+                style={{ color: "#0042a5" }}
+              />
+              <Card.Title
+                className="mt-auto"
+                style={{ color: "rgb(71, 71, 71)" }}>
+                Restore Database
+              </Card.Title>
 
               <Form.Group controlId="fileUpload" className="w-100 mt-3">
                 <Form.Control
@@ -134,14 +204,17 @@ const BackupRestore = () => {
               <Button
                 className="mt-3"
                 style={{
+                  backgroundColor: "#0d6efd",
                   color: "#fff",
                   border: "none",
                   borderRadius: "5px",
                   cursor: "pointer",
+                  width: "100%",
+                  padding: "8px 16px",
                 }}
                 onClick={handleRestore}
-              >
-                Restore
+                disabled={isLoading || !file}>
+                {isLoading ? "Processing..." : "Restore"}
               </Button>
             </Card.Body>
           </Card>
@@ -151,10 +224,25 @@ const BackupRestore = () => {
       {/* Messages */}
       <Row className="mt-4 d-flex flex-column align-items-center">
         {backupMessage && (
-          <p className={backupMessage.includes("successful") ? "text-success" : "text-danger"}>{backupMessage}</p>
+          <p
+            className={
+              backupMessage.includes("success") ||
+              backupMessage.includes("started")
+                ? "text-success"
+                : "text-danger"
+            }>
+            {backupMessage}
+          </p>
         )}
         {restoreMessage && (
-          <p className={restoreMessage.includes("successfully") ? "text-success" : "text-danger"}>{restoreMessage}</p>
+          <p
+            className={
+              restoreMessage.includes("success")
+                ? "text-success"
+                : "text-danger"
+            }>
+            {restoreMessage}
+          </p>
         )}
       </Row>
     </Container>

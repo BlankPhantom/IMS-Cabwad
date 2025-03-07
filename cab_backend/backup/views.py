@@ -2,25 +2,52 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.authentication import TokenAuthentication
 from .utils import backup_database, restore_database
 import os
 import logging
 from django.conf import settings
+from django.http import FileResponse
 
 # Set up logging
 logger = logging.getLogger(__name__)
-
+    
 class BackupDatabaseView(APIView):
-    # Add authentication and permission checks
+    authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAdminUser]  # Only allow admin users
     
-    def get(self, request):
+    def get(self, _):
         try:
             backup_filename = backup_database()  # Call the backup function
-            return Response(
-                {"message": "Database backup successful.", "file": backup_filename}, 
-                status=status.HTTP_200_OK
+            
+            # Prepare the file for download
+            backup_folder = os.path.join(settings.BASE_DIR, 'backups')
+            file_path = os.path.join(backup_folder, backup_filename)
+            
+            # Check if file exists
+            if not os.path.exists(file_path):
+                logger.error(f"Backup file not found: {file_path}")
+                return Response(
+                    {"error": "Backup file not found."}, 
+                    status=status.HTTP_404_NOT_FOUND
+                )
+            
+            # Use FileResponse instead of HttpResponse
+            response = FileResponse(
+                open(file_path, 'rb'),
+                as_attachment=True,
+                filename=backup_filename,
+                content_type='application/sql'
             )
+            
+            # Set additional headers for caching control (optional)
+            response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+            response['Pragma'] = 'no-cache'
+            response['Expires'] = '0'
+            
+            logger.info(f"Serving backup file for download: {backup_filename}")
+            return response
+            
         except ValueError as e:
             # Log the error but return a generic message
             logger.error(f"Backup error: {str(e)}")
@@ -42,7 +69,7 @@ class RestoreDatabaseView(APIView):
     # Add parsers for handling file uploads
     parser_classes = [MultiPartParser, FormParser]
     
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         backup_file = request.FILES.get("backup_file")  # Retrieve the uploaded file
         
         if not backup_file:
