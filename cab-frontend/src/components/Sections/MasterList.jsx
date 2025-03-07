@@ -346,7 +346,7 @@ const Masterlist = () => {
 
 
             <Row>
-                <Col className="d-flex justify-content-end mt-3">
+                <Col className="d-flex justify-content-end">
                     <BtnAddNewItem
                         fetchItems={fetchItems}
                         classifications={classifications}
