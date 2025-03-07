@@ -142,7 +142,10 @@ class TransactionProductSerializer(serializers.ModelSerializer):
         )
 
     def get_total(self, instance):
-        return instance.consumption * instance.itemID.unitCost
+        if instance.purchasedFromSupp > 0:
+            return instance.purchasedFromSupp * instance.itemID.unitCost
+        else:
+            return instance.consumption * instance.itemID.unitCost
     
     def get_itemQuantity(self, instance):
         item = Item.objects.get(pk=instance.itemID.pk)
