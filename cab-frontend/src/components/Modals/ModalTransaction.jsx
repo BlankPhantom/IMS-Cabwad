@@ -255,17 +255,17 @@ const ModalTransaction = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>MRIS/DR</Form.Label>
-                            <Form.Control type="number" name="mris" value={transactionData.mris} onChange={handleTransactionChange} required />
+                            <Form.Control type="number" name="mris" value={transactionData.mris} onChange={handleTransactionChange} autoComplete='off' required />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Label>Supplier</Form.Label>
-                            <Form.Control type="text" name="supplier" value={transactionData.supplier} onChange={handleTransactionChange} />
+                            <Form.Control type="text" name="supplier" value={transactionData.supplier} onChange={handleTransactionChange} autoComplete='off' />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Label>Requested By</Form.Label>
-                            <Form.Control type="text" name="requestedBy" value={transactionData.requestedBy} onChange={handleTransactionChange} />
+                            <Form.Control type="text" name="requestedBy" value={transactionData.requestedBy} onChange={handleTransactionChange} autoComplete='off' />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
@@ -358,6 +358,7 @@ const ModalTransaction = ({
                                 value={productData.productName}
                                 onChange={handleProductNameChange}
                                 required
+                                autoComplete='off'
                             />
                             {filteredProducts.length > 0 && (
                                 <div className="dropdown-menu show">
@@ -400,7 +401,7 @@ const ModalTransaction = ({
                             <>
                                 <Form.Group className="mb-3">
                                     <Form.Label>Purchased from Supplier</Form.Label>
-                                    <Form.Control type="number" name="purchasedFromSupplier" value={productData.purchasedFromSupplier} onChange={handleProductChange} min="0" />
+                                    <Form.Control type="number" name="purchasedFromSupplier" autoComplete='off' value={productData.purchasedFromSupplier} onChange={handleProductChange} min="0" />
                                 </Form.Group>
                             </>
                         )}
@@ -408,7 +409,7 @@ const ModalTransaction = ({
                         {transactionType === 'ReturnSupply' && (
                             <Form.Group className="mb-3">
                                 <Form.Label>Return to Supplier</Form.Label>
-                                <Form.Control type="number" name="returnToSupplier" value={productData.returnToSupplier} onChange={handleProductChange} min="0" />
+                                <Form.Control type="number" name="returnToSupplier" autoComplete='off' value={productData.returnToSupplier} onChange={handleProductChange} min="0" />
                             </Form.Group>
                         )}
 
@@ -418,13 +419,13 @@ const ModalTransaction = ({
                                     <Col>
                                         <Form.Group className="mb-3">
                                             <Form.Label>Issued Quantity</Form.Label>
-                                            <Form.Control type="number" name="issuedQuantity" value={productData.issuedQuantity} onChange={handleProductChange} min="0" />
+                                            <Form.Control type="number" name="issuedQuantity" autoComplete='off' value={productData.issuedQuantity} onChange={handleProductChange} min="0" />
                                         </Form.Group>
                                     </Col>
                                     <Col>
                                         <Form.Group className="mb-3">
                                             <Form.Label>Returned Quantity</Form.Label>
-                                            <Form.Control type="number" name="returnedQuantity" value={productData.returnedQuantity} onChange={handleProductChange} min="0" />
+                                            <Form.Control type="number" name="returnedQuantity" autoComplete='off' value={productData.returnedQuantity} onChange={handleProductChange} min="0" />
                                         </Form.Group>
                                     </Col>
                                 </Row>
@@ -434,12 +435,12 @@ const ModalTransaction = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Transfer from other Warehouse</Form.Label>
-                            <Form.Control type="number" name="transferFromWarehouse" value={productData.transferFromWarehouse} onChange={handleProductChange} />
+                            <Form.Control type="number" name="transferFromWarehouse" value={productData.transferFromWarehouse} autoComplete='off' onChange={handleProductChange} />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Label>Transfer to other Warehouse</Form.Label>
-                            <Form.Control type="number" name="transferToWarehouse" value={productData.transferToWarehouse} onChange={handleProductChange} />
+                            <Form.Control type="number" name="transferToWarehouse" value={productData.transferToWarehouse} autoComplete='off' onChange={handleProductChange} />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
@@ -559,12 +560,12 @@ const ModalTransaction = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Transfer from other Warehouse</Form.Label>
-                            <Form.Control type="text" name="transferFromWarehouse" value={editProductData.transferFromWarehouse} onChange={handleEditProductChange} />
+                            <Form.Control type="text" name="transferFromWarehouse" autoComplete='off' value={editProductData.transferFromWarehouse} onChange={handleEditProductChange} />
                         </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Label>Transfer to other Warehouse</Form.Label>
-                            <Form.Control type="text" name="transferToWarehouse" value={editProductData.transferToWarehouse} onChange={handleEditProductChange} />
+                            <Form.Control type="text" name="transferToWarehouse" autoComplete='off' value={editProductData.transferToWarehouse} onChange={handleEditProductChange} />
                         </Form.Group>
 
                         <Form.Group className="mb-3">

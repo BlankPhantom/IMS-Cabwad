@@ -13,6 +13,8 @@ const Masterlist = () => {
     const [measurements, setMeasurements] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [currentItem, setCurrentItem] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
 
     // Pagination states
@@ -73,6 +75,7 @@ const Masterlist = () => {
 
     // fetch items with token
     const fetchItems = async () => {
+        setLoading(true);
         const token = localStorage.getItem('access_token');
 
         try {
@@ -90,9 +93,13 @@ const Masterlist = () => {
                 setFilteredItems(data);
             } else {
                 console.error('Failed to fetch items');
+                setError("Failed to load items data.");
             }
         } catch (error) {
             console.error('Error fetching items:', error);
+            setError("Failed to load items data.");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -312,7 +319,15 @@ const Masterlist = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {currentItems.length > 0 ? (
+                        {loading ? (
+                            <tr>
+                                <td colSpan="4" className="text-center">Loading data...</td>
+                            </tr>
+                        ) : error ? (
+                            <tr>
+                                <td colSpan="4" className="text-center text-danger">{error}</td>
+                            </tr>
+                        ) : currentItems.length > 0 ? (
                             currentItems.map((item) => (
                                 <tr key={item.id}>
                                     <td>{item.itemID}</td>
@@ -336,14 +351,13 @@ const Masterlist = () => {
             </Row>
 
             {/* Pagination */}
-            <Row>
-                <Col className="d-flex justify-content-center mt-3">
-                    {filteredItems.length > 0 && (
+            {!loading && !error && filteredItems.length > 0 && (
+                <Row>
+                    <Col className="d-flex justify-content-center mt-3">
                         <Pagination>{renderPaginationItems()}</Pagination>
-                    )}
-                </Col>
-            </Row>
-
+                    </Col>
+                </Row>
+            )}
 
             <Row>
                 <Col className="d-flex justify-content-end">
