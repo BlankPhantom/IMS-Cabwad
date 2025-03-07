@@ -153,21 +153,20 @@ const RunningBalance = () => {
                     />
                 </Col>
             </Row>
-            <Row className="mb-3">
-                <Col className="d-flex justify-content-end">
+            
+            <Row>
+                <Col className="d-flex">
                     <Form.Select 
                     className="form-select"
                     value={remarks}
-                    onChange={handleRemarksFilter}
-                    >
+                    style={{width: '300px'}}
+                    onChange={handleRemarksFilter}>
                         <option value="">All</option>
                         <option value="Non-Moving">Non-Moving</option>
                         <option value="Slow Moving">Slow Moving</option>
                         <option value="Fast Moving">Fast Moving</option>
                     </Form.Select>
                 </Col>
-            </Row>
-            <Row>
                 <Col className="d-flex justify-content-end">
                     <Form.Control
                         type="search"

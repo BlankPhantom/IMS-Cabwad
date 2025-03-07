@@ -8,7 +8,6 @@
 
 .tableStyle th,
 .tableStyle td {
-  white-space: nowrap; /* Prevent text wrapping */
   padding: 0px;
   text-align: center !important;
   border: 2px solid #7e7e7e !important;
@@ -19,12 +18,16 @@
   background-color: #f1e349 !important;
   font-weight: bold;
   color: #333 !important;
+  white-space: nowrap; /* Prevent text wrapping */
 }
 
 /* Adjust column widths */
 #TtableStyle th:nth-child(1) {
   width: 8%;
 } /* Date */
+#TtableStyle td:nth-child(1) {
+  white-space: nowrap;
+} 
 #TtableStyle th:nth-child(2) {
   width: 5%;
 } /* Week */
