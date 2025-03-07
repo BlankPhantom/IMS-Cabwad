@@ -8,6 +8,7 @@ import RunningBalance from "./components/Sections/RunningBalance";
 import MonthlyConsumption from "./components/Sections/MonthlyConsumption";
 import Login from "./components/Login";
 import WeeklyConsumption from "./components/Sections/WeeklyConsumption";
+import BackupRestore from "./components/Sections/BackupRestore";
 
 const App = () => {
     return (
@@ -23,6 +24,7 @@ const App = () => {
                     <Route path="running-balance" element={<RunningBalance />} />
                     <Route path="monthly-consumption" element={<MonthlyConsumption />} />
                     <Route path="weekly-consumption" element={<WeeklyConsumption />} />
+                    <Route path="backup-restore" element={<BackupRestore/>}/>
                 </Route>
             </Routes>
         </Router>

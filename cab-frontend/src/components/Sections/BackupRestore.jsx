@@ -74,23 +74,11 @@ const BackupRestore = () => {
 
   return (
     <Container fluid className="py-4 mt-5 d-flex flex-column justify-content-center me-0 ms-0">
-        {/* Row for Back Button and Title */}
-    <Row className="align-items-center">
-                    <Col xs="auto">
-                        <Button 
-                            variant="link" 
-                            onClick={handleBack} 
-                            className="backBtn d-flex align-items-center text-success"
-                        >
-                            <FontAwesomeIcon icon={faChevronLeft} size="lg" />
-                           
-                        </Button>
-                    </Col>
-                    <Col>
-                        <h1 className="mb-0" style={{ color: '#4B4A4A' }}>Backup and Restore</h1>
-                    </Col>
-                </Row>
-
+      <Row className="sectionTitle">
+        <Col>
+          <h2 className="mb-5" style={{ fontWeight: '650' }}>Back Up and Restore</h2>
+        </Col>
+      </Row>
       {/* Backup and Restore Options */}
       <Row className="g-4 d-flex justify-content-center">
         {/* Backup Card */}
@@ -106,8 +94,8 @@ const BackupRestore = () => {
             }}
           >
             <Card.Body className="d-flex flex-column justify-content-center align-items-center">
-              <FontAwesomeIcon icon={faDownload} size="3x" className="mb-3" style={{ color: "#71A872" }} />
-              <Card.Title className="mt-auto text-success">Backup Database</Card.Title>
+              <FontAwesomeIcon icon={faDownload} size="3x" className="mb-3" style={{ color: "#0042a5" }} />
+              <Card.Title className="mt-auto" style={{color: 'rgb(71, 71, 71)'}}>Backup Database</Card.Title>
             </Card.Body>
           </Card>
         </Col>
@@ -123,8 +111,8 @@ const BackupRestore = () => {
             }}
           >
             <Card.Body className="d-flex flex-column justify-content-center align-items-center">
-              <FontAwesomeIcon icon={faUpload} size="3x" className="mb-3" style={{ color: "#71A872" }} />
-              <Card.Title className="mt-auto text-success">Restore Database</Card.Title>
+              <FontAwesomeIcon icon={faUpload} size="3x" className="mb-3" style={{ color: "#0042a5" }} />
+              <Card.Title className="mt-auto" style={{color: 'rgb(71, 71, 71)'}}>Restore Database</Card.Title>
 
               <Form.Group controlId="fileUpload" className="w-100 mt-3">
                 <Form.Control
@@ -145,7 +133,6 @@ const BackupRestore = () => {
 
               <Button
                 className="mt-3"
-                variant="success"
                 style={{
                   color: "#fff",
                   border: "none",
