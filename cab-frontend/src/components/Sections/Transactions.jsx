@@ -101,7 +101,6 @@ const Transactions = () => {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
-            console.log("API response for products:", data); // Check if unitCost is here
             setProducts(data);
         } catch (error) {
             console.error("Error fetching products:", error);

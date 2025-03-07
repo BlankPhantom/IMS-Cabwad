@@ -354,7 +354,8 @@ def create_update_runbal(request):
     current_month = timezone.now().month 
     current_year = timezone.now().year 
 
-    # Get unique items from recent transactions with limit
+    # Get all items instead of just those with recent transactions
+    # Remove the limit and filtering by recent transactions
     item_ids = TransactionProduct.objects.values_list('itemID', flat=True).distinct().order_by('-created_at')[:20]
     items = Item.objects.filter(itemID__in=item_ids).prefetch_related(
         Prefetch('transactionproduct_set', 
@@ -368,14 +369,16 @@ def create_update_runbal(request):
 
     for item in items:
         # Aggregate sums using the prefetched transactions
+        # Handle the case where an item might not have any transactions this month
+        transactions = getattr(item, 'transactions', [])
         sums = {
-            'purchasedFromSupp_sum': sum(tp.purchasedFromSupp for tp in item.transactions),
-            'returnToSupplier_sum': sum(tp.returnToSupplier for tp in item.transactions),
-            'transferFromWH_sum': sum(tp.transferFromWH for tp in item.transactions),
-            'transferToWH_sum': sum(tp.transferToWH for tp in item.transactions),
-            'issuedQty_sum': sum(tp.issuedQty for tp in item.transactions),
-            'returnedQty_sum': sum(tp.returnedQty for tp in item.transactions),
-            'consumption_sum': sum(tp.consumption for tp in item.transactions)
+            'purchasedFromSupp_sum': sum(tp.purchasedFromSupp for tp in transactions),
+            'returnToSupplier_sum': sum(tp.returnToSupplier for tp in transactions),
+            'transferFromWH_sum': sum(tp.transferFromWH for tp in transactions),
+            'transferToWH_sum': sum(tp.transferToWH for tp in transactions),
+            'issuedQty_sum': sum(tp.issuedQty for tp in transactions),
+            'returnedQty_sum': sum(tp.returnedQty for tp in transactions),
+            'consumption_sum': sum(tp.consumption for tp in transactions)
         }
 
         # Handle multiple objects scenario
@@ -434,8 +437,35 @@ def create_update_runbal(request):
         running_balance.unitCost = item.unitCost
         running_balance.totalCost = item.unitCost * running_balance.itemQuantity 
         running_balance.save()
+        
+        # Get the monthly consumption count for this item
+        consumption_counts = MonthlyConsumption.objects.filter(
+            itemID=item.itemID,
+            date__month=current_month,
+            date__year=current_year
+        ).values('week').annotate(weekly_count=Sum('week'))
 
-    return Response({"detail": "Running balance processed successfully for recent transactions."})
+        if not consumption_counts.exists():
+            running_balance.remarks = "Non-Moving"
+        else:
+            # Calculate total consumption across all weeks
+            total_consumption = sum(count['weekly_count'] or 0 for count in consumption_counts)
+            # Count number of weeks with actual consumption records
+            active_weeks = len([c for c in consumption_counts if c['weekly_count'] > 0])
+            
+            # Calculate average weekly consumption (only for weeks with activity)
+            weekly_average = total_consumption / active_weeks if active_weeks > 0 else 0
+            
+            if weekly_average == 0:
+                running_balance.remarks = "Non-Moving"
+            elif weekly_average < 10:
+                running_balance.remarks = "Slow Moving"
+            else:
+                running_balance.remarks = "Fast Moving"
+
+        running_balance.save()
+
+    return Response({"detail": "Running balance processed successfully for all items."})
 
 @api_view(['GET'])
 def get_monthly_consumption(request):
@@ -647,3 +677,4 @@ def download_report_doc(request, year, month):
             "error": "An unexpected error occurred",
             "details": str(unexpected_error)
         }, status=500)
+        

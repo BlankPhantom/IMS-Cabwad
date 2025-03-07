@@ -10,6 +10,7 @@ const RunningBalance = () => {
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [searchTerm, setSearchTerm] = useState("");
+    const [remarks, setRemarks] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
@@ -93,6 +94,17 @@ const RunningBalance = () => {
         setCurrentPage(1);
     };
 
+    const handleRemarksFilter = (event) => {
+        const remark = event.target.value.toLowerCase()
+        setRemarks(remark);
+
+        const filtered = runningBalanceData.filter(item => 
+            item.remarks.toLowerCase().includes(remark)
+        );
+
+        setFilteredData(filtered);
+    }
+
     // Handle month and year change
     const handleMonthYearChange = (month, year) => {
         // Convert month to correct format
@@ -139,9 +151,20 @@ const RunningBalance = () => {
                         initialYear={selectedYear}
                     />
                 </Col>
-
             </Row>
-
+            <Row className="mb-3">
+                <Col className="d-flex justify-content-end">
+                    <Form.Select 
+                    className="form-select"
+                    value={remarks}
+                    onChange={handleRemarksFilter}>
+                        <option value="">All</option>
+                        <option value="non-moving">Non-Moving</option>
+                        <option value="slow moving">Slow Moving</option>
+                        <option value="fast moving">Fast Moving</option>
+                    </Form.Select>
+                </Col>
+            </Row>
             <Row>
                 <Col className="d-flex justify-content-end">
                     <Form.Control
@@ -173,6 +196,7 @@ const RunningBalance = () => {
                             <th>Available Stocks</th>
                             <th>Cost</th>
                             <th>Total</th>
+                            <th>Remarks</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -201,6 +225,7 @@ const RunningBalance = () => {
                                     <td>{item.itemQuantity}</td>
                                     <td>₱ {item.unitCost}</td>
                                     <td>₱ {item.totalCost}</td>
+                                    <td>{item.remarks}</td>
                                 </tr>
                             ))
                         ) : (
