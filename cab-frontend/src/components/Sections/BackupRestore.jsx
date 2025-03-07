@@ -48,7 +48,7 @@ const BackupRestore = () => {
       // Create a link element to trigger the download
       const a = document.createElement("a");
       a.href = url;
-      a.download = "database_backup.sql";  // Ensure the filename is correct
+      a.download = "inventory_backup_" + new Date().toISOString().replace(/[:.]/g, '-') + ".sql";  // Add timestamp to filename
       document.body.appendChild(a);
       a.click();
   
