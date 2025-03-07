@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../table.css";
 import { v4 as uuidv4 } from 'uuid';
-import { Container, Table, Col, Row, Button } from "react-bootstrap";
+import { Container, Table, Col, Row, Pagination } from "react-bootstrap";
 import MonthYearPicker from "../MonthYearPicker";
 import BtnAddTransaction from "../Button/BtnAddTransaction";
 import ModalTransaction from "../Modals/ModalTransaction";
@@ -17,6 +17,9 @@ const Transactions = () => {
         month: new Date().getMonth() + 1, // Default to current month
         year: new Date().getFullYear() // Default to current year
     });
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(20);
+    const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredTransactions, setFilteredTransactions] = useState([]);
     const [transactionType, setTransactionType] = useState('');
@@ -62,6 +65,7 @@ const Transactions = () => {
 
     useEffect(() => {
         filterTransactionsByMonthYear();
+        setCurrentPage(1);
     }, [transactions, selectedMonthYear]);
 
     const formatProductPayload = (product, transactionDetailsID) => ({
@@ -105,6 +109,7 @@ const Transactions = () => {
     };
 
     const fetchTransactionsWithProducts = async () => {
+        setLoading(true);
         try {
             const transactionsResponse = await fetch(API_ENDPOINTS.TRANSACTION_LIST, {
                 method: "GET",
@@ -155,6 +160,8 @@ const Transactions = () => {
             setTransactions(transactionsWithProducts);
         } catch (error) {
             console.error("Error fetching transactions and products:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -179,6 +186,18 @@ const Transactions = () => {
         setFilteredTransactions(filtered);
     };
 
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentTransactions = filteredTransactions.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
+    const pageNumbers = [];
+
+    for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(i);
+    }
 
     const handleMonthYearChange = (month, year) => {
         setIsAllMonthSelected(month === 'all' || month === 0);
@@ -229,10 +248,11 @@ const Transactions = () => {
         });
 
         setFilteredTransactions(filtered);
+        setCurrentPage(1);
     };
 
     // Determine which transactions to display
-    const displayTransactions = searchTerm ? filteredTransactions : transactions;
+    const displayTransactions = currentTransactions;
 
     // Handle modal toggling
     const handleShowTransactionModal = () => setShowTransactionModal(true);
@@ -352,7 +372,7 @@ const Transactions = () => {
             products: [...(prevData.products || []), updatedProduct],
         }));
 
-            console.log("Submitting Product:", updatedProduct);
+        console.log("Submitting Product:", updatedProduct);
 
         handleCloseProductModal();
         handleShowTransactionModal();
@@ -559,8 +579,8 @@ const Transactions = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredTransactions.length > 0 ? (
-                                filteredTransactions.map((transaction, tIndex) => (
+                            {currentTransactions.length > 0 ? (
+                                currentTransactions.map((transaction, tIndex) => (
                                     <React.Fragment key={tIndex}>
                                         <tr>
                                             <td rowSpan={transaction.products?.length + 1 || 2}>{transaction.date}</td>
@@ -623,6 +643,59 @@ const Transactions = () => {
                     </Table>
                 </div>
             </Row>
+
+            {/* Pagination */}
+            {!loading && filteredTransactions.length > 0 && (
+                <Row>
+                    <Col className="d-flex justify-content-center mt-3">
+                        <Pagination>
+                            <Pagination.First
+                                onClick={() => handlePageChange(1)}
+                                disabled={currentPage === 1}
+                            />
+                            <Pagination.Prev
+                                onClick={() => handlePageChange(currentPage - 1)}
+                                disabled={currentPage === 1}
+                            />
+
+                            {/* Display page numbers */}
+                            {pageNumbers.map(number => {
+                                // Show 5 pages around current page
+                                if (
+                                    number === 1 ||
+                                    number === totalPages ||
+                                    (number >= currentPage - 2 && number <= currentPage + 2)
+                                ) {
+                                    return (
+                                        <Pagination.Item
+                                            key={number}
+                                            active={number === currentPage}
+                                            onClick={() => handlePageChange(number)}
+                                        >
+                                            {number}
+                                        </Pagination.Item>
+                                    );
+                                } else if (
+                                    number === currentPage - 3 ||
+                                    number === currentPage + 3
+                                ) {
+                                    return <Pagination.Ellipsis key={number} />;
+                                }
+                                return null;
+                            })}
+
+                            <Pagination.Next
+                                onClick={() => handlePageChange(currentPage + 1)}
+                                disabled={currentPage === totalPages}
+                            />
+                            <Pagination.Last
+                                onClick={() => handlePageChange(totalPages)}
+                                disabled={currentPage === totalPages}
+                            />
+                        </Pagination>
+                    </Col>
+                </Row>
+            )}
 
             <BtnAddTransaction handleShowTransactionModal={handleShowTransactionModal} />
 

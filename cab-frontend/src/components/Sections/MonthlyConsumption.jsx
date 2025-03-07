@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../table.css";
-import { Container, Table, Col, Row, Form, Button } from "react-bootstrap";
+import { Container, Table, Col, Row, Form, Button, Pagination } from "react-bootstrap";
 import MonthYearPicker from "../MonthYearPicker";
 import { API_ENDPOINTS } from "../../config";
 import { saveAs } from "file-saver";
@@ -15,6 +15,10 @@ const MonthlyConsumption = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(20);
 
   useEffect(() => {
     fetchSections();
@@ -38,6 +42,7 @@ const MonthlyConsumption = () => {
     } else {
       setFilteredData(consumptionData);
     }
+    setCurrentPage(1); // Reset to first page when search filter changes
   }, [searchTerm, consumptionData]);
 
   // Fetch sections for the dropdown
@@ -81,6 +86,7 @@ const MonthlyConsumption = () => {
         const data = await response.json();
         setConsumptionData(data);
       }
+      setCurrentPage(1); // Reset to first page when new data is loaded
     } catch (error) {
       console.error("Error fetching monthly consumption:", error);
       setError("Failed to load monthly consumption data.");
@@ -104,6 +110,25 @@ const MonthlyConsumption = () => {
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
+
+  // Pagination handler
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  // Get current items for the current page
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+
+  // Calculate total pages
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+
+  // Generate page numbers
+  const pageNumbers = [];
+  for (let i = 1; i <= totalPages; i++) {
+    pageNumbers.push(i);
+  }
 
   const handleGenerateReports = async () => {
     try {
@@ -228,8 +253,8 @@ const MonthlyConsumption = () => {
                   {error}
                 </td>
               </tr>
-            ) : filteredData.length > 0 ? (
-              filteredData.map((item, index) => (
+            ) : currentItems.length > 0 ? (
+              currentItems.map((item, index) => (
                 <tr key={index}>
                   <td>{item.date}</td>
                   <td>{item.week}</td>
@@ -250,6 +275,59 @@ const MonthlyConsumption = () => {
           </tbody>
         </Table>
       </Row>
+
+      {/* Pagination */}
+      {!loading && !error && filteredData.length > 0 && (
+        <Row>
+          <Col className="d-flex justify-content-center mt-3">
+            <Pagination>
+              <Pagination.First 
+                onClick={() => handlePageChange(1)} 
+                disabled={currentPage === 1}
+              />
+              <Pagination.Prev 
+                onClick={() => handlePageChange(currentPage - 1)} 
+                disabled={currentPage === 1}
+              />
+              
+              {/* Display page numbers */}
+              {pageNumbers.map(number => {
+                // Show 5 pages around current page
+                if (
+                  number === 1 || 
+                  number === totalPages || 
+                  (number >= currentPage - 2 && number <= currentPage + 2)
+                ) {
+                  return (
+                    <Pagination.Item 
+                      key={number} 
+                      active={number === currentPage}
+                      onClick={() => handlePageChange(number)}
+                    >
+                      {number}
+                    </Pagination.Item>
+                  );
+                } else if (
+                  number === currentPage - 3 || 
+                  number === currentPage + 3
+                ) {
+                  return <Pagination.Ellipsis key={number} />;
+                }
+                return null;
+              })}
+              
+              <Pagination.Next 
+                onClick={() => handlePageChange(currentPage + 1)} 
+                disabled={currentPage === totalPages}
+              />
+              <Pagination.Last 
+                onClick={() => handlePageChange(totalPages)} 
+                disabled={currentPage === totalPages}
+              />
+            </Pagination>
+          </Col>
+        </Row>
+      )}
     </Container>
   );
 };

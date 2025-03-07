@@ -12,6 +12,8 @@ const RunningBalance = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage] = useState(20);
 
     const fetchRunningBalance = async () => {
         const token = localStorage.getItem("access_token");
@@ -42,6 +44,7 @@ const RunningBalance = () => {
             const data = await response.json();
             setRunningBalanceData(data);
             setFilteredData(data);
+            setCurrentPage(1);
         } catch (err) {
             console.error("Error fetching running balance:", err);
             setError("Failed to load running balance data.");
@@ -87,6 +90,7 @@ const RunningBalance = () => {
         );
 
         setFilteredData(filtered);
+        setCurrentPage(1);
     };
 
     // Handle month and year change
@@ -95,6 +99,24 @@ const RunningBalance = () => {
         setSelectedMonth(month);
         setSelectedYear(year);
     };
+
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
+
+    // Get current items for the current page
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+
+    // Calculate total pages
+    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+
+    // Generate page numbers
+    const pageNumbers = [];
+    for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(i);
+    }
 
     // Fetch data when month/year changes
     useEffect(() => {
@@ -162,8 +184,8 @@ const RunningBalance = () => {
                             <tr>
                                 <td colSpan="14" className="text-center text-danger">{error}</td>
                             </tr>
-                        ) : filteredData.length > 0 ? (
-                            filteredData.map((item, index) => (
+                        ) : currentItems.length > 0 ? (
+                            currentItems.map((item, index) => (
                                 <tr key={index}>
                                     <td>{item.itemID}</td>
                                     <td>{item.itemName}</td>
@@ -194,6 +216,58 @@ const RunningBalance = () => {
                     </tbody>
                 </Table>
             </Row>
+
+            {!loading && !error && filteredData.length > 0 && (
+                <Row>
+                    <Col className="d-flex justify-content-center mt-3">
+                        <Pagination>
+                            <Pagination.First
+                                onClick={() => handlePageChange(1)}
+                                disabled={currentPage === 1}
+                            />
+                            <Pagination.Prev
+                                onClick={() => handlePageChange(currentPage - 1)}
+                                disabled={currentPage === 1}
+                            />
+
+                            {/* Display page numbers */}
+                            {pageNumbers.map(number => {
+                                // Show 5 pages around current page
+                                if (
+                                    number === 1 ||
+                                    number === totalPages ||
+                                    (number >= currentPage - 2 && number <= currentPage + 2)
+                                ) {
+                                    return (
+                                        <Pagination.Item
+                                            key={number}
+                                            active={number === currentPage}
+                                            onClick={() => handlePageChange(number)}
+                                        >
+                                            {number}
+                                        </Pagination.Item>
+                                    );
+                                } else if (
+                                    number === currentPage - 3 ||
+                                    number === currentPage + 3
+                                ) {
+                                    return <Pagination.Ellipsis key={number} />;
+                                }
+                                return null;
+                            })}
+
+                            <Pagination.Next
+                                onClick={() => handlePageChange(currentPage + 1)}
+                                disabled={currentPage === totalPages}
+                            />
+                            <Pagination.Last
+                                onClick={() => handlePageChange(totalPages)}
+                                disabled={currentPage === totalPages}
+                            />
+                        </Pagination>
+                    </Col>
+                </Row>
+            )}
         </Container>
     );
 };

@@ -12,6 +12,7 @@ const CabFooter = () => {
                 bottom: 0,
                 left: 0,
                 width: "100%",
+                zIndex: '1000'
             }}
         >
             <Container>
