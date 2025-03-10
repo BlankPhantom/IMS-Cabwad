@@ -875,7 +875,7 @@ const EditTransactionModal = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Cost</Form.Label>
-                            <Form.Control type="number" name="cost" value={productData.cost} onChange={handleProductChange} required min="0" />
+                            <Form.Control type="number" name="cost" value={productData.cost} onChange={handleProductChange} required  min="0" step="0.01" />
                         </Form.Group>
 
                         <div className="d-flex justify-content-end gap-2">
@@ -1001,7 +1001,7 @@ const EditTransactionModal = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Cost</Form.Label>
-                            <Form.Control type="number" name="cost" value={editProductData.cost} onChange={handleEditProductChange} min="0" />
+                            <Form.Control type="number" name="cost" value={editProductData.cost} onChange={handleEditProductChange} min="0" step="0.01"  />
                         </Form.Group>
 
                         <div className="d-flex justify-content-end gap-2">
@@ -1126,7 +1126,7 @@ const EditTransactionModal = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Cost</Form.Label>
-                            <Form.Control type="number" name="cost" value={editProductData.cost || ""} onChange={handleEditProductChange} min="0" />
+                            <Form.Control type="number" name="cost" value={editProductData.cost || ""} onChange={handleEditProductChange}  min="0" step="0.01" />
                         </Form.Group>
 
                         <div className="d-flex justify-content-end gap-2">
