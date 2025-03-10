@@ -156,7 +156,16 @@ const Transactions = () => {
                 })),
             }));
 
-            setTransactions(transactionsWithProducts);
+            transactionsWithProducts.sort((a, b) => {
+                // First compare by date
+                const dateComparison = new Date(b.date) - new Date(a.date);
+                if (dateComparison !== 0) return dateComparison;
+
+                // If dates are equal, compare by ID or timestamp
+                return b.transactionDetailsID - a.transactionDetailsID;
+            });
+
+            setTransactions(transactionsWithProducts);  
         } catch (error) {
             console.error("Error fetching transactions and products:", error);
         } finally {
@@ -466,6 +475,8 @@ const Transactions = () => {
             fetchTransactionsWithProducts();// Refresh transaction list
             alert("New Transaction Recorded!");
             setShowTransactionModal(false);
+            window.location.reload(); 
+            handleCloseTransactionModal();
         } catch (error) {
             console.error("Error saving transaction:", error);
             alert("Error saving transaction. Please try again.");
