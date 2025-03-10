@@ -6,6 +6,18 @@ import MonthYearPicker from "../MonthYearPicker";
 import "../table.css";
 
 const WeeklyConsumption = () => {
+    // Calculate current week of the month (1-4)
+    const getCurrentWeekOfMonth = () => {
+        const today = new Date();
+        const dayOfMonth = today.getDate();
+        
+        // Simple calculation dividing the month into 4 weeks
+        if (dayOfMonth <= 7) return 1;
+        if (dayOfMonth <= 14) return 2;
+        if (dayOfMonth <= 21) return 3;
+        return 4;
+    };
+
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [monthlyConsumptionData, setMonthlyConsumptionData] = useState([]);
@@ -13,7 +25,7 @@ const WeeklyConsumption = () => {
     const [error, setError] = useState(null);
     const [selectedSection, setSelectedSection] = useState("");
     const [sections, setSections] = useState([]);
-    const [selectedWeek, setSelectedWeek] = useState(1); // New state for selected week
+    const [selectedWeek, setSelectedWeek] = useState(getCurrentWeekOfMonth()); // Initialize with current week
 
     // Fetch sections
     const fetchSections = async () => {
@@ -66,6 +78,12 @@ const WeeklyConsumption = () => {
     const handleMonthYearChange = (month, year) => {
         setSelectedMonth(month);
         setSelectedYear(year);
+        
+        // If user selects current month and year, set the week to current week
+        const currentDate = new Date();
+        if (month === currentDate.getMonth() + 1 && year === currentDate.getFullYear()) {
+            setSelectedWeek(getCurrentWeekOfMonth());
+        }
     };
 
     // Handle Section Change

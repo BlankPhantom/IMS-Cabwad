@@ -121,7 +121,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'ims_cabwad',
         'USER': 'root',
-        'PASSWORD':'Cloud5024',
+        'PASSWORD':'072702',
         'HOST':'localhost',
         'PORT':'3306',
     }
@@ -129,7 +129,7 @@ DATABASES = {
 
 DB_HOST='localhost',
 DB_USER='root',
-DB_PASSWORD='Cloud5024',
+DB_PASSWORD='072702',
 DB_NAME='ims_cabwad',
 
 
