@@ -15,7 +15,7 @@ const MonthlyConsumption = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  
+
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(20);
@@ -195,7 +195,7 @@ const MonthlyConsumption = () => {
               name="section"
               value={selectedSection}
               onChange={handleSectionChange}>
-              <option value="">Select Section</option>
+              <option value="">All Sections</option>
               {sections.map((section) => (
                 <option key={section.sectionID} value={section.sectionID}>
                   {section.sectionName}
@@ -281,26 +281,26 @@ const MonthlyConsumption = () => {
         <Row>
           <Col className="d-flex justify-content-center mt-3">
             <Pagination>
-              <Pagination.First 
-                onClick={() => handlePageChange(1)} 
+              <Pagination.First
+                onClick={() => handlePageChange(1)}
                 disabled={currentPage === 1}
               />
-              <Pagination.Prev 
-                onClick={() => handlePageChange(currentPage - 1)} 
+              <Pagination.Prev
+                onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
               />
-              
+
               {/* Display page numbers */}
               {pageNumbers.map(number => {
                 // Show 5 pages around current page
                 if (
-                  number === 1 || 
-                  number === totalPages || 
+                  number === 1 ||
+                  number === totalPages ||
                   (number >= currentPage - 2 && number <= currentPage + 2)
                 ) {
                   return (
-                    <Pagination.Item 
-                      key={number} 
+                    <Pagination.Item
+                      key={number}
                       active={number === currentPage}
                       onClick={() => handlePageChange(number)}
                     >
@@ -308,20 +308,20 @@ const MonthlyConsumption = () => {
                     </Pagination.Item>
                   );
                 } else if (
-                  number === currentPage - 3 || 
+                  number === currentPage - 3 ||
                   number === currentPage + 3
                 ) {
                   return <Pagination.Ellipsis key={number} />;
                 }
                 return null;
               })}
-              
-              <Pagination.Next 
-                onClick={() => handlePageChange(currentPage + 1)} 
+
+              <Pagination.Next
+                onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
               />
-              <Pagination.Last 
-                onClick={() => handlePageChange(totalPages)} 
+              <Pagination.Last
+                onClick={() => handlePageChange(totalPages)}
                 disabled={currentPage === totalPages}
               />
             </Pagination>

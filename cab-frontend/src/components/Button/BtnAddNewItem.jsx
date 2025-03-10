@@ -3,7 +3,7 @@ import { useState } from "react";
 import { API_ENDPOINTS } from "../../config";
 import { Button, Modal, Form } from "react-bootstrap";
 
-const BtnAddNewItem = ({fetchItems, classifications, measurements}) => {
+const BtnAddNewItem = ({ fetchItems, classifications, measurements }) => {
     const [showModal, setShowModal] = useState(false);
     const [selectedMeasurement, setSelectedMeasurement] = useState('');
     const [selectedClassification, setSelectedClassification] = useState('');
@@ -20,14 +20,14 @@ const BtnAddNewItem = ({fetchItems, classifications, measurements}) => {
         const selectedId = parseInt(e.target.value, 10);
         setSelectedMeasurement(selectedId);
     };
-    
+
     const handleClassificationChange = (e) => {
         const selectedId = parseInt(e.target.value, 10);
         setSelectedClassification(selectedId);
     };
 
     // Handle form submission
-    const handleSubmit = async(e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const formData = {
             itemName: e.target.itemName.value,
@@ -36,16 +36,16 @@ const BtnAddNewItem = ({fetchItems, classifications, measurements}) => {
             unitCost: e.target.unitCost.value,
         };
 
-        const token = localStorage.getItem('access_token');  
-        
-        try{
+        const token = localStorage.getItem('access_token');
+
+        try {
             const response = await fetch(API_ENDPOINTS.ADD_ITEM, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json', // Ensure the server knows it's JSON
-                    'Authorization': `Token ${token}`,  
+                    'Authorization': `Token ${token}`,
                 },
-                body: JSON.stringify(formData), 
+                body: JSON.stringify(formData),
             });
 
             if (!response.ok) {
@@ -62,7 +62,7 @@ const BtnAddNewItem = ({fetchItems, classifications, measurements}) => {
         }
     };
 
-    return(
+    return (
         <>
             <Button onClick={handleShow} variant="primary">
                 + Add New Item
@@ -86,13 +86,13 @@ const BtnAddNewItem = ({fetchItems, classifications, measurements}) => {
 
                         <Form.Group className="mb-3">
                             <Form.Label>Classification</Form.Label>
-                            <Form.Select 
-                                name="classification" 
-                                value={selectedClassification} 
-                                onChange={handleClassificationChange} 
+                            <Form.Select
+                                name="classification"
+                                value={selectedClassification}
+                                onChange={handleClassificationChange}
                                 required>
                                 <option value="">Select Classification</option>
-                                    {classifications.map((classification) => (
+                                {classifications.map((classification) => (
                                     <option key={classification.id} value={classification.classificationID}>
                                         {classification.classification}
                                     </option>
@@ -102,13 +102,13 @@ const BtnAddNewItem = ({fetchItems, classifications, measurements}) => {
 
                         <Form.Group className="mb-3">
                             <Form.Label>Unit of Measurement</Form.Label>
-                            <Form.Select 
-                                name="measurement" 
-                                value={selectedMeasurement} 
-                                onChange={handleMeasureChange} 
+                            <Form.Select
+                                name="measurement"
+                                value={selectedMeasurement}
+                                onChange={handleMeasureChange}
                                 required>
                                 <option value="">Select Measurement</option>
-                                    {measurements.map((measurement) => (
+                                {measurements.map((measurement) => (
                                     <option key={measurement.id} value={measurement.measurementID}>
                                         {measurement.measureName}
                                     </option>
@@ -118,10 +118,11 @@ const BtnAddNewItem = ({fetchItems, classifications, measurements}) => {
 
                         <Form.Group className="mb-3">
                             <Form.Label>Unit Cost</Form.Label>
-                            <Form.Control 
-                                name="unitCost" 
+                            <Form.Control
+                                name="unitCost"
                                 type="number"
-                                >
+                                min="0" step="0.01" 
+                            >
                             </Form.Control>
                         </Form.Group>
 
