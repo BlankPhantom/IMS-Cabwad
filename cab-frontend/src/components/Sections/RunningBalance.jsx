@@ -11,7 +11,7 @@ const RunningBalance = () => {
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [searchTerm, setSearchTerm] = useState("");
-    const [remarks, setRemarks] = useState(" ");
+    const [remarks, setRemarks] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
@@ -97,14 +97,22 @@ const RunningBalance = () => {
     };
 
     const handleRemarksFilter = (event) => {
-        const remark = event.target.value.toLowerCase()
-       
-        const filtered = runningBalanceData.filter(item => 
-            item.remarks.toLowerCase().includes(remark)
-        );
+        const remark = event.target.value; // Keep it case-sensitive to match exactly
+    
+        // Update remarks state first
         setRemarks(remark);
-        setFilteredData(filtered);
-    }
+    
+        // Apply filter based on selection
+        if (remark === "") {
+            setFilteredData(runningBalanceData); // Reset to all data when "All" is selected
+        } else {
+            const filtered = runningBalanceData.filter(item => 
+                item.remarks === remark // Use exact match
+            );
+            setFilteredData(filtered);
+        }
+    };
+    
 
     // Handle month and year change
     const handleMonthYearChange = (month, year) => {
@@ -157,11 +165,12 @@ const RunningBalance = () => {
             <Row>
                 <Col className="d-flex">
                     <Form.Select 
-                    className="form-select"
-                    value={remarks}
-                    style={{width: '300px'}}
-                    onChange={handleRemarksFilter}>
-                        <option value=" ">All</option>
+                        className="form-select"
+                        value={remarks} // Ensure this is controlled properly
+                        style={{width: '300px'}}
+                        onChange={handleRemarksFilter}
+                    >
+                        <option value="">All</option>
                         <option value="Non-Moving">Non-Moving</option>
                         <option value="Slow Moving">Slow Moving</option>
                         <option value="Fast Moving">Fast Moving</option>

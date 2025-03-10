@@ -61,13 +61,14 @@ class Area(models.Model):
 class TransactionDetails(models.Model):
     formattedDate = dateformat.format(timezone.now(), 'Y-m-d')
     transactionDetailsID = models.AutoField(primary_key=True)
-    date = models.DateField(default=formattedDate)
+    date = models.DateField(default=timezone.now())
     week = models.IntegerField(default=0)
     mris = models.IntegerField(null=False)
     supplier = models.CharField(max_length=500, blank=True)
     requestedBy = models.CharField(max_length=500, blank=True)
     sectionID = models.ForeignKey('Section', on_delete=models.CASCADE, null=True)
     purposeID = models.ForeignKey('Purpose', on_delete=models.CASCADE, null=True)
+    created_at = models.DateTimeField(default=timezone.now)
 
 class TransactionProduct(models.Model):
     transactionProductID = models.AutoField(primary_key=True)

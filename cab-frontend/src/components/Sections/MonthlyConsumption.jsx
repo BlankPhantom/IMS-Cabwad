@@ -143,7 +143,10 @@ const MonthlyConsumption = () => {
         ? "pdf"
         : "docx";
 
-      // Fetch the report from API (modify endpoint based on file type)
+      // Show loading indicator
+      setIsLoading(true); // Add this state variable if not already present
+
+      // Fetch the report from API
       const response = await fetch(
         API_ENDPOINTS.DOWNLOAD_REPORTS(selectedYear, selectedMonth, fileType),
         {
@@ -151,26 +154,46 @@ const MonthlyConsumption = () => {
           headers: {
             Authorization: `Token ${token}`,
           },
+          // Important: Explicitly set the response type
+          responseType: 'arraybuffer'
         }
       );
 
       if (!response.ok) {
-        throw new Error("Failed to fetch the report.");
+        const errorText = await response.text();
+        throw new Error(`Failed to fetch the report: ${errorText}`);
       }
 
-      // Convert response to Blob
-      const blob = await response.blob();
+      // Get content type from response
+      const contentType = response.headers.get("content-type");
+      
+      // Convert response to Blob with explicit content type
+      const blob = new Blob([await response.arrayBuffer()], { 
+        type: contentType || (fileType === 'pdf' ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+      });
 
       // Determine file name & extension
       const fileName = `Monthly_Report_${selectedYear}_${selectedMonth}.${fileType}`;
 
-      // Save the file
-      saveAs(blob, fileName);
+      // Create a download link and trigger it
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      
+      // Clean up
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
 
+      setIsLoading(false); // Hide loading indicator
       alert(`Report downloaded successfully as ${fileType.toUpperCase()}!`);
     } catch (error) {
+      setIsLoading(false); // Hide loading indicator
       console.error("Error generating the report:", error);
-      alert("Failed to generate report. Please try again.");
+      alert(`Failed to generate report: ${error.message}`);
     }
   };
 

@@ -588,7 +588,7 @@ logger = logging.getLogger(__name__)
 
 @csrf_exempt
 @api_view(['GET'])
-def download_report_doc(request, year, month):
+def download_report_doc(request, year, month, file_type='pdf'):
     try:
         # Validate input parameters
         try:
@@ -598,83 +598,63 @@ def download_report_doc(request, year, month):
             # Ensure valid month range
             if month < 1 or month > 12:
                 return Response({"error": "Invalid month. Must be between 1 and 12."}, status=400)
+                
+            # Validate file type
+            if file_type not in ['pdf', 'docx']:
+                return Response({"error": "Invalid file type. Must be 'pdf' or 'docx'."}, status=400)
         except ValueError:
             return Response({"error": "Invalid year or month format"}, status=400)
 
-        # Query the report by year and month
+        # Get the report
         try:
             report = MonthlyConsumptionTotal.objects.get(
                 updated_at__year=year, 
                 updated_at__month=month
             )
         except MonthlyConsumptionTotal.DoesNotExist:
-            logger.warning(f"Report not found for year {year}, month {month}")
             return Response({
-                "error": "Report not found for the specified year and month",
-                "details": {
-                    "year": year,
-                    "month": month
-                }
+                "error": "Report not found for the specified year and month"
             }, status=404)
         
         # Generate the report
         try:
-            doc_path, pdf_path = generate_reports_doc(report)
-        except Exception as doc_gen_error:
-            logger.error(f"Failed to generate report: {str(doc_gen_error)}", exc_info=True)
+            docx_path, pdf_path = generate_reports_doc(report)
+        except Exception as e:
             return Response({
-                "error": "Failed to generate report document",
-                "details": str(doc_gen_error)
+                "error": f"Failed to generate report: {str(e)}"
             }, status=500)
         
-        # Determine file to serve (PDF preferred, fallback to DOCX)
-        if pdf_path and os.path.exists(pdf_path):
+        # Determine which file to serve based on request
+        if file_type == 'pdf' and pdf_path and os.path.exists(pdf_path):
             file_path = pdf_path
-            filename = f"report_{year}_{month}.pdf"
             content_type = 'application/pdf'
-        elif os.path.exists(doc_path):
-            file_path = doc_path
-            filename = f"report_{year}_{month}.docx"
-            content_type = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            filename = f"Monthly_Report_{year}_{month}.pdf"
         else:
-            logger.error("No valid file generated")
+            # Fall back to DOCX
+            file_path = docx_path
+            content_type = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            filename = f"Monthly_Report_{year}_{month}.docx"
+        
+        # Check if the file exists and has content
+        if not os.path.exists(file_path) or os.path.getsize(file_path) == 0:
             return Response({
-                "error": "No valid report file found",
-                "details": {
-                    "docx_path": doc_path,
-                    "pdf_path": pdf_path
-                }
+                "error": "Generated file is empty or does not exist"
             }, status=500)
         
-        # Serve the file for download
-        try:
-            response = FileResponse(
-                open(file_path, 'rb'), 
-                as_attachment=True, 
-                filename=filename,
-                content_type=content_type
-            )
-            
-            # Basic caching headers
-            response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-            response['Pragma'] = 'no-cache'
-            response['Expires'] = '0'
-            
-            logger.info(f"Report downloaded: Year {year}, Month {month}, Format: {filename.split('.')[-1].upper()}")
-            
-            return response
+        # Serve the file with proper headers
+        response = FileResponse(
+            open(file_path, 'rb'),
+            as_attachment=True,
+            filename=filename
+        )
+        response['Content-Type'] = content_type
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        response['Content-Length'] = os.path.getsize(file_path)
+        response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
         
-        except Exception as file_error:
-            logger.error(f"Error serving file: {str(file_error)}", exc_info=True)
-            return Response({
-                "error": "Unexpected error serving file",
-                "details": str(file_error)
-            }, status=500)
-    
-    except Exception as unexpected_error:
-        logger.critical(f"Unexpected error in report download: {str(unexpected_error)}", exc_info=True)
+        return response
+        
+    except Exception as e:
         return Response({
-            "error": "An unexpected error occurred",
-            "details": str(unexpected_error)
+            "error": f"Unexpected error: {str(e)}"
         }, status=500)
-        
