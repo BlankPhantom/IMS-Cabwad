@@ -180,7 +180,8 @@ def get_current_week_month_year():
 
 # Helper function to calculate totals by sectionID for each week and month
 def calculate_totals_for_week_and_month():
-    current_week, current_month, current_year = get_current_week_month_year()
+    # Get the current week, month, and year
+    _, current_month, current_year = get_current_week_month_year()
 
     # Map sectionID to model fields
     section_mapping = {
@@ -201,12 +202,11 @@ def calculate_totals_for_week_and_month():
 
     # Calculate totals for each week
     for week in range(1, 6):
-        # Get consumption totals for each sectionID for the current week and month
+        # Get consumption totals for each sectionID for the current week
         totals = MonthlyConsumption.objects.filter(
-            created_at__year=current_year,
-            created_at__month=current_month,
-            created_at__day__gte=(week - 1) * 7 + 1,
-            created_at__day__lte=week * 7
+            date__year=current_year,
+            date__month=current_month,
+            week=week
         ).values('sectionID').annotate(total=Sum('total'))
 
         # Update weekly totals based on query results
@@ -214,7 +214,7 @@ def calculate_totals_for_week_and_month():
             section_id = item['sectionID']
             if section_id in section_mapping:
                 field_name = f"{section_mapping[section_id]}{week}"
-                weekly_totals[field_name] = item['total']
+                weekly_totals[field_name] = item['total'] or 0  # Handle None values
 
     # Calculate totalConsumption for each week
     for week in range(1, 6):
@@ -232,21 +232,34 @@ def calculate_totals_for_week_and_month():
     # Combine weekly and overall totals
     totals = {**weekly_totals, **overall_totals}
 
-    # Ensure unique check uses month and year
-    monthly_total, created = MonthlyConsumptionTotal.objects.get_or_create(
-        created_at__year=current_year,
-        created_at__month=current_month,
-        defaults=totals
-    )
+    try:
+        # Get or create the monthly total record
+        monthly_total, created = MonthlyConsumptionTotal.objects.get_or_create(
+            created_at__year=current_year,
+            created_at__month=current_month,
+            defaults=totals
+        )
 
-    # If the record already exists, update ALL fields (including weekly and overall totals)
-    if not created:
-        for field, value in totals.items():
-            setattr(monthly_total, field, value)
-        monthly_total.updated_at = now()
-        monthly_total.save()
+        if not created:
+            # Update all fields
+            for field, value in totals.items():
+                setattr(monthly_total, field, value or 0)  # Handle None values
+            monthly_total.updated_at = now()
+            monthly_total.save()
+
+        print(f"Successfully updated MonthlyConsumptionTotal for {current_month}/{current_year}")
+    except Exception as e:
+        print(f"Error updating MonthlyConsumptionTotal: {e}")
+        import traceback
+        traceback.print_exc()
 
 # Signal to update or create MonthlyConsumptionTotal when MonthlyConsumption is created
 @receiver(post_save, sender=MonthlyConsumption)
-def update_monthly_total(sender, instance, **kwargs):
-    calculate_totals_for_week_and_month()
+def update_monthly_total(sender, instance, created, **kwargs):
+    """Update MonthlyConsumptionTotal whenever MonthlyConsumption is created or updated"""
+    try:
+        calculate_totals_for_week_and_month()
+    except Exception as e:
+        print(f"Error in update_monthly_total signal: {e}")
+        import traceback
+        traceback.print_exc()
