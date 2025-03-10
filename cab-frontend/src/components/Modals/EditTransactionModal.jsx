@@ -463,6 +463,7 @@ const EditTransactionModal = ({
 
             setLocalProducts([]);
             handleClose();
+            window.location.reload(); 
         } catch (error) {
             console.error("❌ Error saving transaction:", error);
             alert("Failed to save changes. Please try again.");

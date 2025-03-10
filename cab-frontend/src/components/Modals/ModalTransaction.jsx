@@ -485,6 +485,7 @@ const ModalTransaction = ({
                                 value={editProductData.productName}
                                 onChange={handleEditProductNameChange}
                                 required
+                                autoComplete='off'
                             />
                             {filteredProducts.length > 0 && (
                                 <div className="dropdown-menu show">
