@@ -1,5 +1,5 @@
 /cab_backend/venv
 *.pyc
-cab_backend/cab_backend/__pycache__
-cab_backend/reports_download.log
-cab_backend/backups
+/cab_backend/cab_backend/__pycache__
+/cab_backend/**.log
+**/cab_backend/backups
