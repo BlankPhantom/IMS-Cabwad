@@ -3,6 +3,6 @@
 /cab_backend/cab_backend/__pycache__
 /cab_backend/**.log
 /cab_backend/backups
-/cab_backend/migrations/*.py
-!/cab_backend/migrations/__init__.py
+/cab_backend/ims/migrations/*.py
+!/cab_backend/ims/migrations/__init__.py
 
