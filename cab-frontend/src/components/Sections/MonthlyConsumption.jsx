@@ -15,6 +15,7 @@ const MonthlyConsumption = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [conversionProgress, setConversionProgress] = useState(false);
   
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -132,20 +133,17 @@ const MonthlyConsumption = () => {
 
   const handleGenerateReports = async () => {
     try {
+      setConversionProgress(true); // Start progress
       const token = localStorage.getItem("access_token");
       if (!token) {
         alert("Authorization token is missing. Please log in again.");
+        setConversionProgress(false); // End progress
         return;
       }
-
-      // Ask the user which file type they want to download
-      const fileType = window.confirm("Do you want to download as PDF? Click 'Cancel' for DOCX.")
-        ? "pdf"
-        : "docx";
-
+  
       // Fetch the report from API (modify endpoint based on file type)
       const response = await fetch(
-        API_ENDPOINTS.DOWNLOAD_REPORTS(selectedYear, selectedMonth, fileType),
+        API_ENDPOINTS.DOWNLOAD_REPORTS(selectedYear, selectedMonth, "pdf"),
         {
           method: "GET",
           headers: {
@@ -153,24 +151,26 @@ const MonthlyConsumption = () => {
           },
         }
       );
-
+  
       if (!response.ok) {
         throw new Error("Failed to fetch the report.");
       }
-
+  
       // Convert response to Blob
       const blob = await response.blob();
-
+  
       // Determine file name & extension
-      const fileName = `Monthly_Report_${selectedYear}_${selectedMonth}.${fileType}`;
-
+      const fileName = `Monthly_Report_${selectedYear}_${selectedMonth}.pdf`;
+  
       // Save the file
       saveAs(blob, fileName);
-
-      alert(`Report downloaded successfully as ${fileType.toUpperCase()}!`);
+  
+      alert(`Report downloaded successfully as PDF!`);
     } catch (error) {
       console.error("Error generating the report:", error);
       alert("Failed to generate report. Please try again.");
+    } finally {
+      setConversionProgress(false); // End progress
     }
   };
 
@@ -184,7 +184,7 @@ const MonthlyConsumption = () => {
           <h2 style={{ fontWeight: "650" }}>Monthly Consumption</h2>
         </Col>
       </Row>
-
+  
       <Row className="mt-3 d-flex align-items-center justify-content-between">
         <Col md={6}>
           <MonthYearPicker onMonthYearChange={handleMonthYearChange} />
@@ -205,7 +205,7 @@ const MonthlyConsumption = () => {
           </Form.Group>
         </Col>
       </Row>
-
+  
       <Row>
         <Col className="d-flex justify-content-end mt-4">
           <input
@@ -218,15 +218,25 @@ const MonthlyConsumption = () => {
           />
         </Col>
       </Row>
-
+  
       <Row>
         <Col className="d-flex justify-content-center mt-3">
-          <Button className="shadow" onClick={handleGenerateReports}>
-            GENERATE MONTHLY REPORT
+          <Button className="shadow" onClick={handleGenerateReports} disabled={conversionProgress}>
+            {conversionProgress ? "Generating Report..." : "GENERATE MONTHLY REPORT"}
           </Button>
         </Col>
       </Row>
-
+  
+      {conversionProgress && (
+        <Row>
+          <Col className="d-flex justify-content-center mt-3">
+            <div className="spinner-border text-primary" role="status">
+              <span className="sr-only">Loading...</span>
+            </div>
+          </Col>
+        </Row>
+      )}
+  
       <Row>
         <Table responsive bordered striped hover className="tableStyle mt-3">
           <thead>
@@ -275,7 +285,7 @@ const MonthlyConsumption = () => {
           </tbody>
         </Table>
       </Row>
-
+  
       {/* Pagination */}
       {!loading && !error && filteredData.length > 0 && (
         <Row>
@@ -331,5 +341,4 @@ const MonthlyConsumption = () => {
     </Container>
   );
 };
-
 export default MonthlyConsumption;

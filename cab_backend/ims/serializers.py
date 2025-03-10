@@ -229,6 +229,22 @@ class TransactionProductSerializer(serializers.ModelSerializer):
               f"transferFromWH={original.transferFromWH}, issuedQty={original.issuedQty}, \n"
               f"returnToSupplier={original.returnToSupplier}, transferToWH={original.transferToWH}\n")
         
+        # Calculate the adjustment to revert the original transaction
+        revert_qty_adjustment = (
+            -original.purchasedFromSupp +
+            -original.returnedQty +
+            -original.transferFromWH -
+            -original.issuedQty -
+            -original.returnToSupplier -
+            -original.transferToWH
+        )
+        
+        # Print debug information for the revert adjustment
+        print(f"Revert adjustment: {revert_qty_adjustment}")
+        
+        # Revert the original transaction values
+        self.update_item_quantity(original.itemID.pk, revert_qty_adjustment)
+        
         # Update the instance
         instance = super().update(instance, validated_data)
         
@@ -237,14 +253,14 @@ class TransactionProductSerializer(serializers.ModelSerializer):
               f"transferFromWH={instance.transferFromWH}, issuedQty={instance.issuedQty}, \n"
               f"returnToSupplier={instance.returnToSupplier}, transferToWH={instance.transferToWH}\n")
         
-        # Calculate the adjustment using original values and updated instance
+        # Calculate the adjustment using updated instance
         qty_adjustment = (
-            (instance.purchasedFromSupp - original.purchasedFromSupp) +
-            (instance.returnedQty - original.returnedQty) +
-            (instance.transferFromWH - original.transferFromWH) - 
-            (instance.issuedQty - original.issuedQty) -
-            (instance.returnToSupplier - original.returnToSupplier) -
-            (instance.transferToWH - original.transferToWH)
+            instance.purchasedFromSupp +
+            instance.returnedQty +
+            instance.transferFromWH -
+            instance.issuedQty -
+            instance.returnToSupplier -
+            instance.transferToWH
         )
         
         # Print debug information for the adjustment

@@ -1,15 +1,15 @@
 from docx import Document
 from django.conf import settings
 import os
-import subprocess
 from datetime import datetime
 import logging
+from docx2pdf import convert
 
 logger = logging.getLogger(__name__)
 
+# PDF CONVERSION USING DOCX2PDF
 def convert_docx_to_pdf(docx_path):
     try:
-        from docx2pdf import convert
         pdf_path = docx_path.replace('.docx', '.pdf')
         convert(docx_path, pdf_path)
         
