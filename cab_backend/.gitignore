@@ -2,4 +2,4 @@ venv/
 db.sqlite3
 /cab_backend/venv
 *.pyc
-reports_download.log
+backups/
