@@ -241,6 +241,7 @@ const MonthlyConsumption = () => {
         <Table responsive bordered striped hover className="tableStyle mt-3">
           <thead>
             <tr>
+              <th>Section</th>
               <th>Date</th>
               <th>Week</th>
               <th>Item ID</th>
@@ -266,6 +267,7 @@ const MonthlyConsumption = () => {
             ) : currentItems.length > 0 ? (
               currentItems.map((item, index) => (
                 <tr key={index}>
+                  <td>{item.sectionName}</td>
                   <td>{item.date}</td>
                   <td>{item.week}</td>
                   <td>{item.itemID}</td>

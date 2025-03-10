@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 import math
 from datetime import datetime
 from ims.models import (Item, BeginningBalance, Classification, Measurement, Section, Purpose, TransactionDetails, TransactionProduct, RunningBalance, Area, MonthlyConsumption, MonthlyConsumptionTotal) 
-                        # , MonthlyConsumption)
 from django.db.models import Sum
 from django.db.models import F
 
@@ -106,6 +105,7 @@ class AreaSerializer(serializers.ModelSerializer):
         fields = '__all__'
         
 class MonthlyConsumptionSerializer(serializers.ModelSerializer):
+    sectionName = serializers.CharField(source='sectionID.sectionName', read_only=True)
     class Meta:
         model = MonthlyConsumption
         fields = '__all__'
@@ -122,7 +122,11 @@ class TransactionDetailsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TransactionDetails
-        fields = ('transactionDetailsID', 'date', 'week', 'mris', 'supplier', 'requestedBy', 'sectionID', 'sectionName', 'purposeID', 'purposeName')  
+        fields = ('transactionDetailsID', 'date', 'week', 'mris', 'supplier', 'requestedBy', 'sectionID', 'sectionName', 'purposeID', 'purposeName')
+        
+    def update_section(self, instance, section_id):
+        instance.sectionID = Section.objects.get(pk=section_id)
+        instance.save(update_fields=['sectionID'])  
 
 class TransactionProductSerializer(serializers.ModelSerializer):
     itemQuantity = serializers.SerializerMethodField()

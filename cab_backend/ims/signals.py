@@ -1,9 +1,40 @@
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.utils.timezone import now
 from django.db.models import Sum
 from django.utils import timezone
-from .models import TransactionProduct, MonthlyConsumption, MonthlyConsumptionTotal, Item, BeginningBalance
+from .models import TransactionDetails, TransactionProduct, MonthlyConsumption, MonthlyConsumptionTotal, Item, BeginningBalance
+
+# Signal to update MonthlyConsumption when TransactionDetails sectionID is updated
+@receiver(pre_save, sender=TransactionDetails)
+def update_monthly_consumption_section(sender, instance, **kwargs):
+    """
+    Update the sectionID in MonthlyConsumption when the sectionID in TransactionDetails is updated.
+    """
+    if not instance.pk:
+        # This is a new instance, so no need to update MonthlyConsumption
+        return
+
+    try:
+        # Get the original instance before the update
+        original_instance = TransactionDetails.objects.get(pk=instance.pk)
+        
+        # Check if the sectionID has changed
+        if original_instance.sectionID != instance.sectionID:
+            # Update the sectionID in the corresponding MonthlyConsumption entries
+            MonthlyConsumption.objects.filter(
+                sectionID=original_instance.sectionID,
+                date=original_instance.date,
+                week=original_instance.week,
+                itemID__in=instance.transactionproduct_set.values_list('itemID', flat=True)
+            ).update(sectionID=instance.sectionID)
+            
+            print(f"Updated sectionID from {original_instance.sectionID} to {instance.sectionID} in MonthlyConsumption entries")
+    except TransactionDetails.DoesNotExist:
+        # The original instance does not exist, so no need to update MonthlyConsumption
+        pass
+    except Exception as e:
+        print(f"Error updating sectionID in MonthlyConsumption: {e}")
 
 # ✅ Signal to add new items to BeginningBalance automatically
 @receiver(post_save, sender=Item)
@@ -61,7 +92,6 @@ def create_monthly_consumption(sender, instance, created, **kwargs):
             created_at=instance.created_at  # Use TransactionProduct's timestamp
         )
  
-
         print(f"MonthlyConsumption created for ItemID={instance.itemID}")
  
     except Item.DoesNotExist:
