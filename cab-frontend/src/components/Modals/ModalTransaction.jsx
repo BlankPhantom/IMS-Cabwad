@@ -448,7 +448,7 @@ const ModalTransaction = ({
                             <Form.Control
                                 type="number"
                                 name="cost"
-                                value={editProductData.cost}
+                                value={productData.cost}
                                 onChange={handleProductChange}
                                 min="0"
                                 step="0.01"
