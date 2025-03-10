@@ -61,7 +61,7 @@ class Area(models.Model):
 class TransactionDetails(models.Model):
     formattedDate = dateformat.format(timezone.now(), 'Y-m-d')
     transactionDetailsID = models.AutoField(primary_key=True)
-    date = models.DateField(default=timezone.now())
+    date = models.DateField(default=formattedDate)
     week = models.IntegerField(default=0)
     mris = models.IntegerField(null=False)
     supplier = models.CharField(max_length=500, blank=True)

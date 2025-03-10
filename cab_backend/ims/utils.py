@@ -8,51 +8,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 def convert_docx_to_pdf(docx_path):
-    if isinstance(docx_path, tuple):
-        docx_path = docx_path[0]
-    
-    pdf_path = docx_path.replace('.docx', '.pdf')
-    
     try:
-        # Use a more efficient PowerShell script
-        ps_script = f"""
-        $ErrorActionPreference = "Stop"
-        try {{
-            $word = New-Object -ComObject Word.Application
-            $word.Visible = $false
-            $word.DisplayAlerts = 0
-            
-            # Open with read-only to avoid file locking issues
-            $doc = $word.Documents.Open("{docx_path}", $false, $true)
-            
-            # PDF format constant is 17
-            $doc.SaveAs([ref] "{pdf_path}", [ref] 17)
-            $doc.Close()
-            $word.Quit()
-            
-            [System.Runtime.Interopservices.Marshal]::ReleaseComObject($doc) | Out-Null
-            [System.Runtime.Interopservices.Marshal]::ReleaseComObject($word) | Out-Null
-            [System.GC]::Collect()
-            [System.GC]::WaitForPendingFinalizers()
-            
-            Write-Output "Conversion successful"
-        }} catch {{
-            Write-Error $_.Exception.Message
-            exit 1
-        }}
-        """
-        
-        # Write script to temp file to avoid command line length limitations
-        import tempfile
-        ps_file = tempfile.NamedTemporaryFile(suffix='.ps1', delete=False)
-        ps_file.write(ps_script.encode('utf-8'))
-        ps_file.close()
-        
-        result = subprocess.run(['powershell', '-ExecutionPolicy', 'Bypass', '-File', ps_file.name], 
-                               check=True, capture_output=True)
-        
-        # Clean up temp file
-        os.unlink(ps_file.name)
+        from docx2pdf import convert
+        pdf_path = docx_path.replace('.docx', '.pdf')
+        convert(docx_path, pdf_path)
         
         if os.path.exists(pdf_path):
             logger.info(f"Successfully converted {docx_path} to PDF")
@@ -61,7 +20,7 @@ def convert_docx_to_pdf(docx_path):
             logger.error("PDF conversion completed but file not found")
             return None
     except Exception as e:
-        logger.error(f"Optimized conversion error: {str(e)}")
+        logger.error(f"PDF conversion error: {str(e)}")
         return None
 
 def replace_text_in_table(table, placeholders):
