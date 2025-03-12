@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Form, Button, Row, Col } from 'react-bootstrap';
+import { Modal, Form, Button, Row, Col, Alert } from 'react-bootstrap';
 import { API_ENDPOINTS } from "../../config";
 import { faPenToSquare, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -49,6 +49,8 @@ const EditTransactionModal = ({
         cost: "",
         total: ""
     });
+    const [validationError, setValidationError] = useState('');
+    const [editValidationError, setEditValidationError] = useState('');
 
     // ✅ Fetch sections & purpose on mount
     useEffect(() => {
@@ -146,57 +148,6 @@ const EditTransactionModal = ({
             console.error("Error fetching transaction products:", error);
         }
     };
-
-    // const fetchTransactionsWithProducts = async () => {
-    //     try {
-    //         const transactionsResponse = await fetch(API_ENDPOINTS.TRANSACTION_LIST, {
-    //             method: "GET",
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //                 "Authorization": `Token ${localStorage.getItem("access_token")}`, // ✅ Ensure token is included
-    //             },
-    //         });
-
-    //         if (!transactionsResponse.ok) {
-    //             throw new Error(`Transactions API Error: ${transactionsResponse.status} ${transactionsResponse.statusText}`);
-    //         }
-
-    //         const transactions = await transactionsResponse.json();
-
-    //         const productsResponse = await fetch(API_ENDPOINTS.TRANSACTION_PRODUCTS_ALL, {
-    //             method: "GET",
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //                 "Authorization": `Token ${localStorage.getItem("access_token")}`,
-    //             },
-    //         });
-
-    //         if (!productsResponse.ok) {
-    //             throw new Error(`Products API Error: ${productsResponse.status} ${productsResponse.statusText}`);
-    //         }
-
-    //         const productsText = await productsResponse.text();
-
-    //         // ✅ **Check if Response is Valid JSON**
-    //         let allProducts;
-    //         try {
-    //             allProducts = JSON.parse(productsText);
-    //         } catch (error) {
-    //             console.error("Invalid JSON from Products API:", productsText);
-    //             throw new Error("Products API did not return valid JSON.");
-    //         }
-
-    //         // ✅ **Filter products correctly**
-    //         const transactionsWithProducts = transactions.map(transaction => ({
-    //             ...transaction,
-    //             products: allProducts.filter(product => product.transactionDetailsID === transaction.transactionDetailsID),
-    //         }));
-
-    //         setTransactions(transactionsWithProducts);
-    //     } catch (error) {
-    //         console.error("Error fetching transactions and products:", error);
-    //     }
-    // };
 
     const handleShowProductModal = () => {
         setShowProductModal(true);
@@ -330,6 +281,10 @@ const EditTransactionModal = ({
             issuedQuantity: "",
             returnedQuantity: "",
         }));
+
+         // Clear validation errors when changing transaction type
+         setValidationError('');
+         setEditValidationError('');
     };
 
     const handleProductSelect = (product) => {
@@ -367,6 +322,20 @@ const EditTransactionModal = ({
             alert("Please select an area.");
             return;
         }
+
+        // Validation for Issue/Return transaction type
+        if (transactionType === 'Issue/Return' && productData.issuedQuantity) {
+            const issuedQty = parseFloat(productData.issuedQuantity);
+            const availableQty = parseFloat(productData.itemQuantity);
+
+            if (issuedQty > availableQty) {
+                setValidationError(`Cannot issue ${issuedQty} units. Only ${availableQty} units available in stock.`);
+                return;
+            }
+        }
+
+        // Clear any validation errors
+        setValidationError('');
 
         // ✅ Create a new product object with proper data types
         const newProduct = {
@@ -493,6 +462,20 @@ const EditTransactionModal = ({
 
     const handleSaveProduct = (e) => {
         e.preventDefault();
+
+        // Validation for Issue/Return transaction type
+        if (transactionType === 'Issue/Return' && editProductData.issuedQuantity) {
+            const issuedQty = parseFloat(editProductData.issuedQuantity);
+            const availableQty = parseFloat(editProductData.itemQuantity);
+
+            if (issuedQty > availableQty) {
+                setEditValidationError(`Cannot issue ${issuedQty} units. Only ${availableQty} units available in stock.`);
+                return;
+            }
+        }
+
+        // Clear any validation errors
+        setEditValidationError('');
 
         setLocalProducts((prevProducts) => {
             const updatedProducts = [...prevProducts];
@@ -878,8 +861,13 @@ const EditTransactionModal = ({
                             <Form.Control type="number" name="cost" value={productData.cost} onChange={handleProductChange} required  min="0" step="0.01" />
                         </Form.Group>
 
+                        {validationError && (
+                            <Alert variant="danger">
+                                {validationError}
+                            </Alert>
+                        )}
                         <div className="d-flex justify-content-end gap-2">
-                            <Button variant="danger" onClick={() => { handleCloseProductModal(); handleShow(); }}>
+                            <Button variant="danger" onClick={() => { handleCloseProductModal(); handleShow(); setValidationError(''); }}>
                                 Cancel
                             </Button>
                             <Button type="submit" variant="primary">
@@ -1004,8 +992,13 @@ const EditTransactionModal = ({
                             <Form.Control type="number" name="cost" value={editProductData.cost} onChange={handleEditProductChange} min="0" step="0.01"  />
                         </Form.Group>
 
+                        {editValidationError && (
+                            <Alert variant="danger">
+                                {editValidationError}
+                            </Alert>
+                        )}
                         <div className="d-flex justify-content-end gap-2">
-                            <Button variant="danger" onClick={() => { setShowEditProductModal(false); handleShow(); }}>
+                            <Button variant="danger" onClick={() => { setShowEditProductModal(false); handleShow(); setEditValidationError(''); }}>
                                 Cancel
                             </Button>
                             <Button type="submit" onClick={() => { handleShow(); setShowEditProductModal(false); }} variant="primary">
@@ -1129,8 +1122,13 @@ const EditTransactionModal = ({
                             <Form.Control type="number" name="cost" value={editProductData.cost || ""} onChange={handleEditProductChange}  min="0" step="0.01" />
                         </Form.Group>
 
+                        {editValidationError && (
+                            <Alert variant="danger">
+                                {editValidationError}
+                            </Alert>
+                        )}
                         <div className="d-flex justify-content-end gap-2">
-                            <Button variant="danger" onClick={() => { setShowEditExistingProductModal(false); handleShow(); }}>
+                            <Button variant="danger" onClick={() => { setShowEditExistingProductModal(false); handleShow(); setEditValidationError(''); }}>
                                 Cancel
                             </Button>
                             <Button type="submit" onClick={() => { handleShow(); setShowEditExistingProductModal(false); }} variant="primary">

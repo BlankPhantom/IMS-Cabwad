@@ -2,7 +2,7 @@ import { faPenToSquare, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState, useEffect } from 'react';
 import { API_ENDPOINTS } from "../../config";
-import { Modal, Form, Button, Row, Col } from 'react-bootstrap';
+import { Modal, Form, Button, Row, Col, Alert } from 'react-bootstrap';
 
 const ModalTransaction = ({
     showTransactionModal,
@@ -38,6 +38,8 @@ const ModalTransaction = ({
     const [area, setArea] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [setEditSelectedArea, setSelectedEditArea] = useState('');
+    const [validationError, setValidationError] = useState('');
+    const [editValidationError, setEditValidationError] = useState('');
 
     useEffect(() => {
         fetchSections();
@@ -180,16 +182,20 @@ const ModalTransaction = ({
 
     const handleTransactionTypeChange = (e) => {
         const { value } = e.target;
-        setTransactionType(value); // Always update state
+        setTransactionType(value);
 
         setEditProductData((prevData) => ({
             ...prevData,
             transactionType: value,
-            purchasedFromSupplier: "", // Clear fields
+            purchasedFromSupplier: "",
             returnToSupplier: "",
             issuedQuantity: "",
             returnedQuantity: "",
         }));
+
+        // Clear validation errors when changing transaction type
+        setValidationError('');
+        setEditValidationError('');
     };
 
     const handleEditProduct = (index) => {
@@ -201,10 +207,31 @@ const ModalTransaction = ({
         }
         setEditProductIndex(index);
         setEditProductData(product);
-        setTransactionType(product.transactionType || ""); // Ensure transaction type is set
+        setTransactionType(product.transactionType || "");
+        setEditValidationError(''); // Clear previous validation errors
         setShowEditProductModal(true);
     };
 
+    const validateAndAddProduct = (e) => {
+        e.preventDefault();
+
+        // Validation for Issue/Return transaction type
+        if (transactionType === 'Issue/Return' && productData.issuedQuantity) {
+            const issuedQty = parseFloat(productData.issuedQuantity);
+            const availableQty = parseFloat(productData.itemQuantity);
+
+            if (issuedQty > availableQty) {
+                setValidationError(`Cannot issue ${issuedQty} units. Only ${availableQty} units available in stock.`);
+                return;
+            }
+        }
+
+        // Clear any validation errors
+        setValidationError('');
+
+        // Proceed with original handler
+        handleAddProduct(e);
+    };
 
     const handleDeleteProduct = (index) => {
         const updatedProducts = transactionData.products.filter((_, i) => i !== index);
@@ -213,6 +240,21 @@ const ModalTransaction = ({
 
     const handleSaveProduct = (e) => {
         e.preventDefault();
+
+        // Validation for Issue/Return transaction type
+        if (transactionType === 'Issue/Return' && editProductData.issuedQuantity) {
+            const issuedQty = parseFloat(editProductData.issuedQuantity);
+            const availableQty = parseFloat(editProductData.itemQuantity);
+
+            if (issuedQty > availableQty) {
+                setEditValidationError(`Cannot issue ${issuedQty} units. Only ${availableQty} units available in stock.`);
+                return;
+            }
+        }
+
+        // Clear any validation errors
+        setEditValidationError('');
+
         const updatedProducts = [...transactionData.products];
         if (editProductIndex !== null) {
             updatedProducts[editProductIndex] = editProductData;
@@ -228,6 +270,11 @@ const ModalTransaction = ({
     const handleEditProductChange = (e) => {
         const { name, value } = e.target;
         setEditProductData((prevData) => ({ ...prevData, [name]: value }));
+
+        // Clear validation errors when user makes changes
+        if (name === 'issuedQuantity') {
+            setEditValidationError('');
+        }
     };
 
     return (
@@ -339,7 +386,7 @@ const ModalTransaction = ({
                     <Modal.Title>Add New Product</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Form onSubmit={handleAddProduct}>
+                    <Form onSubmit={validateAndAddProduct}>
                         <Form.Group className="mb-3">
                             <Form.Label>Transaction Type</Form.Label>
                             <Form.Select name="transactionType" value={transactionType} onChange={handleTransactionTypeChange} required>
@@ -454,9 +501,13 @@ const ModalTransaction = ({
                                 step="0.01"
                             />
                         </Form.Group>
-
+                        {validationError && (
+                            <Alert variant="danger">
+                                {validationError}
+                            </Alert>
+                        )}
                         <div className="d-flex justify-content-end gap-2">
-                            <Button variant="danger" onClick={() => { handleCloseProductModal(); handleShowTransactionModal(); }}>
+                            <Button variant="danger" onClick={() => { handleCloseProductModal(); handleShowTransactionModal(); setValidationError(''); }}>
                                 Cancel
                             </Button>
                             <Button type="submit" variant="primary">
@@ -587,9 +638,13 @@ const ModalTransaction = ({
                                 step="0.01"
                             />
                         </Form.Group>
-
+                        {editValidationError && (
+                            <Alert variant="danger">
+                                {editValidationError}
+                            </Alert>
+                        )}
                         <div className="d-flex justify-content-end gap-2">
-                            <Button variant="danger" onClick={() => { setShowEditProductModal(false); handleShowTransactionModal(); }}>
+                            <Button variant="danger" onClick={() => { setShowEditProductModal(false); handleShowTransactionModal(); setEditValidationError(''); }}>
                                 Cancel
                             </Button>
                             <Button type="submit" onClick={() => { handleShowTransactionModal() }} variant="primary">
