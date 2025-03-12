@@ -198,7 +198,7 @@ const WeeklyConsumption = () => {
                                 barmode: 'group',
                                 xaxis: { 
                                     title: 'Products',
-                                    visible: true, // Hide x-axis labels as they're in the legend
+                                    visible: false, 
                                     showticklabels: true
                                 },
                                 yaxis: { 

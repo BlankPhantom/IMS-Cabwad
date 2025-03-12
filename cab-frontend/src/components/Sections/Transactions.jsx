@@ -475,8 +475,8 @@ const Transactions = () => {
             fetchTransactionsWithProducts();// Refresh transaction list
             alert("New Transaction Recorded!");
             setShowTransactionModal(false);
-            window.location.reload(); 
             handleCloseTransactionModal();
+            window.location.reload(); 
         } catch (error) {
             console.error("Error saving transaction:", error);
             alert("Error saving transaction. Please try again.");
