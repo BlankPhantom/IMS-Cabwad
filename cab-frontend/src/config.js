@@ -1,4 +1,5 @@
 const BASE_URL = "http://127.0.0.1:8000/";
+// const BASE_URL = "http://imscabwad.pythonanywhere.com/";
 
 export const API_ENDPOINTS = {
     BASE: `${BASE_URL}`,
