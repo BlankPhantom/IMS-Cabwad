@@ -231,7 +231,7 @@ const MonthlyConsumption = () => {
         <Row>
           <Col className="d-flex justify-content-center mt-3">
             <div className="spinner-border text-primary" role="status">
-              <span className="sr-only">Loading...</span>
+              <span className="sr-only"></span>
             </div>
           </Col>
         </Row>
