@@ -280,6 +280,10 @@ class TransactionProductSerializer(serializers.ModelSerializer):
         return instance
     
     def validate(self, data):
+        request = self.context.get('request')
+        if request and request.method == 'PUT':
+            return data
+
         issuedQty = data.get('issuedQty', 0)
         item = Item.objects.get(pk=data['itemID'].pk)
 

@@ -77,6 +77,11 @@ def create_monthly_consumption(sender, instance, created, **kwargs):
         ).exists():
             print(f"Skipping: MonthlyConsumption already exists for ItemID={instance.itemID}")
             return
+        
+        # Skip creation if consumption is 0
+        if instance.consumption == 0:
+            print(f"Skipping: Consumption is 0 for ItemID={instance.itemID}")
+            return
 
         # Create a new MonthlyConsumption entry
         MonthlyConsumption.objects.create(
