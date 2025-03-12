@@ -254,13 +254,13 @@ const MonthlyConsumption = () => {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="7" className="text-center">
+                <td colSpan="8" className="text-center">
                   Loading data...
                 </td>
               </tr>
             ) : error ? (
               <tr>
-                <td colSpan="7" className="text-center text-danger">
+                <td colSpan="8" className="text-center text-danger">
                   {error}
                 </td>
               </tr>
@@ -279,7 +279,7 @@ const MonthlyConsumption = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="7" className="text-center">
+                <td colSpan="8" className="text-center">
                   No records found.
                 </td>
               </tr>

@@ -224,13 +224,13 @@ const RunningBalance = () => {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="14" className="text-center">
+                <td colSpan="15" className="text-center">
                   Loading data...
                 </td>
               </tr>
             ) : error ? (
               <tr>
-                <td colSpan="14" className="text-center text-danger">
+                <td colSpan="15" className="text-center text-danger">
                   {error}
                 </td>
               </tr>
@@ -266,7 +266,7 @@ const RunningBalance = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="14" className="text-center">
+                <td colSpan="15" className="text-center">
                   {searchTerm
                     ? `No results found for "${searchTerm}"`
                     : "No records found."}
