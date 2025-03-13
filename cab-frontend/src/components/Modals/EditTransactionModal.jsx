@@ -319,11 +319,6 @@ const EditTransactionModal = ({
     const handleAddProductSubmit = (e) => {
         e.preventDefault();
 
-        if (!selectedArea) {
-            alert("Please select an area.");
-            return;
-        }
-
         // Validation for Issue/Return transaction type
         if (transactionType === 'Issue/Return' && productData.issuedQuantity) {
             const issuedQty = parseFloat(productData.issuedQuantity);
@@ -655,7 +650,7 @@ const EditTransactionModal = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Supplier</Form.Label>
-                            <Form.Control type="text" name="supplier" value={transactionData.supplier} autoComplete='off' onChange={handleChange} required />
+                            <Form.Control type="text" name="supplier" value={transactionData.supplier} autoComplete='off' onChange={handleChange} />
                         </Form.Group>
 
                         <Form.Group className="mb-3">

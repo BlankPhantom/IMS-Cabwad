@@ -45,11 +45,15 @@ const ModalTransaction = ({
     if (showTransactionModal) {
       fetchSections();
       fetchPurpose();
-    } if (showProductModal) {
+    }
+  }, [showTransactionModal]);
+
+  useEffect(() => {
+    if (showProductModal) {
       fetchProducts();
       fetchArea();
     }
-  }, []);
+  }, [showProductModal]);
 
   const fetchArea = async () => {
     try {
