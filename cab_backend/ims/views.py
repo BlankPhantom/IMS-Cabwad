@@ -353,50 +353,82 @@ logger = logging.getLogger(__name__)
 def create_update_runbal(request): 
     current_month = timezone.now().month 
     current_year = timezone.now().year 
-
-    # Get all items instead of just those with recent transactions
-    # Remove the limit and filtering by recent transactionszz
-
-    items = Item.objects.all().prefetch_related(
-        Prefetch('transactionproduct_set', 
-            queryset=TransactionProduct.objects.filter(
-                created_at__month=current_month,
-                created_at__year=current_year
-            ), 
-            to_attr='transactions'
+    
+    # Use select_related to reduce database queries for related models
+    items = Item.objects.all().select_related('measurementID')
+    
+    # Pre-fetch all beginning balances for the previous month in one query
+    last_month, last_year = (12, current_year - 1) if current_month == 1 else (current_month - 1, current_year)
+    
+    beginning_balances = {
+        bb.itemID: bb.itemQuantity 
+        for bb in BeginningBalance.objects.filter(
+            created_at__month=last_month,
+            created_at__year=last_year
         )
-    )
-
-    for item in items:
-        # Aggregate sums using the prefetched transactions
-        # Handle the case where an item might not have any transactions this month
-        transactions = getattr(item, 'transactions', [])
-        sums = {
-            'purchasedFromSupp_sum': sum(tp.purchasedFromSupp for tp in transactions),
-            'returnToSupplier_sum': sum(tp.returnToSupplier for tp in transactions),
-            'transferFromWH_sum': sum(tp.transferFromWH for tp in transactions),
-            'transferToWH_sum': sum(tp.transferToWH for tp in transactions),
-            'issuedQty_sum': sum(tp.issuedQty for tp in transactions),
-            'returnedQty_sum': sum(tp.returnedQty for tp in transactions),
-            'consumption_sum': sum(tp.consumption for tp in transactions)
-        }
-
-        # Handle multiple objects scenario
-        running_balances = RunningBalance.objects.filter( 
-            itemID=item, 
-            created_at__month=current_month, 
+    }
+    
+    # Prefetch all existing running balances for the current month
+    existing_balances = {
+        rb.itemID_id: rb 
+        for rb in RunningBalance.objects.filter(
+            created_at__month=current_month,
             created_at__year=current_year
         )
-
-        if running_balances.count() > 1:
-            # Delete duplicates, keep the most recent one
-            latest_balance = running_balances.order_by('-created_at').first()
-            running_balances.exclude(pk=latest_balance.pk).delete()
-            running_balance = latest_balance
-        elif running_balances.exists():
-            running_balance = running_balances.first()
+    }
+    
+    # Fetch aggregated transaction data for all items at once using Django's aggregation
+    transaction_sums = {}
+    for item_data in TransactionProduct.objects.filter(
+        created_at__month=current_month,
+        created_at__year=current_year
+    ).values('itemID').annotate(
+        purchasedFromSupp_sum=Sum('purchasedFromSupp'),
+        returnToSupplier_sum=Sum('returnToSupplier'),
+        transferFromWH_sum=Sum('transferFromWH'),
+        transferToWH_sum=Sum('transferToWH'),
+        issuedQty_sum=Sum('issuedQty'),
+        returnedQty_sum=Sum('returnedQty'),
+        consumption_sum=Sum('consumption')
+    ):
+        item_id = item_data['itemID']
+        transaction_sums[item_id] = {
+            'purchasedFromSupp_sum': item_data['purchasedFromSupp_sum'] or 0,
+            'returnToSupplier_sum': item_data['returnToSupplier_sum'] or 0,
+            'transferFromWH_sum': item_data['transferFromWH_sum'] or 0,
+            'transferToWH_sum': item_data['transferToWH_sum'] or 0,
+            'issuedQty_sum': item_data['issuedQty_sum'] or 0,
+            'returnedQty_sum': item_data['returnedQty_sum'] or 0,
+            'consumption_sum': item_data['consumption_sum'] or 0
+        }
+    
+    # Pre-fetch consumption data grouped by item and week
+    consumption_data = {}
+    for consumption in MonthlyConsumption.objects.filter(
+        date__month=current_month,
+        date__year=current_year
+    ).values('itemID', 'week').annotate(weekly_count=Sum('week')):
+        item_id = consumption['itemID']
+        
+        if item_id not in consumption_data:
+            consumption_data[item_id] = []
+            
+        consumption_data[item_id].append({
+            'week': consumption['week'],
+            'count': consumption['weekly_count'] or 0
+        })
+    
+    # Create batch operations lists
+    balances_to_create = []
+    balances_to_update = []
+    
+    for item in items:
+        item_id = item.itemID  # or item.pk depending on your model
+        
+        # Get or initialize running balance
+        if item_id in existing_balances:
+            running_balance = existing_balances[item_id]
         else:
-            # Create new if no existing balance
             running_balance = RunningBalance(
                 itemID=item,
                 itemName=item.itemName, 
@@ -415,45 +447,42 @@ def create_update_runbal(request):
                 created_at=timezone.now()
             )
 
-        # Determine beginning balance
-        last_month, last_year = (12, current_year - 1) if current_month == 1 else (current_month - 1, current_year) 
-        last_month_bb = BeginningBalance.objects.filter( 
-            itemID=item.itemID, 
-            created_at__month=last_month, 
-            created_at__year=last_year 
-        ).first() 
-
-        running_balance.beginningBalance = last_month_bb.itemQuantity if last_month_bb else 0 
-
+        # Set beginning balance
+        running_balance.beginningBalance = beginning_balances.get(item_id, 0)
+        
+        # Update with transaction sums if available
+        sums = transaction_sums.get(item_id, {
+            'purchasedFromSupp_sum': 0,
+            'returnToSupplier_sum': 0,
+            'transferFromWH_sum': 0,
+            'transferToWH_sum': 0,
+            'issuedQty_sum': 0,
+            'returnedQty_sum': 0,
+            'consumption_sum': 0
+        })
+        
         # Update summary fields
         running_balance.itemQuantity = item.itemQuantity
-        running_balance.purchasedFromSupp = sums['purchasedFromSupp_sum'] or 0 
-        running_balance.returnToSupplier = sums['returnToSupplier_sum'] or 0 
-        running_balance.transferFromWH = sums['transferFromWH_sum'] or 0 
-        running_balance.transferToWH = sums['transferToWH_sum'] or 0 
-        running_balance.issuedQty = sums['issuedQty_sum'] or 0 
-        running_balance.returnedQty = sums['returnedQty_sum'] or 0 
-        running_balance.consumption = sums['consumption_sum'] or 0 
+        running_balance.purchasedFromSupp = sums['purchasedFromSupp_sum']
+        running_balance.returnToSupplier = sums['returnToSupplier_sum']
+        running_balance.transferFromWH = sums['transferFromWH_sum']
+        running_balance.transferToWH = sums['transferToWH_sum']
+        running_balance.issuedQty = sums['issuedQty_sum']
+        running_balance.returnedQty = sums['returnedQty_sum']
+        running_balance.consumption = sums['consumption_sum']
         running_balance.unitCost = item.unitCost
-        running_balance.totalCost = item.unitCost * running_balance.itemQuantity 
-        running_balance.save()
+        running_balance.totalCost = item.unitCost * running_balance.itemQuantity
         
-        # Get the monthly consumption count for this item
-        consumption_counts = MonthlyConsumption.objects.filter(
-            itemID=item.itemID,
-            date__month=current_month,
-            date__year=current_year
-        ).values('week').annotate(weekly_count=Sum('week'))
-
-        if not consumption_counts.exists():
+        # Set remarks based on consumption data
+        item_consumption = consumption_data.get(item_id, [])
+        
+        if not item_consumption:
             running_balance.remarks = "Non-Moving"
         else:
-            # Calculate total consumption across all weeks
-            total_consumption = sum(count['weekly_count'] or 0 for count in consumption_counts)
-            # Count number of weeks with actual consumption records
-            active_weeks = len([c for c in consumption_counts if c['weekly_count'] > 0])
+            # Calculate total consumption and active weeks
+            total_consumption = sum(week_data['count'] for week_data in item_consumption)
+            active_weeks = len([week_data for week_data in item_consumption if week_data['count'] > 0])
             
-            # Calculate average weekly consumption (only for weeks with activity)
             weekly_average = total_consumption / active_weeks if active_weeks > 0 else 0
             
             if weekly_average == 0:
@@ -462,8 +491,25 @@ def create_update_runbal(request):
                 running_balance.remarks = "Slow Moving"
             else:
                 running_balance.remarks = "Fast Moving"
-
-        running_balance.save()
+        
+        # Add to appropriate batch list
+        if item_id in existing_balances:
+            balances_to_update.append(running_balance)
+        else:
+            balances_to_create.append(running_balance)
+    
+    # Batch create and update operations
+    if balances_to_create:
+        RunningBalance.objects.bulk_create(balances_to_create)
+    
+    if balances_to_update:
+        RunningBalance.objects.bulk_update(
+            balances_to_update,
+            fields=['beginningBalance', 'itemQuantity', 'purchasedFromSupp', 
+                   'returnToSupplier', 'transferFromWH', 'transferToWH', 
+                   'issuedQty', 'returnedQty', 'consumption', 'unitCost', 
+                   'totalCost', 'remarks']
+        )
 
     return Response({"detail": "Running balance processed successfully for all items."})
 

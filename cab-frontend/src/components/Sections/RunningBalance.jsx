@@ -78,9 +78,6 @@ const RunningBalance = () => {
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      
-      // After successful creation, fetch the updated data
-      await fetchRunningBalance();
       setIsInitialized(true);
     } catch (error) {
       console.error("Error adding products:", error);
