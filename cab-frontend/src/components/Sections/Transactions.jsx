@@ -629,7 +629,7 @@ const Transactions = () => {
                                                     <td>{product.issuedQty || 0}</td>
                                                     <td>{product.returnedQty || 0}</td>
                                                     <td>{product.consumption || 0}</td>
-                                                    <td>{formatCurrency(product.unitCost)}</td>
+                                                    <td>{formatCurrency(product.cost)}</td>
                                                     <td>{formatCurrency(product.total || 0)}</td>
                                                 </tr>
                                             ))

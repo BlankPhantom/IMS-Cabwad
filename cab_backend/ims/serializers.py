@@ -133,7 +133,6 @@ class TransactionProductSerializer(serializers.ModelSerializer):
     itemName = serializers.CharField(source='itemID.itemName', read_only=True)
     areaName = serializers.CharField(source='areaID.areaName', read_only=True)
     unitCost = serializers.FloatField(source='itemID.unitCost', read_only=True)
-    cost = serializers.FloatField(write_only=True, required=False)
     total = serializers.SerializerMethodField()
     
     class Meta:
@@ -171,6 +170,8 @@ class TransactionProductSerializer(serializers.ModelSerializer):
         
         # Update item cost if a new cost is provided
         if cost is not None:
+            instance.cost = cost
+            instance.save(update_fields=['cost'])
             self.update_unit_cost(instance, cost)
         
         # Calculate adjustment for a new transaction
