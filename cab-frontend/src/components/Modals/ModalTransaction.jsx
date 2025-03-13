@@ -45,7 +45,7 @@ const ModalTransaction = ({
     if (showTransactionModal) {
       fetchSections();
       fetchPurpose();
-    } else if (showProductModal) {
+    } if (showProductModal) {
       fetchProducts();
       fetchArea();
     }

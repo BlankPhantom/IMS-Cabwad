@@ -9,7 +9,7 @@ const DashBoard = () => {
     return (
         <div>
             <TopNav />
-            <Row noGutters>
+            <Row>
                 <Col xs={2}>
                     <SideNav />
                 </Col>

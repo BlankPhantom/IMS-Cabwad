@@ -173,7 +173,12 @@ const MonthlyConsumption = () => {
       setConversionProgress(false); // End progress
     }
   };
-
+  const formatCurrency = (value) => {
+    return `₱${parseFloat(value).toLocaleString('en-PH', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })}`;
+  };
   return (
     <Container
       style={{ width: "100%" }}
@@ -280,8 +285,8 @@ const MonthlyConsumption = () => {
                   <td>{item.itemID}</td>
                   <td>{item.itemName}</td>
                   <td>{item.consumption}</td>
-                  <td>₱{item.cost}</td>
-                  <td>₱{item.total}</td>
+                  <td>{formatCurrency(item.cost)}</td>
+                  <td>{formatCurrency(item.total)}</td>
                 </tr>
               ))
             ) : (

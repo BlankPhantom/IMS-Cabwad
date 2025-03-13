@@ -138,6 +138,12 @@ const RunningBalance = () => {
     fetchRunningBalance();
   }, [selectedMonth, selectedYear]);
 
+  const formatCurrency = (value) => {
+    return `₱${parseFloat(value).toLocaleString('en-PH', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })}`;
+  };
   return (
     <Container
       style={{ width: "100%" }}
@@ -254,13 +260,13 @@ const RunningBalance = () => {
                         item.itemQuantity <= item.beginningBalance * 0.1
                           ? "red"
                           : item.itemQuantity >= item.beginningBalance
-                          ? "green"
-                          : "",
+                            ? "green"
+                            : "",
                     }}>
                     {item.itemQuantity}
                   </td>
-                  <td>₱ {item.unitCost}</td>
-                  <td>₱ {item.totalCost}</td>
+                  <td>{formatCurrency(item.unitCost)}</td>
+                  <td>{formatCurrency(item.totalCost)}</td>
                   <td>{item.remarks}</td>
                 </tr>
               ))
