@@ -390,7 +390,8 @@ const ModalTransaction = ({
               <Form.Select
                 name="purpose"
                 value={selectedPurpose}
-                onChange={handlePurposeChange}>
+                onChange={handlePurposeChange}
+                required>
                 <option value="">Select Purpose</option>
                 {purpose.map((purpose) => (
                   <option key={purpose.purposeID} value={purpose.purposeID}>
@@ -512,7 +513,8 @@ const ModalTransaction = ({
               <Form.Select
                 name="area"
                 value={selectedArea}
-                onChange={handleAreaChange}>
+                onChange={handleAreaChange}
+                required>
                 <option value="">Select Area</option>
                 {area.map((area) => (
                   <option key={area.areaID} value={area.areaID}>
