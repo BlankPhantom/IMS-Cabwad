@@ -12,7 +12,7 @@ const BeginningBalance = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
-    
+
     // Pagination states
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(20);
@@ -69,8 +69,8 @@ const BeginningBalance = () => {
             console.error("Authorization token is missing.");
             alert("Authorization token is missing. Please log in again.");
             return;
-        }   
-        try {            
+        }
+        try {
             await fetch(API_ENDPOINTS.BEGINNING_BAL_CREATE, {
                 method: "POST",
                 headers: {
@@ -89,7 +89,7 @@ const BeginningBalance = () => {
         const term = event.target.value.toLowerCase();
         setSearchTerm(term);
 
-        const filtered = items.filter(item => 
+        const filtered = items.filter(item =>
             item.itemID.toString().toLowerCase().includes(term) ||
             item.itemName.toLowerCase().includes(term) ||
             item.measureName.measureName.toLowerCase().includes(term)
@@ -135,6 +135,12 @@ const BeginningBalance = () => {
         createBeginningBal();
     }, []);
 
+    const formatCurrency = (value) => {
+        return `₱${parseFloat(value).toLocaleString('en-PH', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        })}`;
+    };
     return (
         <Container style={{ width: "100%" }} fluid className="d-flex flex-column justify-content-center mt-2">
             <Row className="sectionTitle">
@@ -151,9 +157,9 @@ const BeginningBalance = () => {
 
             <Row>
                 <Col className="d-flex justify-content-end mt-3">
-                    <input 
-                        type="search" 
-                        placeholder="Search" 
+                    <input
+                        type="search"
+                        placeholder="Search"
                         style={{ width: "300px" }}
                         value={searchTerm}
                         onChange={handleSearch}
@@ -190,8 +196,8 @@ const BeginningBalance = () => {
                                     <td>{item.itemName}</td>
                                     <td>{item.measureName.measureName}</td>
                                     <td>{item.itemQuantity}</td>
-                                    <td>₱{item.unitCost}</td>
-                                    <td>₱{item.totalCost}</td>
+                                    <td>{formatCurrency(item.unitCost)}</td>
+                                    <td>{formatCurrency(item.totalCost)}</td>
                                 </tr>
                             ))
                         ) : (
@@ -208,26 +214,26 @@ const BeginningBalance = () => {
                 <Row>
                     <Col className="d-flex justify-content-center mt-3">
                         <Pagination>
-                            <Pagination.First 
-                                onClick={() => handlePageChange(1)} 
+                            <Pagination.First
+                                onClick={() => handlePageChange(1)}
                                 disabled={currentPage === 1}
                             />
-                            <Pagination.Prev 
-                                onClick={() => handlePageChange(currentPage - 1)} 
+                            <Pagination.Prev
+                                onClick={() => handlePageChange(currentPage - 1)}
                                 disabled={currentPage === 1}
                             />
-                            
+
                             {/* Display page numbers */}
                             {pageNumbers.map(number => {
                                 // Show 5 pages around current page
                                 if (
-                                    number === 1 || 
-                                    number === totalPages || 
+                                    number === 1 ||
+                                    number === totalPages ||
                                     (number >= currentPage - 2 && number <= currentPage + 2)
                                 ) {
                                     return (
-                                        <Pagination.Item 
-                                            key={number} 
+                                        <Pagination.Item
+                                            key={number}
                                             active={number === currentPage}
                                             onClick={() => handlePageChange(number)}
                                         >
@@ -235,20 +241,20 @@ const BeginningBalance = () => {
                                         </Pagination.Item>
                                     );
                                 } else if (
-                                    number === currentPage - 3 || 
+                                    number === currentPage - 3 ||
                                     number === currentPage + 3
                                 ) {
                                     return <Pagination.Ellipsis key={number} />;
                                 }
                                 return null;
                             })}
-                            
-                            <Pagination.Next 
-                                onClick={() => handlePageChange(currentPage + 1)} 
+
+                            <Pagination.Next
+                                onClick={() => handlePageChange(currentPage + 1)}
                                 disabled={currentPage === totalPages}
                             />
-                            <Pagination.Last 
-                                onClick={() => handlePageChange(totalPages)} 
+                            <Pagination.Last
+                                onClick={() => handlePageChange(totalPages)}
                                 disabled={currentPage === totalPages}
                             />
                         </Pagination>

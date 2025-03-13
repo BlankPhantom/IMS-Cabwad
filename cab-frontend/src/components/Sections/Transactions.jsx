@@ -165,7 +165,7 @@ const Transactions = () => {
                 return b.transactionDetailsID - a.transactionDetailsID;
             });
 
-            setTransactions(transactionsWithProducts);  
+            setTransactions(transactionsWithProducts);
         } catch (error) {
             console.error("Error fetching transactions and products:", error);
         } finally {
@@ -363,11 +363,6 @@ const Transactions = () => {
     const handleAddProduct = async (e) => {
         e.preventDefault();
 
-        if (!selectedArea) {
-            alert("Please select an area.");
-            return;
-        }
-
         // Create a new updated product object
         const updatedProduct = {
             ...productData,
@@ -476,7 +471,7 @@ const Transactions = () => {
             alert("New Transaction Recorded!");
             setShowTransactionModal(false);
             handleCloseTransactionModal();
-            window.location.reload(); 
+            window.location.reload();
         } catch (error) {
             console.error("Error saving transaction:", error);
             alert("Error saving transaction. Please try again.");
@@ -529,6 +524,12 @@ const Transactions = () => {
         );
     };
 
+    const formatCurrency = (value) => {
+        return `₱${parseFloat(value).toLocaleString('en-PH', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        })}`;
+    };
     return (
         <Container style={{ width: "100%" }} fluid className="d-flex flex-column justify-content-center mt-2">
             <Row className="sectionTitle">
@@ -628,8 +629,8 @@ const Transactions = () => {
                                                     <td>{product.issuedQty || 0}</td>
                                                     <td>{product.returnedQty || 0}</td>
                                                     <td>{product.consumption || 0}</td>
-                                                    <td>₱{product.unitCost}</td>
-                                                    <td>₱{product.total || 0}</td>
+                                                    <td>{formatCurrency(product.unitCost)}</td>
+                                                    <td>{formatCurrency(product.total || 0)}</td>
                                                 </tr>
                                             ))
                                         ) : (
