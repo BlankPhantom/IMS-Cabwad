@@ -16,10 +16,12 @@ const RunningBalance = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(20);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const fetchRunningBalance = async () => {
     const token = localStorage.getItem("access_token");
     try {
+      setLoading(true);
       let url = API_ENDPOINTS.RUNNING_BAL_LIST;
 
       // If a specific month is selected (not the default 'All')
@@ -55,24 +57,35 @@ const RunningBalance = () => {
     }
   };
 
-  const createRunningBal = () => {
+  const createRunningBal = async () => {
     const token = localStorage.getItem("access_token");
     if (!token) {
       console.error("Authorization token is missing.");
       alert("Authorization token is missing. Please log in again.");
       return;
     }
+    
     try {
-      return fetch(API_ENDPOINTS.RUNNING_BAL_CREATE, {
+      setLoading(true);
+      const response = await fetch(API_ENDPOINTS.RUNNING_BAL_CREATE, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Token ${token}`,
         },
       });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      
+      // After successful creation, fetch the updated data
+      await fetchRunningBalance();
+      setIsInitialized(true);
     } catch (error) {
       console.error("Error adding products:", error);
-      alert("Some products could not be added. Please check your data.");
+      setError("Failed to initialize running balance. Please try again later.");
+      setLoading(false);
     }
   };
 
@@ -133,10 +146,19 @@ const RunningBalance = () => {
     pageNumbers.push(i);
   }
 
+  // Fetch data when month/year changes, but only if already initialized
   useEffect(() => {
-    createRunningBal();
-    fetchRunningBalance();
-  }, [selectedMonth, selectedYear]);
+    if (isInitialized) {
+      fetchRunningBalance();
+    }
+  }, [selectedMonth, selectedYear, isInitialized]);
+
+  // Initial load - only create running balance once when component first mounts
+  useEffect(() => {
+    if (!isInitialized) {
+      createRunningBal();
+    }
+  }, [isInitialized]);
 
   const formatCurrency = (value) => {
     return `₱${parseFloat(value).toLocaleString('en-PH', {
@@ -171,8 +193,8 @@ const RunningBalance = () => {
         <Col className="d-flex">
           <Form.Select
             className="form-select"
-            // Ensure this is controlled properly
             style={{ width: "300px" }}
+            value={remarks}
             onChange={handleRemarksFilter}>
             <option value="">All</option>
             <option value="Non-Moving">Non-Moving</option>
