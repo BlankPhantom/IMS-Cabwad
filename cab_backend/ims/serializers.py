@@ -146,9 +146,9 @@ class TransactionProductSerializer(serializers.ModelSerializer):
 
     def get_total(self, instance):
         if instance.purchasedFromSupp > 0:
-            return instance.purchasedFromSupp * instance.itemID.unitCost
+            return instance.purchasedFromSupp * instance.cost
         else:
-            return instance.consumption * instance.itemID.unitCost
+            return instance.consumption * instance.cost
     
     def get_itemQuantity(self, instance):
         item = Item.objects.get(pk=instance.itemID.pk)
@@ -217,7 +217,7 @@ class TransactionProductSerializer(serializers.ModelSerializer):
         item.unitCost = cost
         
         # Recalculate total cost
-        item.totalCost = item.itemQuantity * item.unitCost
+        item.totalCost = item.itemQuantity * instance.cost
         
         # Save the item with updated cost and total cost
         item.save(update_fields=['unitCost', 'totalCost'])
@@ -273,6 +273,8 @@ class TransactionProductSerializer(serializers.ModelSerializer):
         
         # Update item cost if a new cost is provided
         if cost is not None:
+            instance.cost = cost
+            instance.save(update_fields=['cost'])
             self.update_unit_cost(instance, cost)
         
         # Update item quantity

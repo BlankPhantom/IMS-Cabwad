@@ -355,7 +355,7 @@ def create_update_runbal(request):
     current_year = timezone.now().year 
     
     # Use select_related to reduce database queries for related models
-    items = Item.objects.all().select_related('measurementID')
+    items = Item.objects.all().select_related('measurementID').order_by('itemID')
     
     # Pre-fetch all beginning balances for the previous month in one query
     last_month, last_year = (12, current_year - 1) if current_month == 1 else (current_month - 1, current_year)
@@ -369,13 +369,13 @@ def create_update_runbal(request):
     }
     
     # Prefetch all existing running balances for the current month
-    existing_balances = {
-        rb.itemID_id: rb 
-        for rb in RunningBalance.objects.filter(
-            created_at__month=current_month,
-            created_at__year=current_year
-        )
-    }
+    existing_balances = {}
+    for rb in RunningBalance.objects.filter(
+        created_at__month=current_month,
+        created_at__year=current_year
+    ):
+        # Convert to string to ensure consistent lookup
+        existing_balances[str(rb.itemID_id)] = rb
     
     # Fetch aggregated transaction data for all items at once using Django's aggregation
     transaction_sums = {}
@@ -391,8 +391,8 @@ def create_update_runbal(request):
         returnedQty_sum=Sum('returnedQty'),
         consumption_sum=Sum('consumption')
     ):
-        item_id = item_data['itemID']
-        transaction_sums[item_id] = {
+        itemID = item_data['itemID']
+        transaction_sums[itemID] = {
             'purchasedFromSupp_sum': item_data['purchasedFromSupp_sum'] or 0,
             'returnToSupplier_sum': item_data['returnToSupplier_sum'] or 0,
             'transferFromWH_sum': item_data['transferFromWH_sum'] or 0,
@@ -408,12 +408,12 @@ def create_update_runbal(request):
         date__month=current_month,
         date__year=current_year
     ).values('itemID', 'week').annotate(weekly_count=Sum('week')):
-        item_id = consumption['itemID']
+        itemID = consumption['itemID']
         
-        if item_id not in consumption_data:
-            consumption_data[item_id] = []
+        if itemID not in consumption_data:
+            consumption_data[itemID] = []
             
-        consumption_data[item_id].append({
+        consumption_data[itemID].append({
             'week': consumption['week'],
             'count': consumption['weekly_count'] or 0
         })
@@ -423,11 +423,11 @@ def create_update_runbal(request):
     balances_to_update = []
     
     for item in items:
-        item_id = item.itemID  # or item.pk depending on your model
+        itemID = item.itemID  # or item.pk depending on your model
         
         # Get or initialize running balance
-        if item_id in existing_balances:
-            running_balance = existing_balances[item_id]
+        if itemID in existing_balances:
+            running_balance = existing_balances[itemID]
         else:
             running_balance = RunningBalance(
                 itemID=item,
@@ -448,10 +448,10 @@ def create_update_runbal(request):
             )
 
         # Set beginning balance
-        running_balance.beginningBalance = beginning_balances.get(item_id, 0)
+        running_balance.beginningBalance = beginning_balances.get(itemID, 0)
         
         # Update with transaction sums if available
-        sums = transaction_sums.get(item_id, {
+        sums = transaction_sums.get(itemID, {
             'purchasedFromSupp_sum': 0,
             'returnToSupplier_sum': 0,
             'transferFromWH_sum': 0,
@@ -474,7 +474,7 @@ def create_update_runbal(request):
         running_balance.totalCost = item.unitCost * running_balance.itemQuantity
         
         # Set remarks based on consumption data
-        item_consumption = consumption_data.get(item_id, [])
+        item_consumption = consumption_data.get(itemID, [])
         
         if not item_consumption:
             running_balance.remarks = "Non-Moving"
@@ -493,7 +493,7 @@ def create_update_runbal(request):
                 running_balance.remarks = "Fast Moving"
         
         # Add to appropriate batch list
-        if item_id in existing_balances:
+        if itemID in existing_balances:
             balances_to_update.append(running_balance)
         else:
             balances_to_create.append(running_balance)
