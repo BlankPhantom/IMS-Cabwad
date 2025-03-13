@@ -660,7 +660,7 @@ const EditTransactionModal = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Section</Form.Label>
-                            <Form.Select name="section" value={selectedSection} onChange={handleEditSectionChange} required>
+                            <Form.Select name="section" value={selectedSection} onChange={handleEditSectionChange}>
                                 <option value="">Select Section</option>
                                 {sections.map((section) => (
                                     <option key={section.sectionID} value={section.sectionID}>
@@ -672,7 +672,7 @@ const EditTransactionModal = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Purpose</Form.Label>
-                            <Form.Select name="purpose" value={selectedPurpose} onChange={handleEditPurposeChange} required>
+                            <Form.Select name="purpose" value={selectedPurpose} onChange={handleEditPurposeChange}>
                                 <option value="">Select Purpose</option>
                                 {purpose.map((purpose) => (
                                     <option key={purpose.purposeID} value={purpose.purposeID}>
