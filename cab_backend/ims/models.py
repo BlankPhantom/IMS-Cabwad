@@ -82,6 +82,7 @@ class TransactionProduct(models.Model):
     issuedQty = models.IntegerField(blank=True, default=0)
     returnedQty = models.IntegerField(blank=True, default=0)
     consumption = models.IntegerField(default=0)
+    cost = models.FloatField(default=0.0)
     created_at = models.DateTimeField(default=timezone.now)
 
     def save(self, *args, **kwargs):
