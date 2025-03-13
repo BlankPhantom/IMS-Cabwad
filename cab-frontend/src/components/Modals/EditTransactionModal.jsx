@@ -336,7 +336,7 @@ const EditTransactionModal = ({
         // ✅ Create a new product object with proper data types
         const newProduct = {
             ...productData,
-            transactionType: determineTransactionType(productData),
+            transactionType: determineTransactionTypeLocal(productData),
             areaID: parseInt(selectedArea, 10) || 0, // ✅ Convert to number
             purchasedFromSupplier: parseInt(productData.purchasedFromSupplier, 10) || 0, // ✅ Convert to number
             returnToSupplier: parseInt(productData.returnToSupplier, 10) || 0,
@@ -602,7 +602,7 @@ const EditTransactionModal = ({
 
     const determineTransactionType = (product) => {
         // Check conditions in order of specificity
-        if (product.purchasedFromSupplier > 0) {
+        if (product.purchasedFromSupp > 0) {
             return 'PurchaseSupply';
         }
 
@@ -613,13 +613,25 @@ const EditTransactionModal = ({
         if (product.issuedQty > 0 || product.returnedQty > 0) {
             return 'Issue/Return';
         }
-
-        if (product.transferFromWH > 0 || product.transferToWH > 0) {
-            return 'Warehouse Transfer';
-        }
-
         return 'Unknown'; // Fallback if no type can be determined
     };
+
+    const determineTransactionTypeLocal = (product) => {
+        // Check conditions in order of specificity
+        if (product.purchasedFromSupplier > 0) {
+            return 'PurchaseSupply';
+        }
+
+        if (product.returnToSupplier > 0) {
+            return 'ReturnSupply';
+        }
+
+        if (product.issuedQuantity > 0 || product.returnedQuantity > 0) {
+            return 'Issue/Return';
+        }
+        return 'Unknown'; // Fallback if no type can be determined
+    };
+
     return (
         <>
             <Modal show={show} size="lg" onHide={handleClose} centered>
