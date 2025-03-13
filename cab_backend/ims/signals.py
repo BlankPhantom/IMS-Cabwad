@@ -130,6 +130,10 @@ def update_monthly_consumption(sender, instance, **kwargs):
             itemID=instance.itemID
         ).first()
         
+        if instance.consumption == 0:
+            print(f"Skipping: Consumption is 0 for ItemID={instance.itemID}")
+            return
+        
         if monthly_consumption:
             
             # Update the record
