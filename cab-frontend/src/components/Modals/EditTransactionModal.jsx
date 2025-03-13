@@ -602,7 +602,7 @@ const EditTransactionModal = ({
 
     const determineTransactionType = (product) => {
         // Check conditions in order of specificity
-        if (product.purchasedFromSupp > 0) {
+        if (product.purchasedFromSupplier > 0) {
             return 'PurchaseSupply';
         }
 
@@ -791,7 +791,7 @@ const EditTransactionModal = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Area</Form.Label>
-                            <Form.Select name="area" value={selectedArea} onChange={handleAreaChange}  required>
+                            <Form.Select name="area" value={selectedArea} onChange={handleAreaChange} >
                                 <option value="">Select Area</option>
                                 {area.map((area) => (
                                     <option key={area.areaID} value={area.areaID}>
