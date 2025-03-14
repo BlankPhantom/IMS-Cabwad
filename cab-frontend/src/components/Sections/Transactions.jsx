@@ -59,8 +59,6 @@ const Transactions = () => {
 
   useEffect(() => {
     createRunningBal();
-    fetchProducts();
-    fetchTransactions();
     fetchTransactionsWithProducts();
   }, []);
 
@@ -97,44 +95,31 @@ const Transactions = () => {
     }
   };
 
-  const formatProductPayload = (product, transactionDetailsID) => ({
-    transactionDetailsID,
-    transactionType: product.transactionType || "",
-    itemID: product.itemID,
-    productName: product.productName,
-    areaID: product.areaID,
-    purchasedFromSupp: parseInt(product.purchasedFromSupplier, 10) || 0,
-    returnToSupplier: parseInt(product.returnToSupplier, 10) || 0,
-    transferFromWH: parseInt(product.transferFromWarehouse, 10) || 0,
-    transferToWH: parseInt(product.transferToWarehouse, 10) || 0,
-    issuedQty: parseInt(product.issuedQuantity, 10) || 0,
-    returnedQty: parseInt(product.returnedQuantity, 10) || 0,
-    cost: parseFloat(product.cost) || 0,
-  });
+    const formatProductPayload = (product, transactionDetailsID) => ({
+        transactionDetailsID,
+        transactionType: product.transactionType || "",
+        itemID: product.itemID,
+        productName: product.productName,
+        areaID: product.areaID,
+        purchasedFromSupp: parseInt(product.purchasedFromSupplier, 10) || 0,
+        returnToSupplier: parseInt(product.returnToSupplier, 10) || 0,
+        transferFromWH: parseInt(product.transferFromWarehouse, 10) || 0,
+        transferToWH: parseInt(product.transferToWarehouse, 10) || 0,
+        issuedQty: parseInt(product.issuedQuantity, 10) || 0,
+        returnedQty: parseInt(product.returnedQuantity, 10) || 0,
+        cost: parseFloat(product.cost) || 0,
+    });
 
-  const fetchTransactions = async () => {
-    try {
-      const response = await fetch(API_ENDPOINTS.TRANSACTION_LIST);
-      const data = await response.json();
-      setTransactions(Array.isArray(data) ? data : []); // Ensure it's always an array
-    } catch (error) {
-      console.error("Error fetching transactions:", error);
-      setTransactions([]); // Fallback to empty array
-    }
-  };
-
-  const fetchProducts = async () => {
-    try {
-      const response = await fetch(API_ENDPOINTS.ITEM_LIST);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      setProducts(data);
-    } catch (error) {
-      console.error("Error fetching products:", error);
-    }
-  };
+    const fetchTransactions = async () => {
+        try {
+            const response = await fetch(API_ENDPOINTS.TRANSACTION_LIST);
+            const data = await response.json();
+            setTransactions(Array.isArray(data) ? data : []); // Ensure it's always an array
+        } catch (error) {
+            console.error("Error fetching transactions:", error);
+            setTransactions([]); // Fallback to empty array
+        }
+    };
 
   const fetchTransactionsWithProducts = async () => {
     setLoading(true);
