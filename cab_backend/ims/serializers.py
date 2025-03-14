@@ -170,7 +170,7 @@ class TransactionProductSerializer(serializers.ModelSerializer):
         
         # Update item cost if a new cost is provided
         if cost is not None:
-            instance.cost = cost
+            cost = instance.cost
             instance.save(update_fields=['cost'])
             self.update_unit_cost(instance, cost)
         
