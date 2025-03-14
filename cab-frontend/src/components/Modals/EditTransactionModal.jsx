@@ -52,23 +52,17 @@ const EditTransactionModal = ({
     const [validationError, setValidationError] = useState('');
     const [editValidationError, setEditValidationError] = useState('');
 
-    // ✅ Fetch sections & purpose on mount
-    useEffect(() => {
-        if (show) {
-            fetchTransactions();
-            fetchSections();
-            fetchPurpose();
-            fetchArea();
-            fetchProducts();
-        }
-    }, [show]);
-
     // ✅ Fetch products for the transaction when modal opens
     useEffect(() => {
         if (show && transactionData?.transactionDetailsID) {
             fetchProductsForTransaction(transactionData.transactionDetailsID);
             setSelectedSection(transactionData.sectionID || "");
             setSelectedPurpose(transactionData.purposeID || "");
+            fetchTransactions();
+            fetchSections();
+            fetchPurpose();
+            fetchArea();
+            fetchProducts();
         }
     }, [show, transactionData]);
 
