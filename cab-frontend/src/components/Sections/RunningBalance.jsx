@@ -10,14 +10,13 @@ const RunningBalance = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [searchTerm, setSearchTerm] = useState("");
   const [remarks, setRemarks] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(20);
-  const [isInitialized, setIsInitialized] = useState(false);
   const [showAvailableOnly, setShowAvailableOnly] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const fetchRunningBalance = async () => {
     const token = localStorage.getItem("access_token");
@@ -54,35 +53,6 @@ const RunningBalance = () => {
       console.error("Error fetching running balance:", err);
       setError("Failed to load running balance data.");
     } finally {
-      setLoading(false);
-    }
-  };
-
-  const createRunningBal = async () => {
-    const token = localStorage.getItem("access_token");
-    if (!token) {
-      console.error("Authorization token is missing.");
-      alert("Authorization token is missing. Please log in again.");
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const response = await fetch(API_ENDPOINTS.RUNNING_BAL_CREATE, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Token ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      setIsInitialized(true);
-    } catch (error) {
-      console.error("Error adding products:", error);
-      setError("Failed to initialize running balance. Please try again later.");
       setLoading(false);
     }
   };
@@ -173,17 +143,8 @@ const RunningBalance = () => {
 
   // Fetch data when month/year changes, but only if already initialized
   useEffect(() => {
-    if (isInitialized) {
-      fetchRunningBalance();
-    }
-  }, [selectedMonth, selectedYear, isInitialized]);
-
-  // Initial load - only create running balance once when component first mounts
-  useEffect(() => {
-    if (!isInitialized) {
-      createRunningBal();
-    }
-  }, [isInitialized]);
+    fetchRunningBalance();
+  }, [selectedMonth, selectedYear]);
 
   const formatCurrency = (value) => {
     return `₱${parseFloat(value).toLocaleString('en-PH', {
