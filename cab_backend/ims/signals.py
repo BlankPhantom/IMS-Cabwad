@@ -36,28 +36,28 @@ def update_monthly_consumption_section(sender, instance, **kwargs):
     except Exception as e:
         print(f"Error updating sectionID in MonthlyConsumption: {e}")
 
-# ✅ Signal to add new items to BeginningBalance automatically
-@receiver(post_save, sender=Item)
-def add_new_item_to_balance(sender, instance, created, **kwargs):
-    if created:  # Only run when a new item is created
-        current_month = timezone.now().month
-        current_year = timezone.now().year
+# # ✅ Signal to add new items to BeginningBalance automatically
+# @receiver(post_save, sender=Item)
+# def add_new_item_to_balance(sender, instance, created, **kwargs):
+#     if created:  # Only run when a new item is created
+#         current_month = timezone.now().month
+#         current_year = timezone.now().year
 
-        # Check if this item already exists in BeginningBalance for this month/year
-        if not BeginningBalance.objects.filter(
-            itemID=instance.itemID,
-            created_at__month=current_month,
-            created_at__year=current_year
-        ).exists():
-            BeginningBalance.objects.create(
-                itemID=instance.itemID,
-                itemName=instance.itemName,
-                measurementID=instance.measurementID,
-                itemQuantity=instance.itemQuantity,
-                unitCost=instance.unitCost,
-                totalCost=instance.totalCost,
-                created_at=timezone.now()
-            )
+#         # Check if this item already exists in BeginningBalance for this month/year
+#         if not BeginningBalance.objects.filter(
+#             itemID=instance.itemID,
+#             created_at__month=current_month,
+#             created_at__year=current_year
+#         ).exists():
+#             BeginningBalance.objects.create(
+#                 itemID=instance.itemID,
+#                 itemName=instance.itemName,
+#                 measurementID=instance.measurementID,
+#                 itemQuantity=instance.itemQuantity,
+#                 unitCost=instance.unitCost,
+#                 totalCost=instance.totalCost,
+#                 created_at=timezone.now()
+#             )
 
 @receiver(post_save, sender=TransactionProduct)
 def create_monthly_consumption(sender, instance, created, **kwargs):
@@ -92,8 +92,8 @@ def create_monthly_consumption(sender, instance, created, **kwargs):
             itemID=instance.itemID,
             itemName=item.itemName,
             consumption=instance.consumption,
-            cost=item.unitCost,
-            total=instance.consumption * item.unitCost,
+            cost=instance.cost,
+            total=instance.consumption * instance.cost,
             created_at=instance.created_at  # Use TransactionProduct's timestamp
         )
  
@@ -138,7 +138,8 @@ def update_monthly_consumption(sender, instance, **kwargs):
             
             # Update the record
             monthly_consumption.consumption = instance.consumption
-            monthly_consumption.total = instance.consumption * item.unitCost
+            monthly_consumption.cost = instance.cost
+            monthly_consumption.total = instance.consumption * instance.cost
             monthly_consumption.updated_at = timezone.now()
             
             monthly_consumption.save()
@@ -161,8 +162,8 @@ def update_monthly_consumption(sender, instance, **kwargs):
                 itemID=instance.itemID,
                 itemName=item.itemName,
                 consumption=instance.consumption,
-                cost=item.unitCost,
-                total=instance.consumption * item.unitCost,
+                cost=instance.cost,
+                total=instance.consumption * instance.cost,
                 created_at=timezone.now()
             )
             
