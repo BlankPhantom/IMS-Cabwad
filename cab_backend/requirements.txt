@@ -9,3 +9,5 @@ django-seed
 cryptography
 docx2pdf
 python-docx
+pandas
+mysql-connector-python

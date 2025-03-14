@@ -34,7 +34,7 @@ const BeginningBalance = () => {
             } else {
                 // Fetch data for specific month and year
                 const queryParams = new URLSearchParams({
-                    month: selectedMonth + 1, // Add 1 back when sending to backend
+                    month: selectedMonth , // Add 1 back when sending to backend
                     year: selectedYear,
                 });
                 response = await fetch(`${API_ENDPOINTS.BEGINNING_BAL_LIST}?${queryParams}`, {
@@ -78,6 +78,7 @@ const BeginningBalance = () => {
                     Authorization: `Token ${token}`,
                 },
             });
+            fetchBeginningBalance();
         } catch (e) {
             console.error("Error creating beginning balance:", e);
             setError("Failed to create beginning balance data.");
@@ -125,15 +126,91 @@ const BeginningBalance = () => {
         pageNumbers.push(i);
     }
 
-    // Fetch data on component mount and when month/year changes
     useEffect(() => {
-        fetchBeginningBalance();
+        // Use a flag to track if we're currently fetching/creating
+        let isMounted = true;
+        let isProcessing = false;
+        
+        const fetchAndCreateIfNeeded = async () => {
+            if (isProcessing) return;
+            isProcessing = true;
+            
+            const token = localStorage.getItem("access_token");
+            try {
+                // First, check if data exists for this month/year
+                const queryParams = new URLSearchParams({
+                    month: selectedMonth + 1,
+                    year: selectedYear,
+                });
+                
+                const checkResponse = await fetch(`${API_ENDPOINTS.BEGINNING_BAL_LIST}?${queryParams}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Token ${token}`,
+                    },
+                });
+                
+                if (!checkResponse.ok) {
+                    throw new Error("Failed to check beginning balance data");
+                }
+                
+                const existingData = await checkResponse.json();
+                
+                // Only create if no data exists AND component is still mounted
+                if (existingData.length === 0 && isMounted) {
+                    console.log("No data found for selected month/year. Creating new entries...");
+                    
+                    await fetch(API_ENDPOINTS.BEGINNING_BAL_CREATE, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Token ${token}`,
+                        },
+                    });
+                }
+                
+                // Only fetch final data if component is still mounted
+                if (isMounted) {
+                    // Fetch the updated data
+                    const finalResponse = await fetch(`${API_ENDPOINTS.BEGINNING_BAL_LIST}?${queryParams}`, {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Token ${token}`,
+                        },
+                    });
+                    
+                    if (!finalResponse.ok) {
+                        throw new Error("Failed to fetch updated beginning balance data");
+                    }
+                    
+                    const finalData = await finalResponse.json();
+                    setItems(finalData);
+                    setFilteredItems(finalData);
+                    setCurrentPage(1);
+                }
+                
+            } catch (e) {
+                console.error("Error in fetch and create flow:", e);
+                if (isMounted) {
+                    setError("Failed to initialize beginning balance data.");
+                }
+            } finally {
+                isProcessing = false;
+                if (isMounted) {
+                    setLoading(false);
+                }
+            }
+        };
+        
+        fetchAndCreateIfNeeded();
+        
+        // Cleanup function to prevent state updates if component unmounts
+        return () => {
+            isMounted = false;
+        };
     }, [selectedMonth, selectedYear]);
-
-    // Create beginning balance on component mount
-    useEffect(() => {
-        createBeginningBal();
-    }, []);
 
     const formatCurrency = (value) => {
         return `₱${parseFloat(value).toLocaleString('en-PH', {
