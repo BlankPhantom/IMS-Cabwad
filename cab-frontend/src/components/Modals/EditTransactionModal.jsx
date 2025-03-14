@@ -803,7 +803,7 @@ const EditTransactionModal = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Area</Form.Label>
-                            <Form.Select name="area" value={selectedArea} onChange={handleAreaChange} >
+                            <Form.Select name="area" value={selectedArea} onChange={handleAreaChange} required>
                                 <option value="">Select Area</option>
                                 {area.map((area) => (
                                     <option key={area.areaID} value={area.areaID}>
@@ -935,7 +935,7 @@ const EditTransactionModal = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Area</Form.Label>
-                            <Form.Select name="areaID" value={editProductData.areaID || ""} onChange={handleEditAreaChange}>
+                            <Form.Select name="areaID" value={editProductData.areaID || ""} onChange={handleEditAreaChange} required>
                                 {area.map((area) => (
                                     <option key={area.areaID} value={area.areaID}>
                                         {area.areaName}
@@ -1065,7 +1065,7 @@ const EditTransactionModal = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Area</Form.Label>
-                            <Form.Select name="areaID" value={editProductData.areaID || ""} onChange={handleEditAreaChange}>
+                            <Form.Select name="areaID" value={editProductData.areaID || ""} onChange={handleEditAreaChange} required>
                                 {area.map((area) => (
                                     <option key={area.areaID} value={area.areaID}>
                                         {area.areaName}
