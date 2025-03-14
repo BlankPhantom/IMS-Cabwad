@@ -17,6 +17,7 @@ const RunningBalance = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(20);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [showAvailableOnly, setShowAvailableOnly] = useState(false);
 
   const fetchRunningBalance = async () => {
     const token = localStorage.getItem("access_token");
@@ -64,7 +65,7 @@ const RunningBalance = () => {
       alert("Authorization token is missing. Please log in again.");
       return;
     }
-    
+
     try {
       setLoading(true);
       const response = await fetch(API_ENDPOINTS.RUNNING_BAL_CREATE, {
@@ -74,7 +75,7 @@ const RunningBalance = () => {
           Authorization: `Token ${token}`,
         },
       });
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
@@ -91,31 +92,58 @@ const RunningBalance = () => {
     const term = event.target.value.toLowerCase();
     setSearchTerm(term);
 
-    const filtered = runningBalanceData.filter(
-      (item) =>
-        item.itemID.toLowerCase().includes(term) ||
-        item.itemName.toLowerCase().includes(term)
-    );
+    let filtered = runningBalanceData;
+
+    // Apply search filter
+    if (term) {
+      filtered = filtered.filter(
+        (item) =>
+          item.itemID.toLowerCase().includes(term) ||
+          item.itemName.toLowerCase().includes(term)
+      );
+    }
+
+    // Keep "available only" filter if active
+    if (showAvailableOnly) {
+      filtered = filtered.filter(item => item.itemQuantity > 0);
+    }
+
+    // Keep remarks filter if active
+    if (remarks) {
+      filtered = filtered.filter(item => item.remarks === remarks);
+    }
 
     setFilteredData(filtered);
     setCurrentPage(1);
   };
 
   const handleRemarksFilter = (event) => {
-    const remark = event.target.value; // Keep it case-sensitive to match exactly
-
-    // Update remarks state first
+    const remark = event.target.value;
     setRemarks(remark);
 
-    // Apply filter based on selection
-    if (remark === "") {
-      setFilteredData(runningBalanceData); // Reset to all data when "All" is selected
-    } else {
-      const filtered = runningBalanceData.filter(
-        (item) => item.remarks === remark // Use exact match
-      );
-      setFilteredData(filtered);
+    let filtered = runningBalanceData;
+
+    // Apply remarks filter
+    if (remark) {
+      filtered = filtered.filter(item => item.remarks === remark);
     }
+
+    // Keep search filter if active
+    if (searchTerm) {
+      filtered = filtered.filter(
+        item =>
+          item.itemID.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.itemName.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Keep "available only" filter if active
+    if (showAvailableOnly) {
+      filtered = filtered.filter(item => item.itemQuantity > 0);
+    }
+
+    setFilteredData(filtered);
+    setCurrentPage(1);
   };
 
   // Handle month and year change
@@ -163,6 +191,35 @@ const RunningBalance = () => {
       maximumFractionDigits: 2
     })}`;
   };
+
+  const handleAvailableOnlyFilter = (event) => {
+    const checked = event.target.checked;
+    setShowAvailableOnly(checked);
+
+    // Apply filter based on selection
+    if (checked) {
+      const filtered = runningBalanceData.filter(item => item.itemQuantity > 0);
+      setFilteredData(filtered);
+    } else {
+      // Reapply any existing filters (search term and remarks)
+      let filtered = runningBalanceData;
+
+      if (searchTerm) {
+        filtered = filtered.filter(item =>
+          item.itemID.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.itemName.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
+
+      if (remarks) {
+        filtered = filtered.filter(item => item.remarks === remarks);
+      }
+
+      setFilteredData(filtered);
+    }
+
+    setCurrentPage(1);
+  };
   return (
     <Container
       style={{ width: "100%" }}
@@ -187,7 +244,7 @@ const RunningBalance = () => {
       </Row>
 
       <Row>
-        <Col className="d-flex">
+        <Col className="d-flex align-items-center">
           <Form.Select
             className="form-select"
             style={{ width: "300px" }}
@@ -198,6 +255,14 @@ const RunningBalance = () => {
             <option value="Slow Moving">Slow Moving</option>
             <option value="Fast Moving">Fast Moving</option>
           </Form.Select>
+          <Form.Check
+            type="checkbox"
+            id="available-only"
+            label="With Available Stocks"
+            checked={showAvailableOnly}
+            onChange={handleAvailableOnlyFilter}
+            className="ms-3 d-flex align-items-center"
+          />
         </Col>
         <Col className="d-flex justify-content-end">
           <Form.Control
