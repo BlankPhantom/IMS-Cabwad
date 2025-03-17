@@ -7,10 +7,25 @@ from django.db.models import Sum
 from django.db.models import F
 
 class UserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
     class Meta:
         model = User
-        fields = ('id','first_name','last_name','username','email','is_superuser','is_staff')
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'password', 'is_superuser', 'is_staff']
 
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        user = User(
+            username=validated_data['username'],
+            email=validated_data.get('email', ''),
+            first_name=validated_data.get('first_name', ''),
+            last_name=validated_data.get('last_name', ''),
+            is_superuser=validated_data.get('is_superuser', False),
+            is_staff=validated_data.get('is_staff', False)
+        )
+        user.set_password(password)
+        user.save()
+        return user
 
 class ClassificationSerializer(serializers.ModelSerializer):
     class Meta:

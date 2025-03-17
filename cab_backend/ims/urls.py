@@ -5,8 +5,6 @@ from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
     path('login/', views.login, name='login'),
-    path('test_token/', views.test_token, name='test_token'),
-    path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
     path('users/', views.user_list, name='user_list'),
     path('create_user/', views.create_user, name='create_user'),  # Superadmin only
     path('update_user/<int:user_id>/', views.update_user, name='update_user'),  # Superadmin only

@@ -54,21 +54,30 @@ def login(request):
     
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated, IsSuperAdmin])  # Only superadmins can create users
+@permission_classes([IsAuthenticated, IsSuperAdmin])
 def create_user(request):
     serializer = UserSerializer(data=request.data)
+
     if serializer.is_valid():
-        user = User(
+        # Create the user but don't save password yet
+        password = serializer.validated_data.pop('password')
+        user = User.objects.create(
             username=serializer.validated_data['username'],
-            email=serializer.validated_data['email'],
+            email=serializer.validated_data.get('email', ''),
+            first_name=serializer.validated_data.get('first_name', ''),
+            last_name=serializer.validated_data.get('last_name', ''),
             is_superuser=serializer.validated_data.get('is_superuser', False),
             is_staff=serializer.validated_data.get('is_staff', False)
         )
-        user.set_password(request.data['password'])
+        
+        # Set password separately for proper hashing
+        user.set_password(password)
         user.save()
-
+        
+        # Generate token
         token, created = Token.objects.get_or_create(user=user)
-        return Response({'token': token.key, 'user': serializer.data}, status=status.HTTP_201_CREATED)
+        return Response({'token': token.key, 'user': UserSerializer(user).data}, status=status.HTTP_201_CREATED)
+
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])
@@ -282,41 +291,6 @@ def beginning_balance_bulk_create(request):
         return Response(created_balances, status=status.HTTP_201_CREATED)
 
     return Response({"detail": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-@api_view(['POST'])
-def login(request):
-    username = request.data.get("username")
-    password = request.data.get("password")
-
-    if user := authenticate(username=username, password=password):
-        token, created = Token.objects.get_or_create(user=user)
-        serializer = UserSerializer(user)
-        return Response({"token": token.key, "user": serializer.data}, status=status.HTTP_200_OK)
-    
-    return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
-
-@api_view(['POST'])
-def create_user(request):
-    serializer = UserSerializer(data=request.data)
-    if serializer.is_valid():
-        user = User(
-            username=serializer.validated_data['username'],
-            email=serializer.validated_data['email'],
-            # Add other fields if necessary
-        )
-        user.set_password(request.data['password'])
-        user.save()
-
-        token, created = Token.objects.get_or_create(user=user)
-        return Response({'token': token.key, 'user': serializer.data}, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-#test authentication token
-@api_view(['GET'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def test_token(request):
-    return Response(f"passed! for {request.user.email}", status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def classification_list_all(request):

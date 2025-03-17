@@ -57,6 +57,7 @@ const AccManagement = () => {
       const data = await response.json();
       setUsers(data);
       setLoading(false); // ✅ Set loading to false when done
+      
 
     } catch (e) {
       console.error("Error fetching users:", e);
