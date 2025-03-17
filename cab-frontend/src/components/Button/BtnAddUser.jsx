@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { API_ENDPOINTS } from "../../config";
 
-const BtnAddUser = () => {
+const BtnAddUser = ({ fetchUsers }) => {
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     first_name: "",
