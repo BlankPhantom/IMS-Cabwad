@@ -265,6 +265,41 @@ def beginning_balance_bulk_create(request):
 
     return Response({"detail": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
+@api_view(['POST'])
+def login(request):
+    username = request.data.get("username")
+    password = request.data.get("password")
+
+    if user := authenticate(username=username, password=password):
+        token, created = Token.objects.get_or_create(user=user)
+        serializer = UserSerializer(user)
+        return Response({"token": token.key, "user": serializer.data}, status=status.HTTP_200_OK)
+    
+    return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+
+@api_view(['POST'])
+def create_user(request):
+    serializer = UserSerializer(data=request.data)
+    if serializer.is_valid():
+        user = User(
+            username=serializer.validated_data['username'],
+            email=serializer.validated_data['email'],
+            # Add other fields if necessary
+        )
+        user.set_password(request.data['password'])
+        user.save()
+
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({'token': token.key, 'user': serializer.data}, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#test authentication token
+@api_view(['GET'])
+@authentication_classes([SessionAuthentication, TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def test_token(request):
+    return Response(f"passed! for {request.user.email}", status=status.HTTP_200_OK)
+
 @api_view(['GET'])
 def classification_list_all(request):
     classifications = Classification.objects.all()
