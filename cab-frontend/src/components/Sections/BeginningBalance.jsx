@@ -271,7 +271,7 @@ const BeginningBalance = () => {
                                 <tr key={index}>
                                     <td>{item.itemID}</td>
                                     <td>{item.itemName}</td>
-                                    <td>{item.measurementName.measurementName}</td>
+                                    <td>{item.measurementName}</td>
                                     <td>{item.itemQuantity}</td>
                                     <td>{formatCurrency(item.unitCost)}</td>
                                     <td>{formatCurrency(item.totalCost)}</td>
