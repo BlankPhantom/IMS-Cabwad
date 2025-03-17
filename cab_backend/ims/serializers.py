@@ -11,6 +11,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id','username','email')
 
+
 class ClassificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Classification
@@ -76,11 +77,28 @@ class ItemSerializer(serializers.ModelSerializer):
         return data
 
 class BeginningBalanceSerializer(serializers.ModelSerializer):
-    measureName = MeasurementSerializer(source='measurementID')
-
+    measurementName = serializers.CharField(source='measurementID.measureName', read_only=True)
+    totalCost = serializers.SerializerMethodField()  # Add this line
     class Meta:
         model = BeginningBalance
         fields = '__all__'
+    
+    def get_totalCost(self, instance):
+        return instance.itemQuantity * instance.unitCost  # Compute dynamically
+
+    def create(self, validated_data):
+        validated_data['totalCost'] = validated_data['itemQuantity'] * validated_data['unitCost']
+        return super().create(validated_data)
+    
+    def to_internal_value(self, data):
+        measurement_name = data.pop('measurementName', None)
+        try:
+            if measurement_name:
+                measurement = Measurement.objects.get(measureName=measurement_name)
+                data['measurementID'] = measurement.pk
+        except Measurement.DoesNotExist:
+            raise serializers.ValidationError({'measurementName': 'Invalid measurement name'})
+        return super().to_internal_value(data)
 
 class RunningBalanceSerializer(serializers.ModelSerializer):
     measureName = MeasurementSerializer(source='measurementID')

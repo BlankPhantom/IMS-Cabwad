@@ -110,17 +110,6 @@ const Transactions = () => {
         cost: parseFloat(product.cost) || 0,
     });
 
-    const fetchTransactions = async () => {
-        try {
-            const response = await fetch(API_ENDPOINTS.TRANSACTION_LIST);
-            const data = await response.json();
-            setTransactions(Array.isArray(data) ? data : []); // Ensure it's always an array
-        } catch (error) {
-            console.error("Error fetching transactions:", error);
-            setTransactions([]); // Fallback to empty array
-        }
-    };
-
     const fetchTransactionsWithProducts = async () => {
         setLoading(true);
         try {

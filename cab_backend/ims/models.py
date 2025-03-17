@@ -45,6 +45,10 @@ class BeginningBalance(models.Model):
     unitCost = models.FloatField(default=0.0)
     totalCost = models.FloatField(default=0.0)
     created_at = models.DateTimeField(default=timezone.now)
+    
+    def save(self, *args, **kwargs):
+        self.totalCost = self.itemQuantity * self.unitCost  # Compute totalCost
+        super().save(*args, **kwargs) 
 
 class Section(models.Model):
     sectionID = models.AutoField(primary_key=True)

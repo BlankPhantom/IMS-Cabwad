@@ -7,8 +7,8 @@ from django.db.models import Sum
 logger = logging.getLogger(__name__)
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
-from rest_framework.authentication import SessionAuthentication, TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication 
+from rest_framework.permissions import IsAuthenticated, BasePermission
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
@@ -23,7 +23,96 @@ from ims.models import (Item, BeginningBalance, Classification, Measurement, Sec
 from ims.serializers import (ItemListSerializer, UserSerializer,ItemSerializer, BeginningBalanceSerializer, ClassificationSerializer, MeasurementSerializer, 
                              SectionSerializer, PurposeSerializer, TransactionProductSerializer, TransactionDetailsSerializer, 
                              RunningBalanceSerializer, AreaSerializer, MonthlyConsumptionTotalSerializer, MonthlyConsumptionSerializer) 
+class IsSuperAdmin(BasePermission):
+    """Allows access only to superadmins."""
+    def has_permission(self, request, view):
+        return request.user and request.user.is_superuser
 
+@api_view(['POST'])
+@authentication_classes([])
+def login(request):
+    username = request.data.get("username")
+    password = request.data.get("password")
+
+    if user := authenticate(username=username, password=password):
+        token, created = Token.objects.get_or_create(user=user)
+        serializer = UserSerializer(user)
+        
+        return Response({
+            "token": token.key,
+            "user": serializer.data,
+            "is_superuser": user.is_superuser,
+            "is_staff": user.is_staff
+        }, status=status.HTTP_200_OK)
+    
+    return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+    
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated, IsSuperAdmin])  # Only superadmins can create users
+def create_user(request):
+    serializer = UserSerializer(data=request.data)
+    if serializer.is_valid():
+        user = User(
+            username=serializer.validated_data['username'],
+            email=serializer.validated_data['email'],
+            is_superuser=serializer.validated_data.get('is_superuser', False),
+            is_staff=serializer.validated_data.get('is_staff', False)
+        )
+        user.set_password(request.data['password'])
+        user.save()
+
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({'token': token.key, 'user': serializer.data}, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['PUT'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated, IsSuperAdmin])  # Only superadmins can update users
+def update_user(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    data = request.data
+    serializer = UserSerializer(user, data=data, partial=True)
+
+    if serializer.is_valid():
+        # Explicitly update boolean fields
+        user.is_superuser = data.get("is_superuser", user.is_superuser)
+        user.is_staff = data.get("is_staff", user.is_staff)
+
+        # If updating password, hash it
+        if "password" in data:
+            user.set_password(data["password"])
+
+        user.save()
+        return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['PUT'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])  # Any logged-in user can update their own password
+def update_own_password(request):
+    user = request.user
+    new_password = request.data.get("password")
+
+    if not new_password:
+        return Response({"error": "Password is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+    user.set_password(new_password)
+    user.save()
+    return Response({"message": "Password updated successfully"}, status=status.HTTP_200_OK)
+
+#test authentication token
+@api_view(['GET'])
+@authentication_classes([SessionAuthentication, TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def test_token(request):
+    return Response(f"passed! for {request.user.email}", status=status.HTTP_200_OK)
+    
 @api_view(['GET'])
 def item_list_all(request):
     items = Item.objects.all()
@@ -155,39 +244,26 @@ def copy_items_to_balance(request):
     return JsonResponse({'message': 'Items copied successfully!'}, status=201)
 
 @api_view(['POST'])
-def login(request):
-    username = request.data.get("username")
-    password = request.data.get("password")
+def beginning_balance_bulk_create(request):
+    if request.method == 'POST':
+        balances_data = request.data
 
-    if user := authenticate(username=username, password=password):
-        token, created = Token.objects.get_or_create(user=user)
-        serializer = UserSerializer(user)
-        return Response({"token": token.key, "user": serializer.data}, status=status.HTTP_200_OK)
-    
-    return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+        created_balances = []
+        errors = []
 
-@api_view(['POST'])
-def create_user(request):
-    serializer = UserSerializer(data=request.data)
-    if serializer.is_valid():
-        user = User(
-            username=serializer.validated_data['username'],
-            email=serializer.validated_data['email'],
-            # Add other fields if necessary
-        )
-        user.set_password(request.data['password'])
-        user.save()
+        for balance_data in balances_data:
+            serializer = BeginningBalanceSerializer(data=balance_data)
+            if serializer.is_valid():
+                serializer.save()
+                created_balances.append(serializer.data)
+            else:
+                errors.append(serializer.errors)
 
-        token, created = Token.objects.get_or_create(user=user)
-        return Response({'token': token.key, 'user': serializer.data}, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if errors:
+            return Response({"created_balances": created_balances, "errors": errors}, status=status.HTTP_207_MULTI_STATUS)
+        return Response(created_balances, status=status.HTTP_201_CREATED)
 
-#test authentication token
-@api_view(['GET'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def test_token(request):
-    return Response(f"passed! for {request.user.email}", status=status.HTTP_200_OK)
+    return Response({"detail": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 @api_view(['GET'])
 def classification_list_all(request):
@@ -561,48 +637,38 @@ def get_monthly_total(request):
 def xlsm_to_json(request):
     if request.method == "POST" and request.FILES.get("file"):
         excel_file = request.FILES["file"]
-        sheet_name = request.POST.get("sheet_name", "Masterlist")  # Default to "Sheet1"
-        additional_sheet_name = request.POST.get("additional_sheet", "Beginning Balance")
+        sheet_name = request.POST.get("sheet_name", "Beginning Balance")  # Default to "Sheet1"
         
         # Save file temporarily, overwrite if exists
-        file_path = default_storage.save(f"temp/{excel_file.name}", excel_file)
+        file_path = f"temp/{excel_file.name}"
         if default_storage.exists(file_path):
             default_storage.delete(file_path)
-        file_path = default_storage.save(f"temp/{excel_file.name}", excel_file)
+        file_path = default_storage.save(file_path, excel_file)
 
         try:
             # Read the specified sheet from the .xlsm file
             df = pd.read_excel(file_path, sheet_name=sheet_name, engine="openpyxl")
-            df_additional = pd.read_excel(file_path, sheet_name=additional_sheet_name, engine="openpyxl") 
             
             column_mapping = {
+                "Item ID": "itemID",
                 "PRODUCT NAME": "itemName",
-                "CLASSIFICATION": "classificationName"
+                "UNIT OF MEASURE": "measurementName",
+                "Available Stocks": "itemQuantity",
+                "Ave. Unit Cost": "unitCost"
             } 
             
             # Specify the columns you want to extract
-            selected_columns = ["PRODUCT NAME", "CLASSIFICATION"]
+            selected_columns = ["Item ID","PRODUCT NAME", "UNIT OF MEASURE", "Available Stocks", "Ave. Unit Cost"]
             df_selected = df[selected_columns].rename(columns=column_mapping)
 
-            additional_col_map = {
-                "PRODUCT NAME": "itemName", 
-                "UNIT OF MEASURE": "measurementName"
-            }
-            # Extract Unit of Measurement from the additional sheet
-            additional_columns = ["PRODUCT NAME", "UNIT OF MEASURE"]
-            df_additional_selected = df_additional[additional_columns].rename(columns=additional_col_map)
-
-            # Merge the dataframes on "itemName"
-            df_merged = pd.merge(df_selected, df_additional_selected, on="itemName", how="left")
-
             # Trim whitespace from string columns
-            df_merged = df_merged.applymap(lambda x: x.strip() if isinstance(x, str) else x)
+            df_selected = df_selected.applymap(lambda x: x.strip() if isinstance(x, str) else x)
 
             # Replace NaN with None (which becomes null in JSON)
-            df_merged = df_merged.where(pd.notnull(df_merged), "N/A")
+            df_selected = df_selected.where(pd.notnull(df_selected), 0)
 
             # Convert to JSON and trim all string values
-            json_data = df_merged.to_dict(orient="records")
+            json_data = df_selected.to_dict(orient="records")
             for item in json_data:
                 for key, value in item.items():
                     if isinstance(value, str):
@@ -621,6 +687,69 @@ def xlsm_to_json(request):
 
     return JsonResponse({"error": "Invalid request"}, status=400)
 
+# @csrf_exempt  # Remove in production; use proper authentication
+# def xlsm_to_json(request):
+#     if request.method == "POST" and request.FILES.get("file"):
+#         excel_file = request.FILES["file"]
+#         sheet_name = request.POST.get("sheet_name", "Masterlist")  # Default to "Sheet1"
+#         additional_sheet_name = request.POST.get("additional_sheet", "Beginning Balance")
+        
+#         # Save file temporarily, overwrite if exists
+#         file_path = default_storage.save(f"temp/{excel_file.name}", excel_file)
+#         if default_storage.exists(file_path):
+#             default_storage.delete(file_path)
+#         file_path = default_storage.save(f"temp/{excel_file.name}", excel_file)
+
+#         try:
+#             # Read the specified sheet from the .xlsm file
+#             df = pd.read_excel(file_path, sheet_name=sheet_name, engine="openpyxl")
+#             df_additional = pd.read_excel(file_path, sheet_name=additional_sheet_name, engine="openpyxl") 
+            
+#             column_mapping = {
+#                 "PRODUCT NAME": "itemName",
+#                 "CLASSIFICATION": "classificationName"
+#             } 
+            
+#             # Specify the columns you want to extract
+#             selected_columns = ["PRODUCT NAME", "CLASSIFICATION"]
+#             df_selected = df[selected_columns].rename(columns=column_mapping)
+
+#             additional_col_map = {
+#                 "PRODUCT NAME": "itemName", 
+#                 "UNIT OF MEASURE": "measurementName"
+#             }
+#             # Extract Unit of Measurement from the additional sheet
+#             additional_columns = ["PRODUCT NAME", "UNIT OF MEASURE"]
+#             df_additional_selected = df_additional[additional_columns].rename(columns=additional_col_map)
+
+#             # Merge the dataframes on "itemName"
+#             df_merged = pd.merge(df_selected, df_additional_selected, on="itemName", how="left")
+
+#             # Trim whitespace from string columns
+#             df_merged = df_merged.applymap(lambda x: x.strip() if isinstance(x, str) else x)
+
+#             # Replace NaN with None (which becomes null in JSON)
+#             df_merged = df_merged.where(pd.notnull(df_merged), "N/A")
+
+#             # Convert to JSON and trim all string values
+#             json_data = df_merged.to_dict(orient="records")
+#             for item in json_data:
+#                 for key, value in item.items():
+#                     if isinstance(value, str):
+#                         item[key] = value.strip()
+
+#             response = JsonResponse(json_data, safe=False)
+#             default_storage.delete(file_path)
+#             return response
+
+#         except ValueError as ve:
+#             return JsonResponse({"error": f"Sheet '{sheet_name}' not found"}, status=400)
+#         except KeyError as ke:
+#             return JsonResponse({"error": f"Missing columns: {ke}"}, status=400)
+#         except Exception as e:
+#             return JsonResponse({"error": str(e)}, status=500)
+
+#     return JsonResponse({"error": "Invalid request"}, status=400)
 
 from django.http import FileResponse
 from rest_framework.response import Response

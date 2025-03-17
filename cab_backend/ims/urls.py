@@ -5,9 +5,11 @@ from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
     path('login/', views.login, name='login'),
-    path('create_user/', views.create_user, name='create_user'),
     path('test_token/', views.test_token, name='test_token'),
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
+    path('create_user/', views.create_user, name='create_user'),  # Superadmin only
+    path('update_user/<int:user_id>/', views.update_user, name='update_user'),  # Superadmin only
+    path('update_password/', views.update_own_password, name='update_own_password'),  # User can update own password
 
     path('item/create/', views.item_create, name='create-item'),
     path('item/bulk-create/', views.item_bulk_create, name='bulk-create-item'),
@@ -18,6 +20,7 @@ urlpatterns = [
 
     path("beginning-bal/", views.get_beginning_bal, name="get-beginning-balance"),
     path('copy-items/', views.copy_items_to_balance, name='copy-items'),
+    path('beginning-bal/create/', views.beginning_balance_bulk_create, name='create-beginning-balance'),
 
     path('run-bal/', views.get_running_balance, name='get-running-balance'),
     path('run-bal/create/', views.create_update_runbal, name='create-running-balance'),
