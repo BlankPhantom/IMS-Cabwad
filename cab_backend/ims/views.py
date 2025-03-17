@@ -36,16 +36,21 @@ def login(request):
 
     if user := authenticate(username=username, password=password):
         token, created = Token.objects.get_or_create(user=user)
-        serializer = UserSerializer(user)
-        
+
         return Response({
             "token": token.key,
-            "user": serializer.data,
-            "is_superuser": user.is_superuser,
-            "is_staff": user.is_staff
+            "user": {
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+                "is_superuser": user.is_superuser,  # ✅ Ensure this is included
+                "is_staff": user.is_staff  # ✅ Ensure this is included
+            }
         }, status=status.HTTP_200_OK)
-    
+
     return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+
+
     
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
@@ -106,12 +111,25 @@ def update_own_password(request):
     user.save()
     return Response({"message": "Password updated successfully"}, status=status.HTTP_200_OK)
 
-#test authentication token
 @api_view(['GET'])
-@authentication_classes([SessionAuthentication, TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def test_token(request):
-    return Response(f"passed! for {request.user.email}", status=status.HTTP_200_OK)
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated, IsSuperAdmin]) 
+def user_list(request):
+    users = User.objects.all()
+    serializer = UserSerializer(users, many=True, context={'request': request})
+    return Response(serializer.data)
+
+@api_view(['DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated, IsSuperAdmin]) 
+def user_delete(request, id):
+    try:
+        users = User.objects.get(id=id)
+    except User.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    users.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
     
 @api_view(['GET'])
 def item_list_all(request):

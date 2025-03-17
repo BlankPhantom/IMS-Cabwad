@@ -11,6 +11,9 @@ const SideNavB = () => {
     const handleLogout = () => {
         localStorage.removeItem("access_token"); // Remove token from local storage
         localStorage.removeItem("user_id"); // Remove user ID from local storage
+        localStorage.removeItem("is_staff"); // Remove user ID from local storage
+        localStorage.removeItem("is_superuser"); // Remove user ID from local storage
+
         navigate("/"); // Redirect to login page after logout
     };
 

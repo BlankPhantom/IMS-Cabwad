@@ -7,9 +7,12 @@ urlpatterns = [
     path('login/', views.login, name='login'),
     path('test_token/', views.test_token, name='test_token'),
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
+    path('users/', views.user_list, name='user_list'),
     path('create_user/', views.create_user, name='create_user'),  # Superadmin only
     path('update_user/<int:user_id>/', views.update_user, name='update_user'),  # Superadmin only
     path('update_password/', views.update_own_password, name='update_own_password'),  # User can update own password
+    path('delete_user/<int:id>/', views.user_delete, name='delete-user'), # Superadmin only
+    
 
     path('item/create/', views.item_create, name='create-item'),
     path('item/bulk-create/', views.item_bulk_create, name='bulk-create-item'),

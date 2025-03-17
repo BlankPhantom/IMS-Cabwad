@@ -9,7 +9,7 @@ from django.db.models import F
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id','username','email')
+        fields = ('id','first_name','last_name','username','email','is_superuser','is_staff')
 
 
 class ClassificationSerializer(serializers.ModelSerializer):

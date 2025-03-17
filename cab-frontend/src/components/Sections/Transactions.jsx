@@ -110,16 +110,16 @@ const Transactions = () => {
         cost: parseFloat(product.cost) || 0,
     });
 
-    const fetchTransactionsWithProducts = async () => {
-        setLoading(true);
-        try {
-            const transactionsResponse = await fetch(API_ENDPOINTS.TRANSACTION_LIST, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Token ${localStorage.getItem("access_token")}`,
-                },
-            });
+  const fetchTransactionsWithProducts = async () => {
+    setLoading(true);
+    try {
+      const transactionsResponse = await fetch(API_ENDPOINTS.TRANSACTION_LIST, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${localStorage.getItem("access_token")}`,
+        },
+      });
 
             if (!transactionsResponse.ok) {
                 throw new Error(

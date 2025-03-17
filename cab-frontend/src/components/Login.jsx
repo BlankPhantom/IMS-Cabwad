@@ -15,7 +15,7 @@ const Login = () => {
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
   useEffect(() => {
-    const rememberedUsername = localStorage.getItem('rememberedUsername');
+    const rememberedUsername = localStorage.getItem("rememberedUsername");
     if (rememberedUsername) {
       setUsername(rememberedUsername);
       setRememberMe(true);
@@ -30,7 +30,7 @@ const Login = () => {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  }
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -40,80 +40,124 @@ const Login = () => {
 
     try {
       const response = await fetch(API_ENDPOINTS.LOGIN, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginData),
       });
 
+      const data = await response.json();
+      console.log("API Response:", data); // Debugging the API response
+
       if (response.ok) {
-        const data = await response.json();
+        if (data.token && data.user) {
+          localStorage.setItem("access_token", data.token);
+          localStorage.setItem("id", data.user.id);
+          localStorage.setItem("is_superuser",JSON.stringify(data.user.is_superuser));
+          localStorage.setItem("is_staff", JSON.stringify(data.user.is_staff));
 
-        localStorage.setItem('access_token', data.token);
-        localStorage.setItem('user_id', data.user_id);
+          console.log("Stored in localStorage:", {
+            token: data.token,
+            is_superuser: localStorage.getItem("is_superuser"),
+            is_staff: localStorage.getItem("is_staff"),
+          });
 
-        window.location.href = "/dashboard";
+          if (data.user.is_superuser) {
+            window.location.href = "/dashboard";
+          } else {
+            window.location.href = "/dashboardB";
+          }
+        } else {
+          console.error("Login failed: Missing user data", data);
+        }
       } else {
         setErrors({
-          txtUsername: 'Incorrect login details',
-          txtPassword: 'Incorrect login details',
+          txtUsername: "Incorrect login details",
+          txtPassword: "Incorrect login details",
         });
-        console.error('Login error details:', await response.json());
+        console.error("Login error details:", data);
       }
     } catch (error) {
-      console.error('Error during login:', error);
-      alert('An error occurred. Please try again later.');
+      console.error("Error during login:", error);
+      alert("An error occurred. Please try again later.");
     }
   };
 
-
   return (
-    <div style={{
-      backgroundColor: '#005ce5'
-    }}>
-      <Container style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
+    <div
+      style={{
+        backgroundColor: "#005ce5",
       }}>
+      <Container
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}>
         <div className="loginDiv">
           <Form onSubmit={handleLogin}>
-            <Form.Label className="cabWad" style={{ fontSize: '2rem', fontWeight: 'bold' }}>
+            <Form.Label
+              className="cabWad"
+              style={{ fontSize: "2rem", fontWeight: "bold" }}>
               Cabuyao Water District
             </Form.Label>
-            <p className="ims" style={{ fontSize: '1.2rem', marginBottom: '2rem' }}>Inventory Management System</p>
+            <p
+              className="ims"
+              style={{ fontSize: "1.2rem", marginBottom: "2rem" }}>
+              Inventory Management System
+            </p>
             <Form.Group style={{ alignContent: "start", textAlign: "start" }}>
-              <Form.Label className="justify-content-start mt-4 h6 loglbl"> Username: </Form.Label>
+              <Form.Label className="justify-content-start mt-4 h6 loglbl">
+                {" "}
+                Username:{" "}
+              </Form.Label>
               <Form.Control
                 className="login"
                 controlId="txtUsername"
                 type="text"
-                placeholder='Enter your username here'
+                placeholder="Enter your username here"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                style={{ width: '93%', padding: '0.75rem', borderRadius: '5px' }}
+                style={{
+                  width: "93%",
+                  padding: "0.75rem",
+                  borderRadius: "5px",
+                }}
               />
-              {errors.txtUsername && <p style={{ color: 'red' }}>{errors.txtUsername}</p>}
+              {errors.txtUsername && (
+                <p style={{ color: "red" }}>{errors.txtUsername}</p>
+              )}
             </Form.Group>
-            <Form.Group className="mt-5 mb-5" style={{ alignContent: "start", textAlign: "start" }}>
+            <Form.Group
+              className="mt-5 mb-5"
+              style={{ alignContent: "start", textAlign: "start" }}>
               <Form.Label className="justify-content-start h6 loglbl">
                 Password:
               </Form.Label>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div style={{ display: "flex", alignItems: "center" }}>
                 <Form.Control
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder='Insert your Password here'
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Insert your Password here"
                   value={password}
                   className="password"
-                  contolId="txtPassword"
+                  controlId="txtPassword"
                   onChange={(e) => setPassword(e.target.value)}
-                  style={{ marginRight: '10px', padding: '0.75rem', borderRadius: '5px' }}
+                  style={{
+                    marginRight: "10px",
+                    padding: "0.75rem",
+                    borderRadius: "5px",
+                  }}
                 />
-                <Button variant='primary' onClick={togglePasswordVisibility} style={{ padding: '0.5rem 1rem' }}>
+                <Button
+                  variant="primary"
+                  onClick={togglePasswordVisibility}
+                  style={{ padding: "0.5rem 1rem" }}>
                   <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
                 </Button>
               </div>
-              {errors.txtPassword && <p style={{ color: 'red' }}>{errors.txtPassword}</p>}
+              {errors.txtPassword && (
+                <p style={{ color: "red" }}>{errors.txtPassword}</p>
+              )}
             </Form.Group>
             {/* <Form.Group as={Col} className="mb-3 ps-5" controlId="CheckBox">
                 <Form.Check
@@ -124,7 +168,14 @@ const Login = () => {
                 />
             </Form.Group> */}
             <div className="loginbtn">
-              <Button variant="warning" className="text-white shadow" style={{ fontWeight: "bold", width: "10em" }} type="submit"> Login </Button>
+              <Button
+                variant="warning"
+                className="text-white shadow"
+                style={{ fontWeight: "bold", width: "10em" }}
+                type="submit">
+                {" "}
+                Login{" "}
+              </Button>
             </div>
           </Form>
         </div>

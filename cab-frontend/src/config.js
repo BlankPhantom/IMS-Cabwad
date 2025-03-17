@@ -6,7 +6,10 @@ export const API_ENDPOINTS = {
 
     //User Endpoints
     LOGIN: `${BASE_URL}ims/login/`,
-    CREATE_USER: `${BASE_URL}ims/create_user`,
+    CREATE_USER: `${BASE_URL}ims/create_user/`,
+    USER_LIST: `${BASE_URL}ims/users/`,
+    UPDATE_USER: (userID) => `${BASE_URL}ims/update_user/${userID}/`,
+    DELETE_USER: (userID) => `${BASE_URL}ims/delete_user/${userID}/`,
     TOKEN: `${BASE_URL}ims/token/`,
 
     //Item Endpoints
