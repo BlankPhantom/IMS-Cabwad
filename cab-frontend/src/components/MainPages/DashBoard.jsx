@@ -7,7 +7,7 @@ import TopNav from "../TopNav";
 
 const DashBoard = () => {
     return (
-        <div>
+        <div style={{backgroundColor: '#f8f9fa'}}>
             <TopNav />
             <Row>
                 <Col xs={2}>

@@ -7,7 +7,7 @@ import SideNavB from "../SideNavB";
 
 const DashBoardB = () => {
     return (
-        <div>
+        <div style={{backgroundColor: '#f8f9fa'}}>
             <TopNav />
             <Row>
                 <Col xs={2}>

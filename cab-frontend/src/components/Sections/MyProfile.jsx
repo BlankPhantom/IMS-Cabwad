@@ -10,7 +10,7 @@ const MyProfile = () => {
             </Row>
             
             <Row className="d-flex justify-content-center mt-5">
-                <Card style={{ width: '70%', backgroundColor: '#fafafa' }} className="border-0 shadow">
+                <Card style={{ width: '70%', backgroundColor: '#ffffff' }} className="border-0 shadow">
                     <Card.Body>
                         <Row>
                             <Col>
