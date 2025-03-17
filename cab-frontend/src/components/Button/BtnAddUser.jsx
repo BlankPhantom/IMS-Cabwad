@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { API_ENDPOINTS } from "../../config";
 
-const BtnAddUser = () => {
+const BtnAddUser = ({ fetchUsers }) => {
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     first_name: "",
@@ -128,7 +128,7 @@ const BtnAddUser = () => {
     const token = localStorage.getItem("access_token"); // Get authentication token
     const userData = {
       first_name: formData.first_name,
-      last_name: formData.last_ame,
+      last_name: formData.last_name,
       username: formData.username,
       email: formData.email,
       password: formData.password,
@@ -198,12 +198,12 @@ const BtnAddUser = () => {
                     type="text"
                     name="last_name"
                     placeholder="Last Name"
-                    value={formData.lastName}
+                    value={formData.last_name}
                     onChange={handleChange}
-                    isInvalid={!!errors.lastName}
+                    isInvalid={!!errors.last_name}
                   />
                   <Form.Control.Feedback type="invalid">
-                    {errors.lastName}
+                    {errors.last_name}
                   </Form.Control.Feedback>
                 </Form.Group>
               </Col>
