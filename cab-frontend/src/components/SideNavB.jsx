@@ -3,7 +3,7 @@ import '../App.css';
 import { Nav, Modal, Button } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
-const SideNav = () => {
+const SideNavB = () => {
     const location = useLocation(); // Get current route
     const navigate = useNavigate(); // For navigation
     const [showLogoutModal, setShowLogoutModal] = useState(false); // State to manage modal visibility
@@ -18,7 +18,7 @@ const SideNav = () => {
         <>
             <div className="sideNav" style={{ width: "200px", height: "100vh", backgroundColor: "#005ce5", position: "fixed" }}>
                 <Nav className="flex-column p-3 mt-5">
-                    {["Masterlist", "Beginning Balance", "Transactions", "Running Balance", "Monthly Consumption", "Weekly Consumption", "Account Management"].map((item, index) => {
+                    {["Masterlist", "Beginning Balance", "Transactions", "Running Balance", "Monthly Consumption", "Weekly Consumption"].map((item, index) => {
                         const path = `/dashboard/${item.toLowerCase().replace(/\s+/g, '-')}`;
                         return (
                             <Nav.Link style={{ fontWeight: "400", textShadow: "0.5px 0.5px 0.5px #000" }}
@@ -71,4 +71,4 @@ const SideNav = () => {
     );
 };
 
-export default SideNav;
+export default SideNavB;

@@ -121,7 +121,7 @@ const BtnAddNewItem = ({ fetchItems, classifications, measurements }) => {
                             <Form.Control
                                 name="unitCost"
                                 type="number"
-                                min="0" step="0.01" 
+                                min="0" step="0.01"
                             >
                             </Form.Control>
                         </Form.Group>
