@@ -660,106 +660,42 @@ def get_monthly_total(request):
     serializer = MonthlyConsumptionTotalSerializer(monthly_total, many=True)
     return Response(serializer.data)
 
-@csrf_exempt  # Remove in production; use proper authentication
-def xlsm_to_json(request):
-    if request.method == "POST" and request.FILES.get("file"):
-        excel_file = request.FILES["file"]
-        sheet_name = request.POST.get("sheet_name", "Beginning Balance")  # Default to "Sheet1"
-        
-        # Save file temporarily, overwrite if exists
-        file_path = f"temp/{excel_file.name}"
-        if default_storage.exists(file_path):
-            default_storage.delete(file_path)
-        file_path = default_storage.save(file_path, excel_file)
-
-        try:
-            # Read the specified sheet from the .xlsm file
-            df = pd.read_excel(file_path, sheet_name=sheet_name, engine="openpyxl")
-            
-            column_mapping = {
-                "Item ID": "itemID",
-                "PRODUCT NAME": "itemName",
-                "UNIT OF MEASURE": "measurementName",
-                "Available Stocks": "itemQuantity",
-                "Ave. Unit Cost": "unitCost"
-            } 
-            
-            # Specify the columns you want to extract
-            selected_columns = ["Item ID","PRODUCT NAME", "UNIT OF MEASURE", "Available Stocks", "Ave. Unit Cost"]
-            df_selected = df[selected_columns].rename(columns=column_mapping)
-
-            # Trim whitespace from string columns
-            df_selected = df_selected.applymap(lambda x: x.strip() if isinstance(x, str) else x)
-
-            # Replace NaN with None (which becomes null in JSON)
-            df_selected = df_selected.where(pd.notnull(df_selected), 0)
-
-            # Convert to JSON and trim all string values
-            json_data = df_selected.to_dict(orient="records")
-            for item in json_data:
-                for key, value in item.items():
-                    if isinstance(value, str):
-                        item[key] = value.strip()
-
-            response = JsonResponse(json_data, safe=False)
-            default_storage.delete(file_path)
-            return response
-
-        except ValueError as ve:
-            return JsonResponse({"error": f"Sheet '{sheet_name}' not found"}, status=400)
-        except KeyError as ke:
-            return JsonResponse({"error": f"Missing columns: {ke}"}, status=400)
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
-
-    return JsonResponse({"error": "Invalid request"}, status=400)
-
 # @csrf_exempt  # Remove in production; use proper authentication
 # def xlsm_to_json(request):
 #     if request.method == "POST" and request.FILES.get("file"):
 #         excel_file = request.FILES["file"]
-#         sheet_name = request.POST.get("sheet_name", "Masterlist")  # Default to "Sheet1"
-#         additional_sheet_name = request.POST.get("additional_sheet", "Beginning Balance")
+#         sheet_name = request.POST.get("sheet_name", "Beginning Balance")  # Default to "Sheet1"
         
 #         # Save file temporarily, overwrite if exists
-#         file_path = default_storage.save(f"temp/{excel_file.name}", excel_file)
+#         file_path = f"temp/{excel_file.name}"
 #         if default_storage.exists(file_path):
 #             default_storage.delete(file_path)
-#         file_path = default_storage.save(f"temp/{excel_file.name}", excel_file)
+#         file_path = default_storage.save(file_path, excel_file)
 
 #         try:
 #             # Read the specified sheet from the .xlsm file
 #             df = pd.read_excel(file_path, sheet_name=sheet_name, engine="openpyxl")
-#             df_additional = pd.read_excel(file_path, sheet_name=additional_sheet_name, engine="openpyxl") 
             
 #             column_mapping = {
+#                 "Item ID": "itemID",
 #                 "PRODUCT NAME": "itemName",
-#                 "CLASSIFICATION": "classificationName"
+#                 "UNIT OF MEASURE": "measurementName",
+#                 "Available Stocks": "itemQuantity",
+#                 "Ave. Unit Cost": "unitCost"
 #             } 
             
 #             # Specify the columns you want to extract
-#             selected_columns = ["PRODUCT NAME", "CLASSIFICATION"]
+#             selected_columns = ["Item ID","PRODUCT NAME", "UNIT OF MEASURE", "Available Stocks", "Ave. Unit Cost"]
 #             df_selected = df[selected_columns].rename(columns=column_mapping)
 
-#             additional_col_map = {
-#                 "PRODUCT NAME": "itemName", 
-#                 "UNIT OF MEASURE": "measurementName"
-#             }
-#             # Extract Unit of Measurement from the additional sheet
-#             additional_columns = ["PRODUCT NAME", "UNIT OF MEASURE"]
-#             df_additional_selected = df_additional[additional_columns].rename(columns=additional_col_map)
-
-#             # Merge the dataframes on "itemName"
-#             df_merged = pd.merge(df_selected, df_additional_selected, on="itemName", how="left")
-
 #             # Trim whitespace from string columns
-#             df_merged = df_merged.applymap(lambda x: x.strip() if isinstance(x, str) else x)
+#             df_selected = df_selected.applymap(lambda x: x.strip() if isinstance(x, str) else x)
 
 #             # Replace NaN with None (which becomes null in JSON)
-#             df_merged = df_merged.where(pd.notnull(df_merged), "N/A")
+#             df_selected = df_selected.where(pd.notnull(df_selected), 0)
 
 #             # Convert to JSON and trim all string values
-#             json_data = df_merged.to_dict(orient="records")
+#             json_data = df_selected.to_dict(orient="records")
 #             for item in json_data:
 #                 for key, value in item.items():
 #                     if isinstance(value, str):
@@ -777,6 +713,77 @@ def xlsm_to_json(request):
 #             return JsonResponse({"error": str(e)}, status=500)
 
 #     return JsonResponse({"error": "Invalid request"}, status=400)
+
+@csrf_exempt  # Remove in production; use proper authentication
+def xlsm_to_json(request):
+    if request.method == "POST" and request.FILES.get("file"):
+        excel_file = request.FILES["file"]
+        sheet_name = request.POST.get("sheet_name", "Masterlist")  # Default to "Sheet1"
+        additional_sheet_name = request.POST.get("additional_sheet", "Beginning Balance")
+        
+        # Save file temporarily, overwrite if exists
+        file_path = f"temp/{excel_file.name}"
+        if default_storage.exists(file_path):
+            default_storage.delete(file_path)
+        file_path = default_storage.save(file_path, excel_file)
+
+        try:
+            # Read the specified sheet from the .xlsm file
+            df = pd.read_excel(file_path, sheet_name=sheet_name, engine="openpyxl")
+            df_additional = pd.read_excel(file_path, sheet_name=additional_sheet_name, engine="openpyxl") 
+            
+            column_mapping = {
+                "PRODUCT NAME": "itemName",
+                "CLASSIFICATION": "classificationName"
+            } 
+            
+            # Specify the columns you want to extract
+            selected_columns = ["PRODUCT NAME", "CLASSIFICATION"]
+            df_selected = df[selected_columns].rename(columns=column_mapping)
+
+            additional_col_map = {
+                "PRODUCT NAME": "itemName", 
+                "UNIT OF MEASURE": "measurementName",
+                "Available Stocks": "itemQuantity",
+                "Ave. Unit Cost": "unitCost"
+            }
+            # Extract Unit of Measurement from the additional sheet
+            additional_columns = ["PRODUCT NAME", "UNIT OF MEASURE", "Available Stocks", "Ave. Unit Cost"]
+            df_additional_selected = df_additional[additional_columns].rename(columns=additional_col_map)
+
+            # Merge the dataframes on "itemName"
+            df_merged = pd.merge(df_selected, df_additional_selected, on="itemName", how="left")
+
+            # Trim whitespace from string columns
+            df_merged = df_merged.applymap(lambda x: x.strip() if isinstance(x, str) else x)
+
+            # Ensure itemQuantity is 0.00 if it's 0
+            df_merged['itemQuantity'] = df_merged['itemQuantity'].apply(lambda x: 0.00 if x == 0 else x)
+            df_merged['unitCost'] = df_merged['unitCost'].apply(lambda x: 0.00 if x == 0 else x)
+            # Replace NaN with None (which becomes null in JSON)
+            df_merged = df_merged.where(pd.notnull(df_merged), "N/A")
+
+
+
+            # Convert to JSON and trim all string values
+            json_data = df_merged.to_dict(orient="records")
+            for item in json_data:
+                for key, value in item.items():
+                    if isinstance(value, str):
+                        item[key] = value.strip()
+
+            response = JsonResponse(json_data, safe=False)
+            default_storage.delete(file_path)
+            return response
+
+        except ValueError as ve:
+            return JsonResponse({"error": f"Sheet '{sheet_name}' not found"}, status=400)
+        except KeyError as ke:
+            return JsonResponse({"error": f"Missing columns: {ke}"}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
 
 from django.http import FileResponse
 from rest_framework.response import Response

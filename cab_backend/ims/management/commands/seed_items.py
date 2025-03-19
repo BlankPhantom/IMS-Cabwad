@@ -17,6 +17,7 @@ class Command(BaseCommand):
         
         # Track created items and any errors
         created_items = []
+        updated_items = []
         errors = []
 
         # Iterate through the items
@@ -34,17 +35,31 @@ class Command(BaseCommand):
 
                 # Check if itemName and itemID exist in the data
                 itemName = item_data.get('itemName')
+                itemQuantity = item_data.get('itemQuantity')
+                unitCost = item_data.get('unitCost')
 
                 if not itemName:
                     raise Exception("Missing required fields: itemName or itemID")
                 # Check if item doesn't already exist
                 if Item.objects.filter(itemName=itemName):
-                    raise Exception(f"Item with name {itemName} already exists")
+                    existing_item = Item.objects.get(itemName=itemName)
+                    existing_item.classificationID = classification
+                    existing_item.measurementID = measurement
+                    existing_item.itemQuantity = itemQuantity
+                    existing_item.unitCost = unitCost
+                    existing_item.totalCost = itemQuantity * unitCost
+                    existing_item.save()
+                    updated_items.append(existing_item.itemName)
+                    self.stdout.write(self.style.SUCCESS(f'Updated existing item: {existing_item.itemName}'))
+                    continue
 
                 new_item = Item(
                     classificationID=classification,
                     measurementID=measurement,
                     itemName=itemName,
+                    itemQuantity=itemQuantity,
+                    unitCost=unitCost,
+                    totalCost=itemQuantity*unitCost
                 )
 
                 # Save the item
@@ -69,6 +84,7 @@ class Command(BaseCommand):
         
         # Summary
         self.stdout.write(self.style.SUCCESS(f'\nTotal items created: {len(created_items)}'))
+        self.stdout.write(self.style.SUCCESS(f'\nTotal items created: {len(updated_items)}'))
         if errors:
             self.stdout.write(self.style.WARNING(f'\nErrors encountered: {len(errors)}'))
             for error in errors:

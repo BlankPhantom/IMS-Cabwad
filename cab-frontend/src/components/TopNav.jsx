@@ -19,7 +19,7 @@ const TopNav = () => {
                 <span className="fw-bold text-center">Cabuyao Water District Inventory Management System</span>
             </div>
             <div className="d-flex align-items-center" style={{ color: "white", marginRight: "170px" }}>
-                <FontAwesomeIcon icon={faCircleUser} style={{ fontSize: "1.5em", marginRight: "5px" }} onClick={handleUserIconClick} /> {/* Add onClick handler */}
+                <FontAwesomeIcon icon={faCircleUser} style={{cursor: "pointer", fontSize: "1.5em", marginRight: "5px" }} onClick={handleUserIconClick} /> {/* Add onClick handler */}
             </div>
         </Navbar>
     );
