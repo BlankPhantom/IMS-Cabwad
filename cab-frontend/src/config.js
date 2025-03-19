@@ -11,7 +11,6 @@ export const API_ENDPOINTS = {
     UPDATE_USER: (userID) => `${BASE_URL}ims/update_user/${userID}/`,
     DELETE_USER: (userID) => `${BASE_URL}ims/delete_user/${userID}/`,
     TOKEN: `${BASE_URL}ims/token/`,
-    TOGGLE_USER_ACTIVATION: `${BASE_URL}ims/toggle_user_activation`, // Add this line
 
     //Item Endpoints
     ITEM_LIST: `${BASE_URL}ims/item/`,

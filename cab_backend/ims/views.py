@@ -883,17 +883,4 @@ def download_report_doc(request, year, month):
             "error": "An unexpected error occurred",
             "details": str(unexpected_error)
         }, status=500)
-
-@api_view(['PATCH'])
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated, IsSuperAdmin])  # Only superadmins can toggle user activation
-def toggle_user_activation(request, user_id):
-    try:
-        user = User.objects.get(id=user_id)
-    except User.DoesNotExist:
-        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-
-    user.is_active = not user.is_active
-    user.save()
-    return Response({"message": f"User {'activated' if user.is_active else 'deactivated'} successfully"}, status=status.HTTP_200_OK)
-
+        
