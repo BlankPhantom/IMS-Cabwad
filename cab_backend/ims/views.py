@@ -90,18 +90,10 @@ def update_user(request, user_id):
         return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
     data = request.data
-    serializer = UserSerializer(user, data=data, partial=True)
+    serializer = UserSerializer(user, data=data, partial=True, context={'request': request})
 
     if serializer.is_valid():
-        # Explicitly update boolean fields
-        user.is_superuser = data.get("is_superuser", user.is_superuser)
-        user.is_staff = data.get("is_staff", user.is_staff)
-
-        # If updating password, hash it
-        if "password" in data:
-            user.set_password(data["password"])
-
-        user.save()
+        serializer.save()
         return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
