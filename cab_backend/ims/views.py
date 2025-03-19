@@ -122,7 +122,7 @@ def update_own_password(request):
 
 @api_view(['GET'])
 @authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated, IsSuperAdmin]) 
+@permission_classes([IsAuthenticated]) 
 def user_list(request):
     users = User.objects.all()
     serializer = UserSerializer(users, many=True, context={'request': request})
@@ -456,21 +456,20 @@ logger = logging.getLogger(__name__)
 def create_update_runbal(request): 
     current_month = timezone.now().month 
     current_year = timezone.now().year 
-    
+    last_month, last_year = (12, current_year - 1) if current_month == 1 else (current_month - 1, current_year)
+
     # Use select_related to reduce database queries for related models
     items = Item.objects.all().select_related('measurementID').order_by('itemID')
     
     # Pre-fetch all beginning balances for the previous month in one query
-    last_month, last_year = (12, current_year - 1) if current_month == 1 else (current_month - 1, current_year)
-    
     beginning_balances = {
-        bb.itemID: bb.itemQuantity 
+        str(bb.itemID): bb.itemQuantity 
         for bb in BeginningBalance.objects.filter(
+            created_at__year=last_year,
             created_at__month=last_month,
-            created_at__year=last_year
         )
     }
-    
+
     # Prefetch all existing running balances for the current month
     existing_balances = {}
     for rb in RunningBalance.objects.filter(
@@ -532,13 +531,15 @@ def create_update_runbal(request):
         if itemID in existing_balances:
             running_balance = existing_balances[itemID]
         else:
+            # print(f"ItemID: {itemID}, BeginningBalance: {beginning_balances.get(str(itemID), 'NOT FOUND')}")
+            
             running_balance = RunningBalance(
                 itemID=item,
                 itemName=item.itemName, 
+                beginningBalance=beginning_balances.get(str(item.itemID), 0),
                 measurementID=item.measurementID, 
                 itemQuantity=item.itemQuantity, 
                 unitCost=item.unitCost, 
-                beginningBalance=0, 
                 purchasedFromSupp=0, 
                 returnToSupplier=0, 
                 transferFromWH=0, 
@@ -551,7 +552,7 @@ def create_update_runbal(request):
             )
 
         # Set beginning balance
-        running_balance.beginningBalance = beginning_balances.get(itemID, 0)
+        running_balance.beginningBalance = beginning_balances.get(str(itemID), 0)
         
         # Update with transaction sums if available
         sums = transaction_sums.get(itemID, {
@@ -566,6 +567,7 @@ def create_update_runbal(request):
         
         # Update summary fields
         running_balance.itemQuantity = item.itemQuantity
+        running_balance.beginningBalance = beginning_balances.get(str(running_balance.itemID_id), 0)
         running_balance.purchasedFromSupp = sums['purchasedFromSupp_sum']
         running_balance.returnToSupplier = sums['returnToSupplier_sum']
         running_balance.transferFromWH = sums['transferFromWH_sum']
@@ -594,10 +596,13 @@ def create_update_runbal(request):
                 running_balance.remarks = "Slow Moving"
             else:
                 running_balance.remarks = "Fast Moving"
+                
+        # print(f"ItemID: {itemID}, BeginningBalance: {beginning_balances.get(str(itemID), 'NOT FOUND UPDATE')}")
         
         # Add to appropriate batch list
         if itemID in existing_balances:
             balances_to_update.append(running_balance)
+            running_balance.save()
         else:
             balances_to_create.append(running_balance)
     
@@ -609,9 +614,9 @@ def create_update_runbal(request):
         RunningBalance.objects.bulk_update(
             balances_to_update,
             fields=['beginningBalance', 'itemQuantity', 'purchasedFromSupp', 
-                   'returnToSupplier', 'transferFromWH', 'transferToWH', 
-                   'issuedQty', 'returnedQty', 'consumption', 'unitCost', 
-                   'totalCost', 'remarks']
+                    'returnToSupplier', 'transferFromWH', 'transferToWH', 
+                    'issuedQty', 'returnedQty', 'consumption', 'unitCost', 
+                    'totalCost', 'remarks']
         )
 
     return Response({"detail": "Running balance processed successfully for all items."})

@@ -23,7 +23,7 @@
     "react-dom": "^18.3.1",
     "react-plotly.js": "^2.6.0",
     "react-router": "^7.1.5",
-    "react-router-dom": "^7.1.5",
+    "react-router-dom": "^7.3.0",
     "uuid": "^11.0.5"
   },
   "devDependencies": {
