@@ -9,7 +9,7 @@ Content-Type: application/json
 POST http://127.0.0.1:8000/ims/create_user/
 Content-Type: application/json
 
-{"username": "admin", "password": "admin","email": "admin@email.com"}
+{"username": "newuser", "password": "newuser","email": "nuewuser@email.com", "first_name": "newuser", "last_name": "newuser"}
 
 ###
 #test_token API

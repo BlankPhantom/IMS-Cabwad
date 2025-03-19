@@ -9,7 +9,7 @@ const TopNav = () => {
     const navigate = useNavigate(); 
 
     const handleUserIconClick = () => {
-        navigate("/dashboard/my-profile"); 
+        navigate("./my-profile"); 
     };
 
     return (
