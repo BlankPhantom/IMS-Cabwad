@@ -48,7 +48,6 @@ const App = () => {
                     <Route path="running-balance" element={<RunningBalance />} />
                     <Route path="monthly-consumption" element={<MonthlyConsumption />} />
                     <Route path="weekly-consumption" element={<WeeklyConsumption />} />
-                    <Route path="account-management" element={<AccManagement />} />
                     <Route path="backup-restore" element={<BackupRestore />} />
                     <Route path="my-profile" element={<MyProfile />} />   
                 </Route>           
