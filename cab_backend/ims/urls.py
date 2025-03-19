@@ -4,7 +4,9 @@ from ims import views
 from rest_framework.authtoken.views import obtain_auth_token 
 
 urlpatterns = [
-    path('login/', views.login, name='login'),
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
+    
     path('users/', views.user_list, name='user_list'),
     path('create_user/', views.create_user, name='create_user'),  # Superadmin only
     path('update_user/<int:user_id>/', views.update_user, name='update_user'),  # Superadmin only

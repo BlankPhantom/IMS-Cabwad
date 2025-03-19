@@ -3,6 +3,7 @@ import { Button, Modal, Form, Row, Col, InputGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { API_ENDPOINTS } from "../../config";
+import { fetchWithCSRF } from "../api";
 
 const BtnAddUser = ({ fetchUsers }) => {
   const [showModal, setShowModal] = useState(false);
@@ -135,11 +136,10 @@ const BtnAddUser = ({ fetchUsers }) => {
     };
 
     try {
-      const response = await fetch(API_ENDPOINTS.CREATE_USER, {
+      const response = await fetchWithCSRF(API_ENDPOINTS.CREATE_USER, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Token ${token}`, // Include auth token
         },
         body: JSON.stringify(userData),
       });

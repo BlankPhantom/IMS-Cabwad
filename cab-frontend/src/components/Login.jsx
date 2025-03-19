@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Button, Container, Form } from "react-bootstrap";
 import { API_ENDPOINTS } from "../config";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { fetchWithCSRF } from "./api";
 
 const Login = () => {
   const [username, setUsername] = useState();
@@ -34,53 +35,32 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    if (!validateLogin()) return;
 
-    const loginData = { username, password };
+    const csrfToken = document.cookie.split('; ').find(row => row.startsWith('csrftoken'))?.split('=')[1];
 
     try {
-      const response = await fetch(API_ENDPOINTS.LOGIN, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(loginData),
-      });
-
-      const data = await response.json();
-      console.log("API Response:", data); // Debugging the API response
-
-      if (response.ok) {
-        if (data.token && data.user) {
-          localStorage.setItem("access_token", data.token);
-          localStorage.setItem("id", data.user.id);
-          localStorage.setItem("is_superuser",JSON.stringify(data.user.is_superuser));
-          localStorage.setItem("is_staff", JSON.stringify(data.user.is_staff));
-
-          console.log("Stored in localStorage:", {
-            token: data.token,
-            is_superuser: localStorage.getItem("is_superuser"),
-            is_staff: localStorage.getItem("is_staff"),
-          });
-
-          if (data.user.is_superuser) {
-            window.location.href = "/dashboard";
-          } else {
-            window.location.href = "/dashboardB";
-          }
-        } else {
-          console.error("Login failed: Missing user data", data);
-        }
-      } else {
-        setErrors({
-          txtUsername: "Incorrect login details",
-          txtPassword: "Incorrect login details",
+        const response = await fetchWithCSRF(API_ENDPOINTS.LOGIN, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfToken,  // Add CSRF token here
+            },
+            credentials: "include",  // Ensure cookies are sent
+            body: JSON.stringify({ username, password }),
         });
-        console.error("Login error details:", data);
-      }
+
+        if (response.ok) {
+            const data = await response.json();
+            sessionStorage.setItem("user", JSON.stringify(data.user));
+            window.location.href = data.user.is_superuser ? "/dashboard" : "/dashboardB";
+        } else {
+            console.error("Login failed");
+        }
     } catch (error) {
-      console.error("Error during login:", error);
-      alert("An error occurred. Please try again later.");
+        console.error("Error:", error);
     }
-  };
+};
+
 
   return (
     <div

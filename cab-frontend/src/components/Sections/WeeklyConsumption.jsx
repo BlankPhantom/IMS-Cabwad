@@ -4,6 +4,7 @@ import Plot from 'react-plotly.js';
 import { API_ENDPOINTS } from "../../config";
 import MonthYearPicker from "../MonthYearPicker";
 import "../table.css";
+import { fetchWithCSRF } from "../api";
 
 const WeeklyConsumption = () => {
     // Calculate current week of the month (1-4)
@@ -30,7 +31,7 @@ const WeeklyConsumption = () => {
     // Fetch sections
     const fetchSections = async () => {
         try {
-            const response = await fetch(API_ENDPOINTS.SECTION_LIST);
+            const response = await fetchWithCSRF(API_ENDPOINTS.SECTION_LIST);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -51,7 +52,7 @@ const WeeklyConsumption = () => {
                 ...(selectedSection && { sectionID: selectedSection })
             });
 
-            const response = await fetch(
+            const response = await fetchWithCSRF(
                 `${API_ENDPOINTS.MONTHLY_CONSUMPTION}?${queryParams}`
             );
 

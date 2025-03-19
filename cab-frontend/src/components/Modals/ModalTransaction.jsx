@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState, useEffect } from "react";
 import { API_ENDPOINTS } from "../../config";
 import { Modal, Form, Button, Row, Col, Alert } from "react-bootstrap";
+import { fetchWithCSRF } from "../api";
 
 const ModalTransaction = ({
   showTransactionModal,
@@ -57,7 +58,7 @@ const ModalTransaction = ({
 
   const fetchArea = async () => {
     try {
-      const response = await fetch(API_ENDPOINTS.AREA_LIST);
+      const response = await fetchWithCSRF(API_ENDPOINTS.AREA_LIST);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -70,7 +71,7 @@ const ModalTransaction = ({
 
   const fetchSections = async () => {
     try {
-      const response = await fetch(API_ENDPOINTS.SECTION_LIST);
+      const response = await fetchWithCSRF(API_ENDPOINTS.SECTION_LIST);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -83,7 +84,7 @@ const ModalTransaction = ({
 
   const fetchPurpose = async () => {
     try {
-      const response = await fetch(API_ENDPOINTS.PURPOSE_LIST);
+      const response = await fetchWithCSRF(API_ENDPOINTS.PURPOSE_LIST);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -96,7 +97,7 @@ const ModalTransaction = ({
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch(API_ENDPOINTS.ITEM_LIST);
+      const response = await fetchWithCSRF(API_ENDPOINTS.ITEM_LIST);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

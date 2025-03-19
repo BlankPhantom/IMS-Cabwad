@@ -5,6 +5,7 @@ import { Container, Table, Col, Row, Pagination } from "react-bootstrap";
 import BtnAddNewItem from "../Button/BtnAddNewItem.jsx";
 import BtnEditDeleteMaster from "../Button/BtnEditDeleteMaster.jsx";
 import EditMasterModal from "../Modals/EditMasterModal.jsx";
+import { fetchWithCSRF } from "../api.jsx";
 
 const Masterlist = () => {
     const [items, setItems] = useState([]);
@@ -25,11 +26,11 @@ const Masterlist = () => {
         const token = localStorage.getItem('access_token');
 
         try {
-            const response = await fetch(API_ENDPOINTS.CLASSIFICATIONS_LIST, {
+            const response = await fetchWithCSRF(API_ENDPOINTS.CLASSIFICATIONS_LIST, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`,
+                    
                 },
             });
 
@@ -48,11 +49,11 @@ const Masterlist = () => {
         const token = localStorage.getItem('access_token');
 
         try {
-            const response = await fetch(API_ENDPOINTS.MEASUREMENTS_LIST, {
+            const response = await fetchWithCSRF(API_ENDPOINTS.MEASUREMENTS_LIST, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`,
+                    
                 },
             });
 
@@ -79,11 +80,11 @@ const Masterlist = () => {
         const token = localStorage.getItem('access_token');
 
         try {
-            const response = await fetch(API_ENDPOINTS.ITEM_LIST, {
+            const response = await fetchWithCSRF(API_ENDPOINTS.ITEM_LIST, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`,
+                    
                 },
             });
 
@@ -137,11 +138,11 @@ const Masterlist = () => {
     const deleteItem = async (id) => {
         const token = localStorage.getItem('access_token');
         try {
-            const response = await fetch(API_ENDPOINTS.DELETE_ITEM(id), {
+            const response = await fetchWithCSRF(API_ENDPOINTS.DELETE_ITEM(id), {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`,
+                    
                 },
             });
             if (!response.ok) {
@@ -173,11 +174,11 @@ const Masterlist = () => {
     const handleSaveChanges = async (updatedItemData) => {
         const token = localStorage.getItem('access_token');
         try {
-            const response = await fetch(API_ENDPOINTS.UPDATE_ITEM(updatedItemData.itemID), {
+            const response = await fetchWithCSRF(API_ENDPOINTS.UPDATE_ITEM(updatedItemData.itemID), {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`,
+                    
                 },
                 body: JSON.stringify(updatedItemData),
             });

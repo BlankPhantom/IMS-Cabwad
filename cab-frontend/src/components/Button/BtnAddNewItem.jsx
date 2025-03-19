@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import { API_ENDPOINTS } from "../../config";
 import { Button, Modal, Form } from "react-bootstrap";
+import { fetchWithCSRF } from "../api";
 
 const BtnAddNewItem = ({ fetchItems, classifications, measurements }) => {
     const [showModal, setShowModal] = useState(false);
@@ -39,11 +40,10 @@ const BtnAddNewItem = ({ fetchItems, classifications, measurements }) => {
         const token = localStorage.getItem('access_token');
 
         try {
-            const response = await fetch(API_ENDPOINTS.ADD_ITEM, {
+            const response = await fetchWithCSRF(API_ENDPOINTS.ADD_ITEM, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json', // Ensure the server knows it's JSON
-                    'Authorization': `Token ${token}`,
                 },
                 body: JSON.stringify(formData),
             });

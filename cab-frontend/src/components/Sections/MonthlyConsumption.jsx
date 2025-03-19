@@ -4,6 +4,7 @@ import { Container, Table, Col, Row, Form, Button, Pagination } from "react-boot
 import MonthYearPicker from "../MonthYearPicker";
 import { API_ENDPOINTS } from "../../config";
 import { saveAs } from "file-saver";
+import { fetchWithCSRF } from "../api";
 
 const MonthlyConsumption = () => {
   const [selectedSection, setSelectedSection] = useState("");
@@ -49,7 +50,7 @@ const MonthlyConsumption = () => {
   // Fetch sections for the dropdown
   const fetchSections = async () => {
     try {
-      const response = await fetch(API_ENDPOINTS.SECTION_LIST);
+      const response = await fetchWithCSRF(API_ENDPOINTS.SECTION_LIST);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -71,14 +72,14 @@ const MonthlyConsumption = () => {
       });
 
       if (selectedMonth === 0) {
-        const response = await fetch(API_ENDPOINTS.MONTHLY_CONSUMPTION);
+        const response = await fetchWithCSRF(API_ENDPOINTS.MONTHLY_CONSUMPTION);
         if (!response.ok) {
           throw new Error("Failed to fetch monthly consumption data.");
         }
         const data = await response.json();
         setConsumptionData(data);
       } else {
-        const response = await fetch(
+        const response = await fetchWithCSRF(
           `${API_ENDPOINTS.MONTHLY_CONSUMPTION}?${queryParams}`
         );
         if (!response.ok) {
@@ -142,13 +143,10 @@ const MonthlyConsumption = () => {
       }
 
       // Fetch the report from API (modify endpoint based on file type)
-      const response = await fetch(
+      const response = await fetchWithCSRF(
         API_ENDPOINTS.DOWNLOAD_REPORTS(selectedYear, selectedMonth, "pdf"),
         {
           method: "GET",
-          headers: {
-            Authorization: `Token ${token}`,
-          },
         }
       );
 

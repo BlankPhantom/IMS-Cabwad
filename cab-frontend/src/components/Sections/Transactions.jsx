@@ -8,6 +8,7 @@ import ModalTransaction from "../Modals/ModalTransaction";
 import BtnEditDeleteTransaction from "../Button/BtnEditDeleteTransaction";
 import { API_ENDPOINTS } from "../../config";
 import EditTransactionModal from "../Modals/EditTransactionModal";
+import { fetchWithCSRF } from "../api";
 
 const Transactions = () => {
     const [showTransactionModal, setShowTransactionModal] = useState(false);
@@ -68,20 +69,13 @@ const Transactions = () => {
     }, [transactions, selectedMonthYear]);
 
     const createRunningBal = async () => {
-        const token = localStorage.getItem("access_token");
-        if (!token) {
-            console.error("Authorization token is missing.");
-            alert("Authorization token is missing. Please log in again.");
-            return;
-        }
-
         try {
             setLoading(true);
-            const response = await fetch(API_ENDPOINTS.RUNNING_BAL_CREATE, {
+            const response = await fetchWithCSRF(API_ENDPOINTS.RUNNING_BAL_CREATE, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Token ${token}`,
+                    
                 },
             });
 
@@ -113,11 +107,11 @@ const Transactions = () => {
   const fetchTransactionsWithProducts = async () => {
     setLoading(true);
     try {
-      const transactionsResponse = await fetch(API_ENDPOINTS.TRANSACTION_LIST, {
+      const transactionsResponse = await fetchWithCSRF(API_ENDPOINTS.TRANSACTION_LIST, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Token ${localStorage.getItem("access_token")}`,
+          
         },
       });
 
@@ -129,13 +123,13 @@ const Transactions = () => {
 
             const transactions = await transactionsResponse.json();
 
-            const productsResponse = await fetch(
+            const productsResponse = await fetchWithCSRF(
                 API_ENDPOINTS.TRANSACTION_PRODUCTS_ALL,
                 {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
-                        Authorization: `Token ${localStorage.getItem("access_token")}`,
+                        
                     },
                 }
             );
@@ -409,13 +403,6 @@ const Transactions = () => {
         }
 
         try {
-            const token = localStorage.getItem("access_token");
-            if (!token) {
-                console.error("Authorization token is missing.");
-                alert("Authorization token is missing. Please log in again.");
-                return;
-            }
-
             const productRequests = transactionData.products.map((product) => {
                 const productPayload = formatProductPayload(
                     product,
@@ -423,11 +410,11 @@ const Transactions = () => {
                 );
                 console.log("Final Product Payload:", productPayload); // Debugging
 
-                return fetch(API_ENDPOINTS.ADD_TRANSACTION_PRODUCT, {
+                return fetchWithCSRF(API_ENDPOINTS.ADD_TRANSACTION_PRODUCT, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        Authorization: `Token ${token}`,
+                        
                     },
                     body: JSON.stringify(productPayload),
                 }).then(async (response) => {
@@ -468,11 +455,11 @@ const Transactions = () => {
         const token = localStorage.getItem("access_token");
 
         try {
-            const response = await fetch(API_ENDPOINTS.ADD_TRANSACTION, {
+            const response = await fetchWithCSRF(API_ENDPOINTS.ADD_TRANSACTION, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Token ${token}`,
+                    
                 },
                 body: JSON.stringify(formData),
             });
@@ -523,12 +510,12 @@ const Transactions = () => {
         }
 
         try {
-            const response = await fetch(
+            const response = await fetchWithCSRF(
                 API_ENDPOINTS.DELETE_TRANSACTION(transactionDetailsID),
                 {
                     method: "DELETE",
                     headers: {
-                        Authorization: `Token ${localStorage.getItem("access_token")}`,
+                        
                     },
                 }
             );

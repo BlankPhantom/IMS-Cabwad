@@ -9,6 +9,7 @@ import {
   faUpload,
 } from "@fortawesome/free-solid-svg-icons";
 import { API_ENDPOINTS } from "../../config";
+import { fetchWithCSRF } from "../api";
 
 const BackupRestore = () => {
   const [backupMessage, setBackupMessage] = useState("");
@@ -30,11 +31,8 @@ const BackupRestore = () => {
       const token = localStorage.getItem("access_token"); // Get JWT token
   
       // First, request the backup file from the backend
-      const response = await fetch(API_ENDPOINTS.BACKUP, {
+      const response = await fetchWithCSRF(API_ENDPOINTS.BACKUP, {
         method: "GET",
-        headers: {
-          Authorization: `Token ${token}`,
-        },
       });
   
       if (!response.ok) {
@@ -79,12 +77,8 @@ const BackupRestore = () => {
       const formData = new FormData();
       formData.append("backup_file", file);
 
-      const token = localStorage.getItem("access_token"); // Get JWT token
-      const response = await fetch(API_ENDPOINTS.RESTORE, {
+      const response = await fetchWithCSRF(API_ENDPOINTS.RESTORE, {
         method: "POST",
-        headers: {
-          Authorization: `Token ${token}`, // Include token in the header
-        },
         body: formData, // Pass FormData directly
       });
 

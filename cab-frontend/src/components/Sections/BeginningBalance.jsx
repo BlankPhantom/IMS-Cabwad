@@ -3,6 +3,7 @@ import { API_ENDPOINTS } from "../../config.js";
 import "../table.css";
 import { Container, Table, Col, Row, Pagination } from "react-bootstrap";
 import MonthYearPicker from "../MonthYearPicker";
+import { fetchWithCSRF } from "../api.jsx";
 
 const BeginningBalance = () => {
     const [items, setItems] = useState([]);
@@ -24,11 +25,11 @@ const BeginningBalance = () => {
             let response;
             if (selectedMonth === 0) {
                 // If no specific month is selected, fetch all data
-                response = await fetch(API_ENDPOINTS.BEGINNING_BAL_LIST, {
+                response = await fetchWithCSRF(API_ENDPOINTS.BEGINNING_BAL_LIST, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
-                        Authorization: `Token ${token}`,
+                        
                     },
                 });
             } else {
@@ -37,11 +38,11 @@ const BeginningBalance = () => {
                     month: selectedMonth , // Add 1 back when sending to backend
                     year: selectedYear,
                 });
-                response = await fetch(`${API_ENDPOINTS.BEGINNING_BAL_LIST}?${queryParams}`, {
+                response = await fetchWithCSRF(`${API_ENDPOINTS.BEGINNING_BAL_LIST}?${queryParams}`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
-                        Authorization: `Token ${token}`,
+                        
                     },
                 });
             }
@@ -71,11 +72,11 @@ const BeginningBalance = () => {
             return;
         }
         try {
-            await fetch(API_ENDPOINTS.BEGINNING_BAL_CREATE, {
+            await fetchWithCSRF(API_ENDPOINTS.BEGINNING_BAL_CREATE, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Token ${token}`,
+                    
                 },
             });
             fetchBeginningBalance();
@@ -143,11 +144,11 @@ const BeginningBalance = () => {
                     year: selectedYear,
                 });
                 
-                const checkResponse = await fetch(`${API_ENDPOINTS.BEGINNING_BAL_LIST}?${queryParams}`, {
+                const checkResponse = await fetchWithCSRF(`${API_ENDPOINTS.BEGINNING_BAL_LIST}?${queryParams}`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
-                        Authorization: `Token ${token}`,
+                        
                     },
                 });
                 
@@ -161,11 +162,11 @@ const BeginningBalance = () => {
                 if (existingData.length === 0 && isMounted) {
                     console.log("No data found for selected month/year. Creating new entries...");
                     
-                    await fetch(API_ENDPOINTS.BEGINNING_BAL_CREATE, {
+                    await fetchWithCSRF(API_ENDPOINTS.BEGINNING_BAL_CREATE, {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
-                            Authorization: `Token ${token}`,
+                            
                         },
                     });
                 }
@@ -173,11 +174,11 @@ const BeginningBalance = () => {
                 // Only fetch final data if component is still mounted
                 if (isMounted) {
                     // Fetch the updated data
-                    const finalResponse = await fetch(`${API_ENDPOINTS.BEGINNING_BAL_LIST}?${queryParams}`, {
+                    const finalResponse = await fetchWithCSRF(`${API_ENDPOINTS.BEGINNING_BAL_LIST}?${queryParams}`, {
                         method: "GET",
                         headers: {
                             "Content-Type": "application/json",
-                            Authorization: `Token ${token}`,
+                            
                         },
                     });
                     

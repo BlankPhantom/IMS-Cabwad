@@ -3,8 +3,8 @@ from django.utils import timezone
 from django.utils.timezone import now
 from django.http import JsonResponse
 from django.db.models import Sum
-
-logger = logging.getLogger(__name__)
+from django.contrib.auth import login, logout
+from django.middleware.csrf import get_token
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication 
@@ -29,31 +29,39 @@ class IsSuperAdmin(BasePermission):
         return request.user and request.user.is_superuser
 
 @api_view(['POST'])
-@authentication_classes([])
-def login(request):
+@authentication_classes([])  # Allow login without auth
+def login_view(request):
     username = request.data.get("username")
     password = request.data.get("password")
 
-    if user := authenticate(username=username, password=password):
-        token, created = Token.objects.get_or_create(user=user)
+    user = authenticate(username=username, password=password)
 
-        return Response({
-            "token": token.key,
+    if user:
+        login(request, user)  # Start session
+        response = Response({
             "user": {
                 "id": user.id,
                 "username": user.username,
                 "email": user.email,
-                "is_superuser": user.is_superuser,  # ✅ Ensure this is included
-                "is_staff": user.is_staff  # ✅ Ensure this is included
+                "is_superuser": user.is_superuser,
+                "is_staff": user.is_staff
             }
         }, status=status.HTTP_200_OK)
-
+        response.set_cookie("csrftoken", get_token(request), httponly=True, secure=True, samesite="Lax")
+        return response
     return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
 
-
-    
 @api_view(['POST'])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([SessionAuthentication])
+@permission_classes([IsAuthenticated])
+def logout_view(request):
+    logout(request)
+    response = Response({"message": "Logged out"}, status=status.HTTP_200_OK)
+    response.delete_cookie("csrftoken")
+    return response
+
+@api_view(['POST'])
+@authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated, IsSuperAdmin])
 def create_user(request):
     serializer = UserSerializer(data=request.data)
@@ -81,7 +89,7 @@ def create_user(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated, IsSuperAdmin])  # Only superadmins can update users
 def update_user(request, user_id):
     try:
@@ -99,7 +107,7 @@ def update_user(request, user_id):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])  # Any logged-in user can update their own password
 def update_own_password(request):
     user = request.user
@@ -113,7 +121,7 @@ def update_own_password(request):
     return Response({"message": "Password updated successfully"}, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated]) 
 def user_list(request):
     users = User.objects.all()
@@ -121,7 +129,7 @@ def user_list(request):
     return Response(serializer.data)
 
 @api_view(['DELETE'])
-@authentication_classes([TokenAuthentication])
+@authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated, IsSuperAdmin]) 
 def user_delete(request, id):
     try:

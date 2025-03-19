@@ -4,6 +4,7 @@ import { API_ENDPOINTS } from "../../config";
 import { Container, Table, Col, Row, Form } from "react-bootstrap";
 import MonthYearPicker from "../MonthYearPicker";
 import { Pagination } from "react-bootstrap";
+import { fetchWithCSRF } from "../api";
 
 const RunningBalance = () => {
   const [runningBalanceData, setRunningBalanceData] = useState([]);
@@ -33,11 +34,10 @@ const RunningBalance = () => {
         url = `${url}?${queryParams}`;
       }
 
-      const response = await fetch(url, {
+      const response = await fetchWithCSRF(url, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Token ${token}`,
         },
       });
 
