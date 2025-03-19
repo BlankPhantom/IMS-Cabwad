@@ -207,19 +207,6 @@ const AccManagement = () => {
             </Row>
 
             <Row>
-                <Col className="d-flex justify-content-end mt-3">
-                    <input
-                        type="search"
-                        className="form-control"
-                        placeholder="Search"
-                        style={{ width: "300px" }}
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </Col>
-            </Row>
-
-            <Row>
                 <Table responsive bordered striped hover className="tableStyle mt-3">
                     <thead>
                         <tr>

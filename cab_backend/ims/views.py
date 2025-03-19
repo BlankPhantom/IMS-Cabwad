@@ -103,10 +103,14 @@ def update_user(request, user_id):
 @permission_classes([IsAuthenticated])  # Any logged-in user can update their own password
 def update_own_password(request):
     user = request.user
-    new_password = request.data.get("password")
+    old_password = request.data.get("old_password")
+    new_password = request.data.get("new_password")
 
-    if not new_password:
-        return Response({"error": "Password is required"}, status=status.HTTP_400_BAD_REQUEST)
+    if not old_password or not new_password:
+        return Response({"error": "Old password and new password are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+    if not user.check_password(old_password):
+        return Response({"error": "Old password is incorrect"}, status=status.HTTP_400_BAD_REQUEST)
 
     user.set_password(new_password)
     user.save()
