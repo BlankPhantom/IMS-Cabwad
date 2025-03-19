@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Modal, Form, Row, Col, InputGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash, faCheckCircle, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 import { API_ENDPOINTS } from "../../config";
 
 const BtnAddUser = ({ fetchUsers }) => {
@@ -18,6 +18,8 @@ const BtnAddUser = ({ fetchUsers }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState(0);
+  const [passwordFeedback, setPasswordFeedback] = useState([]);
 
   const handleShow = () => setShowModal(true);
   const handleClose = () => {
@@ -68,6 +70,32 @@ const BtnAddUser = ({ fetchUsers }) => {
   // Toggle confirm password visibility
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword(!showConfirmPassword);
+  };
+
+  // Password validation criteria
+  const passwordRequirements = [
+    { regex: /.{6,}/, message: "At least 6 characters" },
+    { regex: /[A-Z]/, message: "At least one uppercase letter" },
+    { regex: /[a-z]/, message: "At least one lowercase letter" },
+    { regex: /[0-9]/, message: "At least one number" },
+  ];
+
+  useEffect(() => {
+    if (formData.password) {
+      const metRequirements = passwordRequirements.filter(req => req.regex.test(formData.password));
+      setPasswordStrength(Math.floor((metRequirements.length / passwordRequirements.length) * 100));
+      setPasswordFeedback(passwordRequirements);
+    } else {
+      setPasswordStrength(0);
+      setPasswordFeedback([]);
+    }
+  }, [formData.password]);
+
+  // Get color based on password strength
+  const getStrengthColor = () => {
+    if (passwordStrength < 40) return "danger";
+    if (passwordStrength < 70) return "warning";
+    return "success";
   };
 
   // Validate form
@@ -256,6 +284,34 @@ const BtnAddUser = ({ fetchUsers }) => {
                   {errors.password}
                 </Form.Control.Feedback>
               </InputGroup>
+              
+              {formData.password && (
+                <div className="mt-2">
+                  <div className="mb-1">Password strength:</div>
+                  <div className="progress mb-3">
+                    <div 
+                      className={`progress-bar bg-${getStrengthColor()}`} 
+                      role="progressbar" 
+                      style={{ width: `${passwordStrength}%` }} 
+                      aria-valuenow={passwordStrength} 
+                      aria-valuemin="0" 
+                      aria-valuemax="100"
+                    ></div>
+                  </div>
+                  
+                  <div className="password-requirements">
+                    {passwordFeedback.map((req, index) => (
+                      <div key={index} className="d-flex align-items-center mb-1">
+                        <FontAwesomeIcon 
+                          icon={req.regex.test(formData.password) ? faCheckCircle : faTimesCircle} 
+                          className={`me-2 text-${req.regex.test(formData.password) ? 'success' : 'danger'}`}
+                        />
+                        <small>{req.message}</small>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Confirm Password</Form.Label>

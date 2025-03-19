@@ -108,10 +108,9 @@ const BtnChangePass = () => {
             setNewPassword("");
             setConfirmPassword("");
             
-            // Close modal after 2 seconds on success
             setTimeout(() => {
                 handleClose();
-            }, 2000);
+            }, 1500);
         } catch (e) {
             console.error("Error changing password:", e);
             setError(e.message || "Failed to change password. Please check console for details.");
