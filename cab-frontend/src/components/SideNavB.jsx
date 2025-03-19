@@ -39,7 +39,7 @@ const SideNavB = () => {
                 <Nav className="mt-auto p-3">
                     <Nav.Link style={{ fontWeight: "400", textShadow: "0.5px 0.5px 0.5px #000" }}
                         as={Link}
-                        to="/dashboard/backup-restore"
+                        to="/dashboardB/backup-restore"
                         className={`nav-link-custom ${location.pathname === "/dashboardB/backup-restore" ? 'active-link' : 'text-white'}`}
                     >
                         Back Up and Restore
