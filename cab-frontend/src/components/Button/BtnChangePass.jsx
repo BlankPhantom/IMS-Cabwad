@@ -150,7 +150,6 @@ const BtnChangePass = () => {
                                     name="oldPassword"
                                     value={oldPassword}
                                     onChange={(e) => setOldPassword(e.target.value)}
-                                    required
                                 />
                                 <Button 
                                     variant="outline-secondary"
@@ -169,7 +168,6 @@ const BtnChangePass = () => {
                                     name="newPassword"
                                     value={newPassword}
                                     onChange={(e) => setNewPassword(e.target.value)}
-                                    required
                                 />
                                 <Button 
                                     variant="outline-secondary"
@@ -216,7 +214,6 @@ const BtnChangePass = () => {
                                     name="confirmPassword"
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
-                                    required
                                 />
                                 <Button 
                                     variant="outline-secondary"
