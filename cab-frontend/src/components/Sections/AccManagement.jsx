@@ -233,8 +233,8 @@ const AccManagement = () => {
                                     <td>{user.email}</td>
                                     <td>{user.is_superuser ? "Super Admin" : "Admin"}</td>
                                     <td>
-                                        <Badge bg={user.is_active ? "danger" : "success"}>
-                                            {user.is_active ? "Inactive" : "Active"}
+                                        <Badge bg={user.is_active ? "success" : "danger"}>
+                                            {user.is_active ? "Active" : "Inactive"}
                                         </Badge>
                                     </td>
                                     <td>
