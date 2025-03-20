@@ -422,6 +422,52 @@ const AccManagement = () => {
                                 required
                             />
                         </Form.Group>
+                        
+                        {/* Password Fields */}
+                        <Form.Group className="mb-3">
+                            <Form.Label>New Password (leave blank to keep current)</Form.Label>
+                            <div className="input-group">
+                                <Form.Control
+                                    type={showNewPassword ? "text" : "password"}
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                />
+                                <Button 
+                                    variant="outline-secondary"
+                                    onClick={() => setShowNewPassword(!showNewPassword)}
+                                >
+                                    <FontAwesomeIcon icon={showNewPassword ? faEyeSlash : faEye} />
+                                </Button>
+                            </div>
+                            
+                            {newPassword && (
+                                <div className="mt-2">
+                                    <div className="mb-1">Password strength:</div>
+                                    <div className="progress mb-3">
+                                        <div 
+                                            className={`progress-bar bg-${getStrengthColor()}`} 
+                                            role="progressbar" 
+                                            style={{ width: `${passwordStrength}%` }} 
+                                            aria-valuenow={passwordStrength} 
+                                            aria-valuemin="0" 
+                                            aria-valuemax="100"
+                                        ></div>
+                                    </div>
+                                    
+                                    <div className="password-requirements">
+                                        {passwordFeedback.map((req, index) => (
+                                            <div key={index} className="d-flex align-items-center mb-1">
+                                                <FontAwesomeIcon 
+                                                    icon={req.regex.test(newPassword) ? faCheckCircle : faTimesCircle} 
+                                                    className={`me-2 text-${req.regex.test(newPassword) ? 'success' : 'danger'}`}
+                                                />
+                                                <small>{req.message}</small>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </Form.Group>
 
                         <Form.Group className="mb-3">
                             <Form.Label>Confirm New Password</Form.Label>
