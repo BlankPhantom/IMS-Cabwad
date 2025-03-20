@@ -10,7 +10,7 @@ urlpatterns = [
     path('update_user/<int:user_id>/', views.update_user, name='update_user'),  # Superadmin only
     path('update_password/', views.update_own_password, name='update_own_password'),  # User can update own password
     path('delete_user/<int:id>/', views.user_delete, name='delete-user'), # Superadmin only
-    
+    path('toggle_user_activation/<int:user_id>/', views.toggle_user_activation, name='toggle_user_activation'),  # Superadmin only
 
     path('item/create/', views.item_create, name='create-item'),
     path('item/bulk-create/', views.item_bulk_create, name='bulk-create-item'),
