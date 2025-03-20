@@ -1,17 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "../table.css";
-import { Container, Table, Col, Row, Button, Modal, Form, Badge, Alert, Spinner } from "react-bootstrap";
+import { Container, Table, Col, Row, Button, Modal, Form, Badge } from "react-bootstrap";
 import BtnAddUser from "../Button/BtnAddUser";
 import { API_ENDPOINTS } from "../../config";
-import { 
-    faPenToSquare, 
-    faUserCheck, 
-    faUserXmark, 
-    faEye, 
-    faEyeSlash,
-    faCheckCircle,
-    faTimesCircle 
-} from "@fortawesome/free-solid-svg-icons";
+import { faPenToSquare, faUserCheck, faUserXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const AccManagement = () => {
@@ -34,42 +26,11 @@ const AccManagement = () => {
     const [tempUserState, setTempUserState] = useState({
         is_superuser: false
     });
-    
-    // Password related states
-    const [newPassword, setNewPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-    const [showNewPassword, setShowNewPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [passwordStrength, setPasswordStrength] = useState(0);
-    const [passwordFeedback, setPasswordFeedback] = useState([]);
-    const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
-
-    // Password validation criteria
-    const passwordRequirements = [
-        { regex: /.{6,}/, message: "At least 6 characters" },
-        { regex: /[A-Z]/, message: "At least one uppercase letter" },
-        { regex: /[a-z]/, message: "At least one lowercase letter" },
-        { regex: /[0-9]/, message: "At least one number" },
-    ];
 
     // Fetch users when component mounts
     useEffect(() => {
         fetchUsers();
     }, []);
-
-    // Password strength calculation
-    useEffect(() => {
-        if (newPassword) {
-            const metRequirements = passwordRequirements.filter(req => req.regex.test(newPassword));
-            setPasswordStrength(Math.floor((metRequirements.length / passwordRequirements.length) * 100));
-            setPasswordFeedback(passwordRequirements);
-        } else {
-            setPasswordStrength(0);
-            setPasswordFeedback([]);
-        }
-    }, [newPassword]);
 
     const handleToggleActivation = (user) => {
         setCurrentUser(user);
@@ -131,12 +92,6 @@ const AccManagement = () => {
     };
 
     const handleShowEditModal = (user) => {
-        // Reset password fields and alerts when opening modal
-        setNewPassword("");
-        setConfirmPassword("");
-        setError(null);
-        setSuccess(null);
-        
         // Use only one setCurrentUser call
         setCurrentUser({
             id: user.id,
@@ -154,10 +109,6 @@ const AccManagement = () => {
 
     const handleCloseEditModal = () => {
         setShowEditModal(false);
-        setNewPassword("");
-        setConfirmPassword("");
-        setError(null);
-        setSuccess(null);
     };
 
     const handleInputChange = (e) => {
@@ -200,62 +151,19 @@ const AccManagement = () => {
         }));
     };
 
-    // Password validation
-    const validatePassword = () => {
-        // Skip validation if no password is entered (not changing password)
-        if (!newPassword && !confirmPassword) {
-            return true;
-        }
-        
-        // Check if passwords match
-        if (newPassword !== confirmPassword) {
-            setError("New password and confirm password do not match");
-            return false;
-        }
-
-        // Check if password meets minimum requirements
-        const meetsRequirements = passwordRequirements.every(req => req.regex.test(newPassword));
-        if (!meetsRequirements) {
-            setError("Password does not meet all requirements");
-            return false;
-        }
-
-        return true;
-    };
-
-    // Get color based on password strength
-    const getStrengthColor = () => {
-        if (passwordStrength < 40) return "danger";
-        if (passwordStrength < 70) return "warning";
-        return "success";
-    };
-
     const handleUpdateUser = async (e) => {
         e.preventDefault();
-        setError(null);
-        setSuccess(null);
-        
-        if (!validatePassword()) {
-            return;
-        }
-        
-        setIsLoading(true);
         const token = localStorage.getItem("access_token");
 
-        // Create payload - only include password if a new one was entered
-        const payload = { ...currentUser };
-        if (newPassword) {
-            payload.password = newPassword;
-        }
-
         try {
+           
             const response = await fetch(API_ENDPOINTS.UPDATE_USER(currentUser.id), {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Token ${token}`,
                 },
-                body: JSON.stringify(payload),
+                body: JSON.stringify(currentUser),
             });
 
             if (!response.ok) {
@@ -264,17 +172,15 @@ const AccManagement = () => {
                 throw new Error(`Failed to update user: ${response.status}`);
             }
 
+            const updatedUser = await response.json();
+
             // Close modal and refresh user list
-            setSuccess("User updated successfully!");
-            setTimeout(() => {
-                setShowEditModal(false);
-                fetchUsers();
-            }, 1500);
+            alert("User updated successfully!");
+            setShowEditModal(false);
+            fetchUsers();
         } catch (e) {
             console.error("Error updating user:", e);
-            setError("Failed to update user. Please check console for details.");
-        } finally {
-            setIsLoading(false);
+            alert("Failed to update user. Please check console for details.");
         }
     };
 
@@ -327,8 +233,8 @@ const AccManagement = () => {
                                     <td>{user.email}</td>
                                     <td>{user.is_superuser ? "Super Admin" : "Admin"}</td>
                                     <td>
-                                        <Badge bg={user.is_active ? "success" : "danger"}>
-                                            {user.is_active ? "Active" : "Inactive"}
+                                        <Badge bg={user.is_active ? "danger" : "success"}>
+                                            {user.is_active ? "Inactive" : "Active"}
                                         </Badge>
                                     </td>
                                     <td>
@@ -379,8 +285,6 @@ const AccManagement = () => {
                     <Modal.Title>Edit User</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    {error && <Alert variant="danger">{error}</Alert>}
-                    {success && <Alert variant="success">{success}</Alert>}
                     <Form onSubmit={handleUpdateUser}>
                         <Form.Group className="mb-3">
                             <Form.Label>First Name</Form.Label>
@@ -422,80 +326,6 @@ const AccManagement = () => {
                                 required
                             />
                         </Form.Group>
-                        
-                        {/* Password Fields */}
-                        <Form.Group className="mb-3">
-                            <Form.Label>New Password (leave blank to keep current)</Form.Label>
-                            <div className="input-group">
-                                <Form.Control
-                                    type={showNewPassword ? "text" : "password"}
-                                    value={newPassword}
-                                    onChange={(e) => setNewPassword(e.target.value)}
-                                />
-                                <Button 
-                                    variant="outline-secondary"
-                                    onClick={() => setShowNewPassword(!showNewPassword)}
-                                >
-                                    <FontAwesomeIcon icon={showNewPassword ? faEyeSlash : faEye} />
-                                </Button>
-                            </div>
-                            
-                            {newPassword && (
-                                <div className="mt-2">
-                                    <div className="mb-1">Password strength:</div>
-                                    <div className="progress mb-3">
-                                        <div 
-                                            className={`progress-bar bg-${getStrengthColor()}`} 
-                                            role="progressbar" 
-                                            style={{ width: `${passwordStrength}%` }} 
-                                            aria-valuenow={passwordStrength} 
-                                            aria-valuemin="0" 
-                                            aria-valuemax="100"
-                                        ></div>
-                                    </div>
-                                    
-                                    <div className="password-requirements">
-                                        {passwordFeedback.map((req, index) => (
-                                            <div key={index} className="d-flex align-items-center mb-1">
-                                                <FontAwesomeIcon 
-                                                    icon={req.regex.test(newPassword) ? faCheckCircle : faTimesCircle} 
-                                                    className={`me-2 text-${req.regex.test(newPassword) ? 'success' : 'danger'}`}
-                                                />
-                                                <small>{req.message}</small>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                        </Form.Group>
-
-                        <Form.Group className="mb-3">
-                            <Form.Label>Confirm New Password</Form.Label>
-                            <div className="input-group">
-                                <Form.Control
-                                    type={showConfirmPassword ? "text" : "password"}
-                                    value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                    disabled={!newPassword}
-                                />
-                                <Button 
-                                    variant="outline-secondary"
-                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                >
-                                    <FontAwesomeIcon icon={showConfirmPassword ? faEyeSlash : faEye} />
-                                </Button>
-                            </div>
-                            {confirmPassword && newPassword && (
-                                <div className="mt-2">
-                                    {confirmPassword === newPassword ? (
-                                        <small className="text-success">Passwords match</small>
-                                    ) : (
-                                        <small className="text-danger">Passwords do not match</small>
-                                    )}
-                                </div>
-                            )}
-                        </Form.Group>
-                        
                         <Form.Group className="mb-3">
                             <Form.Check
                                 type="checkbox"
@@ -506,25 +336,11 @@ const AccManagement = () => {
                             />
                         </Form.Group>
                         <div className="d-flex justify-content-end">
-                            <Button variant="danger" className="me-2" onClick={handleCloseEditModal} disabled={isLoading}>
+                            <Button variant="danger" className="me-2" onClick={handleCloseEditModal}>
                                 Cancel
                             </Button>
-                            <Button variant="primary" type="submit" disabled={isLoading}>
-                                {isLoading ? (
-                                    <>
-                                        <Spinner
-                                            as="span"
-                                            animation="border"
-                                            size="sm"
-                                            role="status"
-                                            aria-hidden="true"
-                                            className="me-2"
-                                        />
-                                        Saving...
-                                    </>
-                                ) : (
-                                    "Save Changes"
-                                )}
+                            <Button variant="primary" type="submit">
+                                Save Changes
                             </Button>
                         </div>
                     </Form>
