@@ -3,7 +3,6 @@ import { Modal, Form, Button, Row, Col, Alert } from 'react-bootstrap';
 import { API_ENDPOINTS } from "../../config";
 import { faPenToSquare, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { fetchWithCSRF } from '../api';
 
 const EditTransactionModal = ({
     show,
@@ -69,7 +68,7 @@ const EditTransactionModal = ({
 
     const fetchTransactions = async () => {
         try {
-            const response = await fetchWithCSRF(API_ENDPOINTS.TRANSACTION_LIST);
+            const response = await fetch(API_ENDPOINTS.TRANSACTION_LIST);
             const data = await response.json();
             setTransactions(Array.isArray(data) ? data : []); // Ensure it's always an array
         } catch (error) {
@@ -80,7 +79,7 @@ const EditTransactionModal = ({
 
     const fetchSections = async () => {
         try {
-            const response = await fetchWithCSRF(API_ENDPOINTS.SECTION_LIST);
+            const response = await fetch(API_ENDPOINTS.SECTION_LIST);
             const data = await response.json();
             setSections(data);
         } catch (error) {
@@ -90,7 +89,7 @@ const EditTransactionModal = ({
 
     const fetchPurpose = async () => {
         try {
-            const response = await fetchWithCSRF(API_ENDPOINTS.PURPOSE_LIST);
+            const response = await fetch(API_ENDPOINTS.PURPOSE_LIST);
             const data = await response.json();
             setPurpose(data);
         } catch (error) {
@@ -100,7 +99,7 @@ const EditTransactionModal = ({
 
     const fetchArea = async () => {
         try {
-            const response = await fetchWithCSRF(API_ENDPOINTS.AREA_LIST);
+            const response = await fetch(API_ENDPOINTS.AREA_LIST);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -113,7 +112,7 @@ const EditTransactionModal = ({
 
     const fetchProducts = async () => {
         try {
-            const response = await fetchWithCSRF(API_ENDPOINTS.ITEM_LIST);
+            const response = await fetch(API_ENDPOINTS.ITEM_LIST);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -126,7 +125,7 @@ const EditTransactionModal = ({
 
     const fetchProductsForTransaction = async (transactionDetailsID) => {
         try {
-            const response = await fetchWithCSRF(API_ENDPOINTS.TRANSACTION_PRODUCTS_ALL);
+            const response = await fetch(API_ENDPOINTS.TRANSACTION_PRODUCTS_ALL);
             const data = await response.json();
 
             const filteredProducts = data.filter(product =>
@@ -358,7 +357,7 @@ const EditTransactionModal = ({
             const token = localStorage.getItem("access_token");
 
             // ✅ Step 1: Update the transaction details
-            const transactionResponse = await fetchWithCSRF(API_ENDPOINTS.UPDATE_TRANSACTION(transactionData.transactionDetailsID), {
+            const transactionResponse = await fetch(API_ENDPOINTS.UPDATE_TRANSACTION(transactionData.transactionDetailsID), {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -391,7 +390,7 @@ const EditTransactionModal = ({
                         cost: parseFloat(productData.cost) || 0,
                     };
 
-                    return fetchWithCSRF(API_ENDPOINTS.ADD_TRANSACTION_PRODUCT, {
+                    return fetch(API_ENDPOINTS.ADD_TRANSACTION_PRODUCT, {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
@@ -527,7 +526,7 @@ const EditTransactionModal = ({
             };
 
             // Send PUT request to update the existing product
-            const response = await fetchWithCSRF(
+            const response = await fetch(
                 API_ENDPOINTS.UPDATE_TRANSACTION_PRODUCT(
                     transactionData.transactionDetailsID,
                     selectedExistingProduct.transactionProductID
@@ -567,7 +566,7 @@ const EditTransactionModal = ({
         try {
             const token = localStorage.getItem("access_token");
 
-            const response = await fetchWithCSRF(
+            const response = await fetch(
                 API_ENDPOINTS.DELETE_TRANSACTION_PRODUCT(
                     transactionData.transactionDetailsID,
                     product.transactionProductID

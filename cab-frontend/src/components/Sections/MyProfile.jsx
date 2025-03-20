@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Container, Col, Row, Card, Alert } from "react-bootstrap";
 import BtnChangePass from "../Button/BtnChangePass";
 import { API_ENDPOINTS } from "../../config";
-import { fetchWithCSRF } from "../api";
 
 const MyProfile = () => {
     const [userData, setUserData] = useState({
@@ -19,12 +18,22 @@ const MyProfile = () => {
     }, []);
 
     const fetchUserProfile = async () => {
+        const token = localStorage.getItem("access_token");
+        const userId = localStorage.getItem("id");
+
+        if (!token || !userId) {
+            setError("You must be logged in to view your profile");
+            setLoading(false);
+            return;
+        }
+
         try {
             // Using the existing USER_LIST endpoint and filtering for the current user
-            const response = await fetchWithCSRF(API_ENDPOINTS.USER_LIST, {
+            const response = await fetch(API_ENDPOINTS.USER_LIST, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Token ${token}`,
                 },
             });
 

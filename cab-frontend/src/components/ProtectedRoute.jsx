@@ -2,13 +2,18 @@ import React from "react";
 import { Navigate } from "react-router-dom";
 
 const ProtectedRoute = ({ children }) => {
-    const user = JSON.parse(sessionStorage.getItem("user"));
+    const token = localStorage.getItem("access_token");
+    const isSuperUser = localStorage.getItem("is_superuser") === "true"; // Ensure it's a boolean
 
-    if (!user) {
-        return <Navigate to="/" replace />;
+    if (!token) {
+        return <Navigate to="/" replace />; // Redirect to login if no token
     }
 
-    return children;
+    if (!isSuperUser) {
+        return <Navigate to="/dashboardB" replace />; // Redirect non-superusers
+    }
+
+    return children; // Allow access if superuser
 };
 
 export default ProtectedRoute;
