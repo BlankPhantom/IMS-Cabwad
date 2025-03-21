@@ -59,7 +59,7 @@ class Command(BaseCommand):
                     itemName=itemName,
                     itemQuantity=itemQuantity,
                     unitCost=unitCost,
-                    totalCost=itemQuantity*unitCost
+                    totalCost=itemQuantity * unitCost,
                 )
 
                 # Save the item

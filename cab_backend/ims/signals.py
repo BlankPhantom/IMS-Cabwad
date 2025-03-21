@@ -1,4 +1,4 @@
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save, pre_save, post_delete
 from django.dispatch import receiver
 from django.utils.timezone import now
 from django.db.models import Sum
@@ -273,3 +273,31 @@ def update_monthly_total(sender, instance, created, **kwargs):
         print(f"Error in update_monthly_total signal: {e}")
         import traceback
         traceback.print_exc()
+        
+@receiver(post_delete, sender=TransactionProduct)
+def delete_monthly_consumption_on_product_delete(sender, instance, **kwargs):
+    try:
+        # Delete related MonthlyConsumption entry
+        MonthlyConsumption.objects.filter(transactionProductID=instance).delete()
+        print(f"Deleted MonthlyConsumption for TransactionProductID={instance.pk}")
+
+        # Recalculate totals
+        calculate_totals_for_week_and_month()
+
+    except Exception as e:
+        print(f"Error deleting MonthlyConsumption for TransactionProductID={instance.pk}: {e}")
+
+@receiver(post_delete, sender=TransactionDetails)
+def delete_consumption_on_transaction_delete(sender, instance, **kwargs):
+    try:
+        # Delete all related MonthlyConsumption entries (via related TransactionProducts)
+        MonthlyConsumption.objects.filter(
+            transactionProductID__transactionDetailsID=instance
+        ).delete()
+        print(f"Deleted MonthlyConsumption entries for TransactionDetailsID={instance.pk}")
+
+        # Recalculate totals
+        calculate_totals_for_week_and_month()
+
+    except Exception as e:
+        print(f"Error deleting MonthlyConsumption for TransactionDetailsID={instance.pk}: {e}")

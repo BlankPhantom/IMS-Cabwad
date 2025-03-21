@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication 
-from rest_framework.permissions import IsAuthenticated, BasePermission
+from rest_framework.permissions import IsAuthenticated, BasePermission, IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
@@ -653,26 +653,6 @@ def get_monthly_consumption(request):
 
     # Serialize the filtered data
     serializer = MonthlyConsumptionSerializer(monthly_consumption, many=True)
-    return Response(serializer.data)
-
-@api_view(['GET'])
-def get_monthly_total(request):
-    # Get query parameters
-    month = request.query_params.get('month')
-    year = request.query_params.get('year')
-    section_id = request.query_params.get('sectionID')
-
-    # Filter MonthlyConsumptionTotal based on the provided parameters
-    monthly_total = MonthlyConsumptionTotal.objects.all()
-
-    if month:
-        monthly_total = monthly_total.filter(updated_at__month=month)
-    if year:
-        monthly_total = monthly_total.filter(updated_at__year=year)
-    if section_id:
-        monthly_total = monthly_total.filter(sectionID=section_id)
-
-    serializer = MonthlyConsumptionTotalSerializer(monthly_total, many=True)
     return Response(serializer.data)
 
 # @csrf_exempt  # Remove in production; use proper authentication

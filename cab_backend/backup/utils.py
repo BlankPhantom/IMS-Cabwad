@@ -4,6 +4,7 @@ from datetime import datetime
 import re
 from django.conf import settings
 import logging
+from django.db import connection
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -113,47 +114,37 @@ def restore_database(backup_file):
         raise ValueError("Database configuration is incomplete. Please check environment variables.")
 
     try:
-        # Connect to the database
-        connection = mysql.connector.connect(**db_config)
-        cursor = connection.cursor(buffered=True)
-
-        # Read the backup file
-        with open(backup_file, 'r') as f:
+        with open(backup_file, "r") as f:
             sql_content = f.read()
-            
-        # Basic validation of SQL content
-        if "DROP DATABASE" in sql_content or "DROP USER" in sql_content:
-            raise ValueError("The backup file contains potentially harmful commands")
 
-        # Split the SQL script into individual statements and execute them
-        statements = []
-        current_statement = ""
-        
-        # Parse SQL statements properly respecting string literals with semicolons
-        for line in sql_content.splitlines():
-            line = line.strip()
-            
-            # Skip comments and empty lines
-            if not line or line.startswith('--'):
-                continue
-                
-            current_statement += line + " "
-            
-            if line.endswith(';'):
-                statements.append(current_statement.strip())
-                current_statement = ""
-        
-        # Execute each statement separately
-        for statement in statements:
-            if statement.strip():  # Skip empty statements
+        with connection.cursor() as cursor:
+            cursor.execute("SET FOREIGN_KEY_CHECKS=0;")
+
+            # Get all table names to truncate
+            cursor.execute("SHOW TABLES;")
+            tables = cursor.fetchall()
+
+            for (table_name,) in tables:
                 try:
-                    cursor.execute(statement)
-                except mysql.connector.Error as e:
-                    logger.warning(f"Error executing SQL statement: {str(e)}")
-                    # Continue with other statements despite errors
-        
-        connection.commit()
-        logger.info("Database restore successful!")
+                    cursor.execute(f"TRUNCATE TABLE `{table_name}`;")
+                except Exception as e:
+                    logger.warning(f"Failed to truncate table {table_name}: {e}")
+
+            logger.info("All tables truncated successfully.")
+
+            # Execute restore statements
+            statements = sql_content.split(';')
+            for statement in statements:
+                cleaned_statement = statement.strip()
+                if cleaned_statement:
+                    try:
+                        cursor.execute(cleaned_statement)
+                    except Exception as e:
+                        logger.warning(f"Error executing statement: {cleaned_statement[:100]}... Error: {e}")
+
+            cursor.execute("SET FOREIGN_KEY_CHECKS=1;")
+
+        logger.info("Database restore completed.")
 
     except mysql.connector.Error as e:
         logger.error(f"Database restore error: {str(e)}")
@@ -161,7 +152,3 @@ def restore_database(backup_file):
     except Exception as e:
         logger.error(f"Unexpected error during database restore: {str(e)}")
         raise ValueError("Database restore failed due to an unexpected error")
-    finally:
-        if 'connection' in locals() and connection.is_connected():
-            cursor.close()
-            connection.close()

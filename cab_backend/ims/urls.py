@@ -48,7 +48,6 @@ urlpatterns = [
     path('transaction-product/delete/<int:detailID>/<int:id>/', views.transaction_product_delete, name='delete-transaction-product'),
 
     path('monthly-consumption/', views.get_monthly_consumption, name="get-monthly-consumption"),
-    path('monthly-consumption-total/', views.get_monthly_total, name="get-monthly-total"),
 
     path('download-report/<int:year>/<int:month>/', views.download_report_doc, name='download-report'),
     
