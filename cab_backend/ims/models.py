@@ -28,6 +28,7 @@ class Item(models.Model):
         if not self.itemID:
             max_id = Item.objects.filter(classificationID=self.classificationID).count() + 1
             self.itemID = f'{self.classificationID.classificationID:02d}-{max_id:03d}'
+            self.totalCost = self.itemQuantity * self.unitCost  # Compute totalCost
         super(Item, self).save(*args, **kwargs)
 
 @receiver(pre_save, sender=Item)

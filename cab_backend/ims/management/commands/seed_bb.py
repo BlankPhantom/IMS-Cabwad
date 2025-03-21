@@ -4,8 +4,7 @@ import json
 import os
 from django.conf import settings
 from django.utils import timezone
-from faker import Faker
-from ims.models import BeginningBalance
+from ims.models import BeginningBalance, Item
 from django.utils.timezone import make_aware
 import datetime
 
@@ -28,7 +27,7 @@ class Command(BaseCommand):
                 measurement = Measurement.objects.get(
                     measureName=item_data['measurementName']
                 )
-
+                
                 item_quantity = float(item_data.get('itemQuantity', 0) or 0)
                 unit_cost = float(item_data.get('unitCost', 0) or 0)
 
@@ -40,7 +39,10 @@ class Command(BaseCommand):
                     unitCost=unit_cost,
                     created_at=specific_date  # Set specific date
                 )
-
+                # Update itemQuantity in the Items model
+                Item.objects.filter(itemID=item_data.get('itemID')).update(itemQuantity=item_quantity)
+                Item.objects.filter(itemID=item_data.get('itemID')).update(unitCost=unit_cost)
+                
                 new_item.save()
                 created_bb.append(new_item.itemName)
 
