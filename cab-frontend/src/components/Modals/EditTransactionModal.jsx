@@ -549,7 +549,6 @@ const EditTransactionModal = ({
             // Refresh transaction products after successful update
             await fetchProductsForTransaction(transactionData.transactionDetailsID);
 
-            alert("Product updated successfully!");
             setShowEditExistingProductModal(false);
             handleShow(); // Reopen the main edit transaction modal
         } catch (error) {

@@ -445,7 +445,6 @@ const Transactions = () => {
             });
 
             await Promise.all(productRequests);
-            alert("Products have been successfully added!");
         } catch (error) {
             console.error("Error adding products:", error);
             alert("Some products could not be added. Please check your data.");
