@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../table.css";
 import { v4 as uuidv4 } from "uuid";
-import { Container, Table, Col, Row, Pagination } from "react-bootstrap";
+import { Container, Table, Col, Row, Pagination, Modal, Button } from "react-bootstrap";
 import MonthYearPicker from "../MonthYearPicker";
 import BtnAddTransaction from "../Button/BtnAddTransaction";
 import ModalTransaction from "../Modals/ModalTransaction";
@@ -29,6 +29,8 @@ const Transactions = () => {
     const [selectedProduct, setSelectedProduct] = useState("");
     const [selectedArea, setSelectedArea] = useState(0);
     const [products, setProducts] = useState([]);
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+    const [transactionToDelete, setTransactionToDelete] = useState(null);
     const [transactionData, setTransactionData] = useState({
         date: getCurrentDate(),
         week: getWeekNumber(getCurrentDate()),
@@ -110,16 +112,16 @@ const Transactions = () => {
         cost: parseFloat(product.cost) || 0,
     });
 
-  const fetchTransactionsWithProducts = async () => {
-    setLoading(true);
-    try {
-      const transactionsResponse = await fetch(API_ENDPOINTS.TRANSACTION_LIST, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Token ${localStorage.getItem("access_token")}`,
-        },
-      });
+    const fetchTransactionsWithProducts = async () => {
+        setLoading(true);
+        try {
+            const transactionsResponse = await fetch(API_ENDPOINTS.TRANSACTION_LIST, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Token ${localStorage.getItem("access_token")}`,
+                },
+            });
 
             if (!transactionsResponse.ok) {
                 throw new Error(
@@ -492,7 +494,6 @@ const Transactions = () => {
             }
 
             fetchTransactionsWithProducts(); // Refresh transaction list
-            alert("New Transaction Recorded!");
             setShowTransactionModal(false);
             handleCloseTransactionModal();
             window.location.reload();
@@ -512,18 +513,15 @@ const Transactions = () => {
         setTransactions(updatedTransactions);
     };
 
-    const handleDelete = async (transactionDetailsID) => {
-        if (
-            !window.confirm(
-                "Are you sure you want to delete this transaction and its associated products?"
-            )
-        ) {
-            return; // Exit if user cancels
-        }
+    const confirmDelete = (transactionDetailsID) => {
+        setTransactionToDelete(transactionDetailsID);
+        setShowDeleteConfirmation(true);
+    };
 
+    const handleDelete = async () => {
         try {
             const response = await fetch(
-                API_ENDPOINTS.DELETE_TRANSACTION(transactionDetailsID),
+                API_ENDPOINTS.DELETE_TRANSACTION(transactionToDelete),
                 {
                     method: "DELETE",
                     headers: {
@@ -536,18 +534,20 @@ const Transactions = () => {
                 throw new Error("Failed to delete transaction");
             }
 
-            // ✅ Update state by filtering out the deleted transaction
+            // Update state by filtering out the deleted transaction
             setTransactions((prevTransactions) =>
                 prevTransactions.filter(
                     (transaction) =>
-                        transaction.transactionDetailsID !== transactionDetailsID
+                        transaction.transactionDetailsID !== transactionToDelete
                 )
             );
 
-            alert("Transaction and its products have been successfully deleted!"); // ✅ Success alert
+            // Close the modal
+            setShowDeleteConfirmation(false);
+
         } catch (error) {
             console.error("Error deleting transaction:", error);
-            alert("Error deleting transaction. Please try again.");
+            setShowDeleteConfirmation(false);
         }
     };
 
@@ -656,7 +656,7 @@ const Transactions = () => {
                                                 <BtnEditDeleteTransaction
                                                     onEdit={handleEdit}
                                                     fetchTransactionsWithProducts={fetchTransactionsWithProducts}
-                                                    onDelete={handleDelete}
+                                                    onDelete={confirmDelete} 
                                                     onUpdate={handleUpdateTransaction}
                                                     transaction={transaction}
                                                     handleTransactionChange={handleTransactionChange}
@@ -789,6 +789,23 @@ const Transactions = () => {
                 setSelectedArea={setSelectedArea}
                 setTransactionData={setTransactionData}
             />
+
+            <Modal show={showDeleteConfirmation} onHide={() => setShowDeleteConfirmation(false)} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Delete</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Are you sure you want to delete this transaction and its associated products?
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowDeleteConfirmation(false)}>
+                        Cancel
+                    </Button>
+                    <Button variant="danger" onClick={handleDelete}>
+                        Delete
+                    </Button>
+                </Modal.Footer>
+            </Modal>
 
             <EditTransactionModal
                 transactionData={transactionData}

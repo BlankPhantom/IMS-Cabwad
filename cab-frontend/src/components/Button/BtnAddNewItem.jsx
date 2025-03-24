@@ -54,7 +54,6 @@ const BtnAddNewItem = ({ fetchItems, classifications, measurements }) => {
             }
             else {
                 handleClose(); // Close modal after submission
-                alert("Item added successfully!");
                 fetchItems();
             }
         } catch (e) {

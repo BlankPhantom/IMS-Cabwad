@@ -414,7 +414,6 @@ const EditTransactionModal = ({
 
             // ✅ Step 3: Refresh transactions **before closing the modal**
             setTransactions([]);  // ✅ Clear transactions before fetching new ones
-            alert("Transaction and products have been successfully updated!");
 
             if (typeof onSuccess === 'function') {
                 await onSuccess(); // Wait for refresh to complete
@@ -585,8 +584,6 @@ const EditTransactionModal = ({
 
             // Refresh transaction products after successful deletion
             await fetchProductsForTransaction(transactionData.transactionDetailsID);
-
-            alert("Product deleted successfully!");
         } catch (error) {
             console.error("Error deleting product:", error);
             alert(`Failed to delete product: ${error.message}`);

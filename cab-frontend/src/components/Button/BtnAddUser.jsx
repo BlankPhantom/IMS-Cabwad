@@ -176,7 +176,6 @@ const BtnAddUser = ({ fetchUsers }) => {
       console.log("API Response:", data); // Debugging
 
       if (response.ok) {
-        alert("User added successfully!");
         handleClose(); // Close modal after success
       } else {
         setErrors(data); // Show validation errors if any

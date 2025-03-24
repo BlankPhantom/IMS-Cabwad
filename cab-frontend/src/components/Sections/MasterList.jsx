@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../table.css";
 import { API_ENDPOINTS } from "../../config.js";
-import { Container, Table, Col, Row, Pagination } from "react-bootstrap";
+import { Container, Table, Col, Row, Pagination, Modal, Button } from "react-bootstrap";
 import BtnAddNewItem from "../Button/BtnAddNewItem.jsx";
 import BtnEditDeleteMaster from "../Button/BtnEditDeleteMaster.jsx";
 import EditMasterModal from "../Modals/EditMasterModal.jsx";
@@ -16,7 +16,8 @@ const Masterlist = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
-
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState(null);
     // Pagination states
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(20);
@@ -126,13 +127,15 @@ const Masterlist = () => {
     const handleDelete = (id) => {
         const item = items.find(item => item.itemID === id);
         if (item) {
-            const confirmDelete = window.confirm(`Are you sure you want to delete the item "${item.itemName}" (ID: ${item.itemID})?`);
-
-            if (confirmDelete) {
-                deleteItem(item.itemID);
-            }
+            setItemToDelete(item);
+            setShowDeleteModal(true);
         }
-    }
+    };
+
+    const handleCloseDeleteModal = () => {
+        setShowDeleteModal(false);
+        setItemToDelete(null);
+    };
 
     const deleteItem = async (id) => {
         const token = localStorage.getItem('access_token');
@@ -149,8 +152,6 @@ const Masterlist = () => {
             }
             fetchItems();
             setCurrentItem(null);
-            window.alert('Item deleted successfully!');
-
         } catch (e) {
             console.error("Error deleting item:", e);
             window.alert('Failed to delete item.');
@@ -186,7 +187,6 @@ const Masterlist = () => {
             }
             fetchItems();
             handleCloseModal();
-            window.alert('Item updated successfully!');
         } catch (e) {
             console.error("Error updating item:", e);
             window.alert('Failed to update item.');
@@ -369,6 +369,32 @@ const Masterlist = () => {
                 </Col>
             </Row>
 
+            <Modal show={showDeleteModal} onHide={handleCloseDeleteModal} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirm Deletion</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {itemToDelete && (
+                        <>
+                            <p>Are you sure you want to delete the item "{itemToDelete.itemName}" (ID: {itemToDelete.itemID})?</p>
+                            <p>This action cannot be undone.</p>
+                        </>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseDeleteModal}>
+                        Cancel
+                    </Button>
+                    <Button variant="danger" onClick={() => {
+                        if (itemToDelete) {
+                            deleteItem(itemToDelete.itemID);
+                            handleCloseDeleteModal();
+                        }
+                    }}>
+                        Delete Item
+                    </Button>
+                </Modal.Footer>
+            </Modal>
             <EditMasterModal
                 show={showModal}
                 handleClose={handleCloseModal}
