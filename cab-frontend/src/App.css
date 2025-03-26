@@ -6,14 +6,6 @@ html {
   overflow-x: hidden;
   background-color: #f8f9fa;
 }
-
-.loginDiv {
-  background-color: rgb(230, 230, 230);
-  padding: 3em;
-  width: 50em;
-  border-radius: 10px;
-}
-
 .cabWad {
   color: rgb(71, 71, 71);
   font-size: 2.5em;

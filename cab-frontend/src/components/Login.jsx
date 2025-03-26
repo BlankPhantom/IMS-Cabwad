@@ -2,25 +2,18 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { useState, useEffect } from "react";
 import { Button, Container, Form } from "react-bootstrap";
+import Logo from "/src/assets/cabwadLogo.png";
+import CabFooter from "./CabFooter";
 import { API_ENDPOINTS } from "../config";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash, faUser, faLock } from "@fortawesome/free-solid-svg-icons";
 
 const Login = () => {
   const [username, setUsername] = useState();
   const [password, setPassword] = useState();
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState(false);
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
-
-  useEffect(() => {
-    const rememberedUsername = localStorage.getItem("rememberedUsername");
-    if (rememberedUsername) {
-      setUsername(rememberedUsername);
-      setRememberMe(true);
-    }
-  }, []);
 
   const validateLogin = () => {
     const newErrors = {};
@@ -46,20 +39,13 @@ const Login = () => {
       });
 
       const data = await response.json();
-      console.log("API Response:", data); // Debugging the API response
 
       if (response.ok) {
         if (data.token && data.user) {
           localStorage.setItem("access_token", data.token);
           localStorage.setItem("id", data.user.id);
-          localStorage.setItem("is_superuser",JSON.stringify(data.user.is_superuser));
+          localStorage.setItem("is_superuser", JSON.stringify(data.user.is_superuser));
           localStorage.setItem("is_staff", JSON.stringify(data.user.is_staff));
-
-          console.log("Stored in localStorage:", {
-            token: data.token,
-            is_superuser: localStorage.getItem("is_superuser"),
-            is_staff: localStorage.getItem("is_staff"),
-          });
 
           if (data.user.is_superuser) {
             window.location.href = "/dashboard";
@@ -74,7 +60,6 @@ const Login = () => {
           txtUsername: "Incorrect login details",
           txtPassword: "Incorrect login details",
         });
-        console.error("Login error details:", data);
       }
     } catch (error) {
       console.error("Error during login:", error);
@@ -85,101 +70,166 @@ const Login = () => {
   return (
     <div
       style={{
-        backgroundColor: "#005ce5",
-      }}>
+        background: '#0041a8',
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '20px'
+      }}
+    >
       <Container
         style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}>
-        <div className="loginDiv">
+          maxWidth: '500px',
+          width: '100%',
+        }}
+      >
+        <div
+          className="loginDiv shadow-lg"
+          style={{
+            backgroundColor: 'white',
+            borderRadius: '15px',
+            padding: '40px',
+            boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+            transition: 'transform 0.3s ease',
+            position: 'relative',
+          }}
+        >
           <Form onSubmit={handleLogin}>
-            <Form.Label
-              className="cabWad"
-              style={{ fontSize: "2rem", fontWeight: "bold" }}>
-              Cabuyao Water District
-            </Form.Label>
-            <p
-              className="ims"
-              style={{ fontSize: "1.2rem", marginBottom: "2rem" }}>
-              Inventory Management System
-            </p>
-            <Form.Group style={{ alignContent: "start", textAlign: "start" }}>
-              <Form.Label className="justify-content-start mt-4 h6 loglbl">
-                {" "}
-                Username:{" "}
-              </Form.Label>
-              <Form.Control
-                className="login"
-                controlId="txtUsername"
-                type="text"
-                placeholder="Enter your username here"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+            <div className="logoDiv text-center mb-4">
+              <img
+                className="logo img-fluid mb-3"
+                src={Logo}
+                alt="Cabuyao Water District"
                 style={{
-                  width: "93%",
-                  padding: "0.75rem",
-                  borderRadius: "5px",
+                  height: "100px",
+                  marginBottom: "15px"
                 }}
               />
+              <h1
+                className="cabWad"
+                style={{
+                  fontSize: "1.8rem",
+                  fontWeight: "bold",
+                  color: "#0041a8",
+                  marginBottom: "10px"
+                }}
+              >
+                Cabuyao Water District
+              </h1>
+              <p
+                className="ims"
+                style={{
+                  fontSize: "1rem",
+                  color: "#6c757d",
+                  marginBottom: "20px"
+                }}
+              >
+                Inventory Management System
+              </p>
+            </div>
+
+            <Form.Group className="mb-3">
+              <div style={{ position: 'relative' }}>
+                <FontAwesomeIcon
+                  icon={faUser}
+                  style={{
+                    position: 'absolute',
+                    left: '15px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: '#0041a8'
+                  }}
+                />
+                <Form.Control
+                  className="login ps-5"
+                  type="text"
+                  placeholder="Username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  style={{
+                    height: "3rem",
+                    borderRadius: "25px",
+                    paddingLeft: "45px",
+                    border: errors.txtUsername ? '2px solid red' : '1px solid #ced4da'
+                  }}
+                />
+              </div>
               {errors.txtUsername && (
-                <p style={{ color: "red" }}>{errors.txtUsername}</p>
+                <p style={{ color: "red", marginTop: "5px", fontSize: "0.9rem" }}>
+                  {errors.txtUsername}
+                </p>
               )}
             </Form.Group>
-            <Form.Group
-              className="mt-5 mb-5"
-              style={{ alignContent: "start", textAlign: "start" }}>
-              <Form.Label className="justify-content-start h6 loglbl">
-                Password:
-              </Form.Label>
-              <div style={{ display: "flex", alignItems: "center" }}>
+
+            <Form.Group className="mb-3">
+              <div style={{ position: 'relative' }}>
+                <FontAwesomeIcon
+                  icon={faLock}
+                  style={{
+                    position: 'absolute',
+                    left: '15px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: '#0041a8'
+                  }}
+                />
                 <Form.Control
                   type={showPassword ? "text" : "password"}
-                  placeholder="Insert your Password here"
+                  placeholder="Password"
                   value={password}
-                  className="password"
-                  controlId="txtPassword"
                   onChange={(e) => setPassword(e.target.value)}
                   style={{
-                    marginRight: "10px",
-                    padding: "0.75rem",
-                    borderRadius: "5px",
+                    height: "3rem",
+                    borderRadius: "25px",
+                    paddingLeft: "45px",
+                    paddingRight: "50px",
+                    border: errors.txtPassword ? '2px solid red' : '1px solid #ced4da'
                   }}
                 />
                 <Button
-                  variant="primary"
+                  variant="link"
                   onClick={togglePasswordVisibility}
-                  style={{ padding: "0.5rem 1rem" }}>
+                  style={{
+                    position: 'absolute',
+                    right: '15px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: '#0041a8'
+                  }}
+                >
                   <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
                 </Button>
               </div>
               {errors.txtPassword && (
-                <p style={{ color: "red" }}>{errors.txtPassword}</p>
+                <p style={{ color: "red", marginTop: "5px", fontSize: "0.9rem" }}>
+                  {errors.txtPassword}
+                </p>
               )}
             </Form.Group>
-            {/* <Form.Group as={Col} className="mb-3 ps-5" controlId="CheckBox">
-                <Form.Check
-                    type="checkbox"
-                    label="Remember Me"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                />
-            </Form.Group> */}
-            <div className="loginbtn">
+
+            <div className="text-center mt-4">
               <Button
-                variant="warning"
-                className="text-white shadow"
-                style={{ fontWeight: "bold", width: "10em" }}
-                type="submit">
-                {" "}
-                Login{" "}
+                variant="primary"
+                type="submit"
+                style={{
+                  width: "200px",
+                  height: "3rem",
+                  borderRadius: "25px",
+                  backgroundColor: '#0041a8',
+                  border: 'none',
+                  fontWeight: 'bold',
+                  transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+                }}
+                className="hover-effect"
+              >
+                Login
               </Button>
             </div>
           </Form>
         </div>
       </Container>
+      <CabFooter />
     </div>
   );
 };

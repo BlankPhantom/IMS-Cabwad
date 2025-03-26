@@ -19,12 +19,12 @@ const SideNavB = () => {
 
     return (
         <>
-            <div className="sideNav" style={{ width: "200px", height: "100vh", backgroundColor: "#005ce5", position: "fixed" }}>
+            <div className="sideNav" style={{ width: "200px", height: "100vh", backgroundColor: "#0041a8", position: "fixed" }}>
                 <Nav className="flex-column p-3 mt-5">
                     {["Masterlist", "Beginning Balance", "Transactions", "Running Balance", "Monthly Consumption", "Weekly Consumption"].map((item, index) => {
                         const path = `/dashboardB/${item.toLowerCase().replace(/\s+/g, '-')}`;
                         return (
-                            <Nav.Link style={{ fontWeight: "400", textShadow: "0.5px 0.5px 0.5px #000" }}
+                            <Nav.Link style={{ fontWeight: "400" }}
                                 as={Link}
                                 to={path}
                                 key={index}
@@ -37,7 +37,7 @@ const SideNavB = () => {
                 </Nav>
 
                 <Nav className="mt-auto p-3">
-                    <Nav.Link style={{ fontWeight: "400", textShadow: "0.5px 0.5px 0.5px #000" }}
+                    <Nav.Link style={{ fontWeight: "400"}}
                         as={Link}
                         to="/dashboardB/backup-restore"
                         className={`nav-link-custom ${location.pathname === "/dashboardB/backup-restore" ? 'active-link' : 'text-white'}`}
@@ -46,7 +46,7 @@ const SideNavB = () => {
                     </Nav.Link>
                 </Nav>
                 <Nav className="mt-auto p-3">
-                    <Nav.Link style={{ fontWeight: "400", textShadow: "0.5px 0.5px 0.5px #000" }}
+                    <Nav.Link style={{ fontWeight: "400"}}
                         className="text-white"
                         onClick={() => setShowLogoutModal(true)}
                     >
