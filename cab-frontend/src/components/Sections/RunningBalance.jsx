@@ -8,7 +8,7 @@ import { Pagination } from "react-bootstrap";
 const RunningBalance = () => {
   const [runningBalanceData, setRunningBalanceData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [remarks, setRemarks] = useState("");
   const [loading, setLoading] = useState(true);
@@ -22,16 +22,13 @@ const RunningBalance = () => {
     const token = localStorage.getItem("access_token");
     try {
       setLoading(true);
-      let url = API_ENDPOINTS.RUNNING_BAL_LIST;
 
-      // If a specific month is selected (not the default 'All')
-      if (selectedMonth !== 0) {
-        const queryParams = new URLSearchParams({
-          month: selectedMonth,
-          year: selectedYear,
-        });
-        url = `${url}?${queryParams}`;
-      }
+      const queryParams = new URLSearchParams({
+        month: selectedMonth + 1, 
+        year: selectedYear,
+      });
+
+      const url = `${API_ENDPOINTS.RUNNING_BAL_LIST}?${queryParams}`;
 
       const response = await fetch(url, {
         method: "GET",
@@ -118,7 +115,7 @@ const RunningBalance = () => {
 
   // Handle month and year change
   const handleMonthYearChange = (month, year) => {
-    // Convert month to correct format
+
     setSelectedMonth(month);
     setSelectedYear(year);
   };

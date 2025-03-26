@@ -18,7 +18,7 @@ const Transactions = () => {
         year: new Date().getFullYear(), // Default to current year
     });
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage] = useState(20);
+    const [itemsPerPage] = useState(5);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredTransactions, setFilteredTransactions] = useState([]);

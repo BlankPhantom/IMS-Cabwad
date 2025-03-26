@@ -18,7 +18,7 @@ const WeeklyConsumption = () => {
         return 4;
     };
 
-    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [monthlyConsumptionData, setMonthlyConsumptionData] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -42,29 +42,37 @@ const WeeklyConsumption = () => {
     };
 
     const fetchMonthlyConsumption = async () => {
+        const token = localStorage.getItem("access_token");
         setLoading(true);
         setError(null);
         try {
             const queryParams = new URLSearchParams({
-                month: selectedMonth,
+                month: selectedMonth + 1, // Add 1 to convert from 0-indexed to 1-indexed
                 year: selectedYear,
-                ...(selectedSection && { sectionID: selectedSection })
+                ...(selectedSection && { sectionID: selectedSection }) // Conditionally add section if selected
             });
-
+    
             const response = await fetch(
-                `${API_ENDPOINTS.MONTHLY_CONSUMPTION}?${queryParams}`
+                `${API_ENDPOINTS.MONTHLY_CONSUMPTION}?${queryParams}`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Token ${token}`,
+                    },
+                }
             );
-
+    
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-
+    
             const data = await response.json();
-
+    
             if (data.length === 0) {
                 setError("No consumption data available for the selected period");
             }
-
+    
             setMonthlyConsumptionData(data);
         } catch (error) {
             console.error("Error fetching monthly consumption:", error);
@@ -81,7 +89,7 @@ const WeeklyConsumption = () => {
         
         // If user selects current month and year, set the week to current week
         const currentDate = new Date();
-        if (month === currentDate.getMonth() + 1 && year === currentDate.getFullYear()) {
+        if (month === currentDate.getMonth()&& year === currentDate.getFullYear()) {
             setSelectedWeek(getCurrentWeekOfMonth());
         }
     };

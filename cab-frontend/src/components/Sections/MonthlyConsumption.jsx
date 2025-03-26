@@ -7,7 +7,7 @@ import { saveAs } from "file-saver";
 
 const MonthlyConsumption = () => {
   const [selectedSection, setSelectedSection] = useState("");
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [sections, setSections] = useState([]);
   const [consumptionData, setConsumptionData] = useState([]);
@@ -61,32 +61,33 @@ const MonthlyConsumption = () => {
   };
 
   const fetchMonthlyConsumption = async () => {
+    const token = localStorage.getItem("access_token");
     setLoading(true);
     setError(null);
     try {
       const queryParams = new URLSearchParams({
-        month: selectedMonth,
+        month: selectedMonth + 1, // Add 1 to convert from 0-indexed to 1-indexed
         year: selectedYear,
-        sectionID: selectedSection,
+        sectionID: selectedSection || '', // Use empty string if no section selected
       });
 
-      if (selectedMonth === 0) {
-        const response = await fetch(API_ENDPOINTS.MONTHLY_CONSUMPTION);
-        if (!response.ok) {
-          throw new Error("Failed to fetch monthly consumption data.");
+      const response = await fetch(
+        `${API_ENDPOINTS.MONTHLY_CONSUMPTION}?${queryParams}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Token ${token}`,
+          },
         }
-        const data = await response.json();
-        setConsumptionData(data);
-      } else {
-        const response = await fetch(
-          `${API_ENDPOINTS.MONTHLY_CONSUMPTION}?${queryParams}`
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch monthly consumption data.");
-        }
-        const data = await response.json();
-        setConsumptionData(data);
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch monthly consumption data.");
       }
+
+      const data = await response.json();
+      setConsumptionData(data);
       setCurrentPage(1); // Reset to first page when new data is loaded
     } catch (error) {
       console.error("Error fetching monthly consumption:", error);
@@ -95,7 +96,7 @@ const MonthlyConsumption = () => {
       setLoading(false);
     }
   };
-
+  
   // Handle Section Change
   const handleSectionChange = (event) => {
     setSelectedSection(event.target.value);
