@@ -7,7 +7,7 @@ import { saveAs } from "file-saver";
 
 const MonthlyConsumption = () => {
   const [selectedSection, setSelectedSection] = useState("");
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [sections, setSections] = useState([]);
   const [consumptionData, setConsumptionData] = useState([]);
@@ -65,7 +65,7 @@ const MonthlyConsumption = () => {
     setError(null);
     try {
       const queryParams = new URLSearchParams({
-        month: selectedMonth,
+        month: selectedMonth + 1, // Add 1 to convert from 0-indexed to 1-indexed
         year: selectedYear,
         sectionID: selectedSection,
       });
