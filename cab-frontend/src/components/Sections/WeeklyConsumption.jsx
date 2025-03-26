@@ -87,9 +87,9 @@ const WeeklyConsumption = () => {
         setSelectedMonth(month);
         setSelectedYear(year);
         
-        // If user selects current month and year, set the week to current week
+        // Special handling for current month
         const currentDate = new Date();
-        if (month === currentDate.getMonth()&& year === currentDate.getFullYear()) {
+        if (month === currentDate.getMonth() && year === currentDate.getFullYear()) {
             setSelectedWeek(getCurrentWeekOfMonth());
         }
     };
