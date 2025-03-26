@@ -7,7 +7,7 @@ import { saveAs } from "file-saver";
 
 const MonthlyConsumption = () => {
   const [selectedSection, setSelectedSection] = useState("");
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [sections, setSections] = useState([]);
   const [consumptionData, setConsumptionData] = useState([]);
@@ -61,33 +61,24 @@ const MonthlyConsumption = () => {
   };
 
   const fetchMonthlyConsumption = async () => {
-    const token = localStorage.getItem("access_token");
     setLoading(true);
     setError(null);
     try {
       const queryParams = new URLSearchParams({
-        month: selectedMonth + 1, // Add 1 to convert from 0-indexed to 1-indexed
+        month: selectedMonth,
         year: selectedYear,
-        sectionID: selectedSection || '', // Use empty string if no section selected
+        sectionID: selectedSection,
       });
 
       const response = await fetch(
-        `${API_ENDPOINTS.MONTHLY_CONSUMPTION}?${queryParams}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Token ${token}`,
-          },
-        }
+        `${API_ENDPOINTS.MONTHLY_CONSUMPTION}?${queryParams}`
       );
-
       if (!response.ok) {
         throw new Error("Failed to fetch monthly consumption data.");
       }
-
       const data = await response.json();
       setConsumptionData(data);
+      
       setCurrentPage(1); // Reset to first page when new data is loaded
     } catch (error) {
       console.error("Error fetching monthly consumption:", error);
@@ -96,7 +87,7 @@ const MonthlyConsumption = () => {
       setLoading(false);
     }
   };
-  
+
   // Handle Section Change
   const handleSectionChange = (event) => {
     setSelectedSection(event.target.value);
@@ -144,7 +135,7 @@ const MonthlyConsumption = () => {
 
       // Fetch the report from API (modify endpoint based on file type)
       const response = await fetch(
-        API_ENDPOINTS.DOWNLOAD_REPORTS(selectedYear, selectedMonth, "pdf"),
+        API_ENDPOINTS.DOWNLOAD_REPORTS(selectedYear, selectedMonth, "docx"),
         {
           method: "GET",
           headers: {
@@ -161,12 +152,12 @@ const MonthlyConsumption = () => {
       const blob = await response.blob();
 
       // Determine file name & extension
-      const fileName = `Monthly_Report_${selectedYear}_${selectedMonth}.pdf`;
+      const fileName = `Monthly_Report_${selectedYear}_${selectedMonth}.docx`;
 
       // Save the file
       saveAs(blob, fileName);
 
-      alert(`Report downloaded successfully as PDF!`);
+      alert(`Report downloaded successfully as DOCX!`);
     } catch (error) {
       console.error("Error generating the report:", error);
       alert("Failed to generate report. Please try again.");
