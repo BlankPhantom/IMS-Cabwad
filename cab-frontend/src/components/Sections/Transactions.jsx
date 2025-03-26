@@ -14,7 +14,7 @@ const Transactions = () => {
     const [showProductModal, setShowProductModal] = useState(false);
     const [transactions, setTransactions] = useState([]); // State to store all transactions
     const [selectedMonthYear, setSelectedMonthYear] = useState({
-        month: new Date().getMonth() + 1, // Default to current month
+        month: new Date().getMonth(), // Default to current month
         year: new Date().getFullYear(), // Default to current year
     });
     const [currentPage, setCurrentPage] = useState(1);
@@ -194,14 +194,9 @@ const Transactions = () => {
         const filtered = transactions.filter((transaction) => {
             const transactionDate = new Date(transaction.date);
 
-            // If "All" is selected, only filter by year
-            if (isAllMonthSelected) {
-                return transactionDate.getFullYear() === selectedMonthYear.year;
-            }
-
             // Otherwise filter by both month and year
             return (
-                transactionDate.getMonth() + 1 === selectedMonthYear.month &&
+                transactionDate.getMonth() === selectedMonthYear.month &&
                 transactionDate.getFullYear() === selectedMonthYear.year
             );
         });
@@ -227,10 +222,8 @@ const Transactions = () => {
 
     const handleMonthYearChange = (month, year) => {
         setLoading(true);
-    
-        setIsAllMonthSelected(month === "all" || month === 0);
         setSelectedMonthYear({
-            month: month === "all" ? 0 : month,
+            month,
             year,
         });
 
@@ -701,7 +694,7 @@ const Transactions = () => {
                                     <td colSpan="20" className="text-center">
                                         {isAllMonthSelected ?
                                             `No transactions found for ${selectedMonthYear.year}` :
-                                            `No transactions found for ${new Date(selectedMonthYear.year, selectedMonthYear.month - 1).toLocaleString('default', { month: 'long', year: 'numeric' })}`
+                                            `No transactions found for ${new Date(selectedMonthYear.year, selectedMonthYear.month).toLocaleString('default', { month: 'long', year: 'numeric' })}`
                                         }
                                     </td>
                                 </tr>
