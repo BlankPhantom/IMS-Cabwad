@@ -226,11 +226,17 @@ const Transactions = () => {
     }
 
     const handleMonthYearChange = (month, year) => {
+        setLoading(true);
+    
         setIsAllMonthSelected(month === "all" || month === 0);
         setSelectedMonthYear({
             month: month === "all" ? 0 : month,
             year,
         });
+
+        setTimeout(() => {
+            setLoading(false);
+        }, 500); 
     };
 
     const handleSearch = (e) => {

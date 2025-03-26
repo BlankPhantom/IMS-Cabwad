@@ -102,7 +102,8 @@ const BeginningBalance = () => {
 
     // Month and Year change handler
     const handleMonthYearChange = (month, year) => {
-        // Subtract 1 to convert from 1-12 to 0-11 indexing
+        setLoading(true);
+    
         setSelectedMonth(month - 1);
         setSelectedYear(year);
     };
