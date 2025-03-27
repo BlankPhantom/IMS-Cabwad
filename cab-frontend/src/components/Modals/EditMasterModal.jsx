@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 
-const EditMasterModal = ({ show, handleClose, itemData, handleInputChange, handleSave, classifications, measurements}) => {
+const EditMasterModal = ({ show, handleClose, itemData, handleInputChange, handleSave, classifications, measurements }) => {
     const [selectedMeasurement, setSelectedMeasurement] = useState('');
     const [selectedClassification, setSelectedClassification] = useState('');
 
@@ -11,7 +11,7 @@ const EditMasterModal = ({ show, handleClose, itemData, handleInputChange, handl
         setSelectedClassification(itemData?.classificationID || '');
     }, [itemData]);
 
-    const handleMeasureChange = (e) => {
+  const handleMeasureChange = (e) => {
         const selectedId = parseInt(e.target.value, 10);
         setSelectedMeasurement(selectedId);
         handleInputChange({
@@ -21,7 +21,7 @@ const EditMasterModal = ({ show, handleClose, itemData, handleInputChange, handl
             }
         });
     };
-    
+
     const handleClassificationChange = (e) => {
         const selectedId = parseInt(e.target.value, 10);
         setSelectedClassification(selectedId);
@@ -60,14 +60,14 @@ const EditMasterModal = ({ show, handleClose, itemData, handleInputChange, handl
                     </Form.Group>
                     <Form.Group className="mb-3">
                         <Form.Label>Classification</Form.Label>
-                        <Form.Select 
-                            name="classificationID" 
+                        <Form.Select
+                            name="classificationID"
                             value={selectedClassification}
-                            onChange={handleClassificationChange} 
-                            required 
+                            onChange={handleClassificationChange}
+                            required
                             disabled>
                             <option value="">{itemData?.classificationName}</option>
-                                {classifications.map((classification) => (
+                            {classifications.map((classification) => (
                                 <option key={classification.id} value={classification.classificationID}>
                                     {classification.classification}
                                 </option>
@@ -76,13 +76,13 @@ const EditMasterModal = ({ show, handleClose, itemData, handleInputChange, handl
                     </Form.Group>
                     <Form.Group className="mb-3">
                         <Form.Label>Unit of Measurement</Form.Label>
-                        <Form.Select 
-                            name="measurementID" 
+                        <Form.Select
+                            name="measurementID"
                             value={selectedMeasurement}
-                            onChange={handleMeasureChange} 
+                            onChange={handleMeasureChange}
                             required>
                             <option value="">{itemData?.measurementName}</option>
-                                {measurements.map((measurement) => (
+                            {measurements.map((measurement) => (
                                 <option key={measurement.id} value={measurement.measurementID}>
                                     {measurement.measureName}
                                 </option>
@@ -91,15 +91,15 @@ const EditMasterModal = ({ show, handleClose, itemData, handleInputChange, handl
                     </Form.Group>
                     <Form.Group className="mb-3">
                         <Form.Label>Unit Cost</Form.Label>
-                        <Form.Control 
-                            name="unitCost" 
+                        <Form.Control
+                            name="unitCost"
                             type="number"
                             value={itemData?.unitCost}
                             onChange={handleInputChange}
-                            >
+                        >
                         </Form.Control>
                     </Form.Group>
-                    <Form.Group className='d-flex justify-content-end'> 
+                    <Form.Group className='d-flex justify-content-end'>
                         <Button variant="danger" onClick={handleClose} className='me-2'>
                             Cancel
                         </Button>
@@ -110,7 +110,7 @@ const EditMasterModal = ({ show, handleClose, itemData, handleInputChange, handl
                 </Form>
             </Modal.Body>
             <Modal.Footer>
-                
+
             </Modal.Footer>
         </Modal>
     );

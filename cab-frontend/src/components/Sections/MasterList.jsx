@@ -8,6 +8,7 @@ import EditMasterModal from "../Modals/EditMasterModal.jsx";
 
 const Masterlist = () => {
     const [items, setItems] = useState([]);
+    const [itemToEdit, setItemToEdit] = useState(null);
     const [currentItems, setCurrentItems] = useState([]);
     const [classifications, setClassifications] = useState([]);
     const [measurements, setMeasurements] = useState([]);
@@ -38,7 +39,7 @@ const Masterlist = () => {
 
             if (response.ok) {
                 const data = await response.json();
-                
+
                 // DRF Pagination structure
                 setItems(data.results);
                 setCurrentItems(data.results);
@@ -104,8 +105,8 @@ const Masterlist = () => {
         }
     }
 
-     // Search handler 
-     const handleSearchChange = (e) => {
+    // Search handler 
+    const handleSearchChange = (e) => {
         const term = e.target.value;
         setSearchTerm(term);
 
@@ -164,31 +165,46 @@ const Masterlist = () => {
     const handleEdit = (id) => {
         const item = items.find(item => item.itemID === id);
         if (item) {
-            setCurrentItems(item);
+            console.log('Selected Item:', item);
+            setItemToEdit(item); // Use itemToEdit instead of currentItems
             setShowModal(true);
         }
     };
 
     const handleCloseModal = () => {
         setShowModal(false);
-        setCurrentItems(null);
+        setItemToEdit(null); // Reset itemToEdit
     };
 
     const handleSaveChanges = async (updatedItemData) => {
         const token = localStorage.getItem('access_token');
         try {
+            // Ensure all necessary fields are included
+            const finalItemData = {
+                itemID: updatedItemData.itemID,
+                itemName: updatedItemData.itemName,
+                classificationID: updatedItemData.classificationID,
+                measurementID: updatedItemData.measurementID,
+                unitCost: updatedItemData.unitCost
+            };
+    
             const response = await fetch(API_ENDPOINTS.UPDATE_ITEM(updatedItemData.itemID), {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Token ${token}`,
                 },
-                body: JSON.stringify(updatedItemData),
+                body: JSON.stringify(finalItemData),
             });
+            
             if (!response.ok) {
+                const errorText = await response.text();
+                console.error("Failed to update item. Response:", errorText);
                 throw new Error("Failed to update item");
             }
-            fetchItems();
+            
+            // Refetch items to ensure fresh data
+            await fetchItems(currentPage);
             handleCloseModal();
         } catch (e) {
             console.error("Error updating item:", e);
@@ -198,9 +214,11 @@ const Masterlist = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setCurrentItems(prevState => ({
+        setItemToEdit(prevState => ({
             ...prevState,
-            [name]: name === 'classificationID' || name === 'measurementID' ? parseInt(value, 10) : value,
+            [name]: (name === 'measurementID' || name === 'classificationID') 
+                ? parseInt(value, 10) 
+                : value
         }));
     };
 
@@ -208,7 +226,7 @@ const Masterlist = () => {
         fetchItems();
         fetchClassifications();
         fetchMeasurements();
-    }, []); 
+    }, []);
 
     const paginate = (pageNumber) => {
         if (pageNumber >= 1 && pageNumber <= totalPages) {
@@ -253,8 +271,8 @@ const Masterlist = () => {
         // Page number buttons
         for (let i = startPage; i <= endPage; i++) {
             pageNumbers.push(
-                <Pagination.Item 
-                    key={i} 
+                <Pagination.Item
+                    key={i}
                     active={i === currentPage}
                     onClick={() => paginate(i)}
                 >
@@ -277,7 +295,7 @@ const Masterlist = () => {
 
         return pageNumbers;
     };
-    
+
 
     return (
         <Container style={{ width: '100%' }} fluid className="d-flex flex-column justify-content-center mt-2">
@@ -321,7 +339,7 @@ const Masterlist = () => {
                             <tr>
                                 <td colSpan="4" className="text-center text-danger">{error}</td>
                             </tr>
-                        ) : currentItems.length > 0 ? (
+                        ) : currentItems && currentItems.length > 0 ? (
                             currentItems.map((item) => (
                                 <tr key={item.id}>
                                     <td>{item.itemID}</td>
@@ -349,24 +367,24 @@ const Masterlist = () => {
                 <Row>
                     <Col className="d-flex justify-content-center mt-3">
                         <Pagination>
-                            <Pagination.First 
-                                onClick={() => paginate(1)} 
-                                disabled={currentPage === 1} 
+                            <Pagination.First
+                                onClick={() => paginate(1)}
+                                disabled={currentPage === 1}
                             />
-                            <Pagination.Prev 
-                                onClick={() => paginate(currentPage - 1)} 
-                                disabled={currentPage === 1} 
+                            <Pagination.Prev
+                                onClick={() => paginate(currentPage - 1)}
+                                disabled={currentPage === 1}
                             />
-                            
+
                             {renderPaginationItems()}
 
-                            <Pagination.Next 
-                                onClick={() => paginate(currentPage + 1)} 
-                                disabled={currentPage === totalPages} 
+                            <Pagination.Next
+                                onClick={() => paginate(currentPage + 1)}
+                                disabled={currentPage === totalPages}
                             />
-                            <Pagination.Last 
-                                onClick={() => paginate(totalPages)} 
-                                disabled={currentPage === totalPages} 
+                            <Pagination.Last
+                                onClick={() => paginate(totalPages)}
+                                disabled={currentPage === totalPages}
                             />
                         </Pagination>
                     </Col>
@@ -412,7 +430,7 @@ const Masterlist = () => {
             <EditMasterModal
                 show={showModal}
                 handleClose={handleCloseModal}
-                itemData={currentItems}
+                itemData={itemToEdit} // Pass itemToEdit here
                 handleInputChange={handleChange}
                 handleSave={handleSaveChanges}
                 classifications={classifications}
