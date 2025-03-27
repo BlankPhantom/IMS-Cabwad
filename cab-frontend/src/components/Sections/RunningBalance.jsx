@@ -7,25 +7,30 @@ import { Pagination } from "react-bootstrap";
 
 const RunningBalance = () => {
   const [runningBalanceData, setRunningBalanceData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
+  const [currentItems, setCurrentItems] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [remarks, setRemarks] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(20);
   const [showAvailableOnly, setShowAvailableOnly] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const fetchRunningBalance = async () => {
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [itemsPerPage] = useState(20);
+
+  const fetchRunningBalance = async (page=1) => {
     const token = localStorage.getItem("access_token");
     try {
       setLoading(true);
 
       const queryParams = new URLSearchParams({
-        month: selectedMonth + 1, 
+        month: selectedMonth + 1,
         year: selectedYear,
+        page,
       });
 
       const url = `${API_ENDPOINTS.RUNNING_BAL_LIST}?${queryParams}`;
@@ -43,9 +48,14 @@ const RunningBalance = () => {
       }
 
       const data = await response.json();
-      setRunningBalanceData(data);
-      setFilteredData(data);
-      setCurrentPage(1);
+      // DRF Pagination structure
+      setRunningBalanceData(data.results);
+      setCurrentItems(data.results);
+      setTotalPages(Math.ceil(data.count / itemsPerPage));
+      setTotalItems(data.count);
+      setCurrentPage(page);
+      updateRunningState(data, page);
+
     } catch (err) {
       console.error("Error fetching running balance:", err);
       setError("Failed to load running balance data.");
@@ -53,6 +63,14 @@ const RunningBalance = () => {
       setLoading(false);
     }
   };
+
+  const updateRunningState = (data, page) => {
+    setRunningBalanceData(data.results);
+    setCurrentItems(data.results);
+    setTotalPages(Math.ceil(data.count / itemsPerPage));
+    setTotalItems(data.count);
+    setCurrentPage(page);
+};
 
   // Handle search functionality
   const handleSearch = (event) => {
@@ -68,20 +86,25 @@ const RunningBalance = () => {
           item.itemID.toLowerCase().includes(term) ||
           item.itemName.toLowerCase().includes(term)
       );
+    } else if (!term) {
+      // Reset to first page of all items
+      fetchItems(1);
+      return;
     }
 
     // Keep "available only" filter if active
     if (showAvailableOnly) {
-      filtered = filtered.filter(item => item.itemQuantity > 0);
+      filtered = filtered.filter((item) => item.itemQuantity > 0);
     }
 
     // Keep remarks filter if active
     if (remarks) {
-      filtered = filtered.filter(item => item.remarks === remarks);
+      filtered = filtered.filter((item) => item.remarks === remarks);
     }
 
-    setFilteredData(filtered);
+    setCurrentItems(filtered);
     setCurrentPage(1);
+    setTotalPages(Math.ceil(filtered.length / itemsPerPage));
   };
 
   const handleRemarksFilter = (event) => {
@@ -92,13 +115,13 @@ const RunningBalance = () => {
 
     // Apply remarks filter
     if (remark) {
-      filtered = filtered.filter(item => item.remarks === remark);
+      filtered = filtered.filter((item) => item.remarks === remark);
     }
 
     // Keep search filter if active
     if (searchTerm) {
       filtered = filtered.filter(
-        item =>
+        (item) =>
           item.itemID.toLowerCase().includes(searchTerm.toLowerCase()) ||
           item.itemName.toLowerCase().includes(searchTerm.toLowerCase())
       );
@@ -106,37 +129,19 @@ const RunningBalance = () => {
 
     // Keep "available only" filter if active
     if (showAvailableOnly) {
-      filtered = filtered.filter(item => item.itemQuantity > 0);
+      filtered = filtered.filter((item) => item.itemQuantity > 0);
     }
 
-    setFilteredData(filtered);
+    setCurrentItems(filtered);
     setCurrentPage(1);
+    setTotalPages(Math.ceil(filtered.length / itemsPerPage));
   };
 
   // Handle month and year change
   const handleMonthYearChange = (month, year) => {
-
     setSelectedMonth(month);
     setSelectedYear(year);
   };
-
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-
-  // Get current items for the current page
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
-
-  // Calculate total pages
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-
-  // Generate page numbers
-  const pageNumbers = [];
-  for (let i = 1; i <= totalPages; i++) {
-    pageNumbers.push(i);
-  }
 
   // Fetch data when month/year changes, but only if already initialized
   useEffect(() => {
@@ -144,9 +149,9 @@ const RunningBalance = () => {
   }, [selectedMonth, selectedYear]);
 
   const formatCurrency = (value) => {
-    return `₱${parseFloat(value).toLocaleString('en-PH', {
+    return `₱${parseFloat(value).toLocaleString("en-PH", {
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      maximumFractionDigits: 2,
     })}`;
   };
 
@@ -156,28 +161,102 @@ const RunningBalance = () => {
 
     // Apply filter based on selection
     if (checked) {
-      const filtered = runningBalanceData.filter(item => item.itemQuantity > 0);
-      setFilteredData(filtered);
+      const filtered = runningBalanceData.filter(
+        (item) => item.itemQuantity > 0
+      );
+      setCurrentItems(filtered);
     } else {
       // Reapply any existing filters (search term and remarks)
       let filtered = runningBalanceData;
 
       if (searchTerm) {
-        filtered = filtered.filter(item =>
-          item.itemID.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.itemName.toLowerCase().includes(searchTerm.toLowerCase())
+        filtered = filtered.filter(
+          (item) =>
+            item.itemID.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.itemName.toLowerCase().includes(searchTerm.toLowerCase())
         );
       }
 
       if (remarks) {
-        filtered = filtered.filter(item => item.remarks === remarks);
+        filtered = filtered.filter((item) => item.remarks === remarks);
       }
 
-      setFilteredData(filtered);
+      setCurrentItems(filtered);
+      setTotalPages(Math.ceil(filtered.length / itemsPerPage));
     }
 
     setCurrentPage(1);
+    
   };
+
+  const paginate = (pageNumber) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+        fetchRunningBalance(pageNumber);
+    }
+  };
+
+  // Render pagination items
+  const renderPaginationItems = () => {
+      const pageNumbers = [];
+      const totalPagesToShow = 5;
+      let startPage, endPage;
+
+      if (totalPages <= totalPagesToShow) {
+          startPage = 1;
+          endPage = totalPages;
+      } else {
+          if (currentPage <= Math.ceil(totalPagesToShow / 2)) {
+              startPage = 1;
+              endPage = totalPagesToShow;
+          } else if (currentPage + Math.floor(totalPagesToShow / 2) >= totalPages) {
+              startPage = totalPages - totalPagesToShow + 1;
+              endPage = totalPages;
+          } else {
+              startPage = currentPage - Math.floor(totalPagesToShow / 2);
+              endPage = currentPage + Math.floor(totalPagesToShow / 2);
+          }
+      }
+
+      // First page button
+      if (startPage > 1) {
+          pageNumbers.push(
+              <Pagination.Item key="first" onClick={() => paginate(1)}>
+                  1
+              </Pagination.Item>
+          );
+          if (startPage > 2) {
+              pageNumbers.push(<Pagination.Ellipsis key="first-ellipsis" />);
+          }
+      }
+
+      // Page number buttons
+      for (let i = startPage; i <= endPage; i++) {
+          pageNumbers.push(
+              <Pagination.Item 
+                  key={i} 
+                  active={i === currentPage}
+                  onClick={() => paginate(i)}
+              >
+                  {i}
+              </Pagination.Item>
+          );
+      }
+
+      // Last page button
+      if (endPage < totalPages) {
+          if (endPage < totalPages - 1) {
+              pageNumbers.push(<Pagination.Ellipsis key="last-ellipsis" />);
+          }
+          pageNumbers.push(
+              <Pagination.Item key="last" onClick={() => paginate(totalPages)}>
+                  {totalPages}
+              </Pagination.Item>
+          );
+      }
+
+      return pageNumbers;
+  };  
+  
   return (
     <Container
       style={{ width: "100%" }}
@@ -302,8 +381,8 @@ const RunningBalance = () => {
                         item.itemQuantity <= item.beginningBalance * 0.1
                           ? "red"
                           : item.itemQuantity >= item.beginningBalance
-                            ? "green"
-                            : "",
+                          ? "green"
+                          : "",
                     }}>
                     {item.itemQuantity}
                   </td>
@@ -325,48 +404,28 @@ const RunningBalance = () => {
         </Table>
       </Row>
 
-      {!loading && !error && filteredData.length > 0 && (
+      {/* Pagination */}
+      {!loading && !error && totalPages > 1 && (
         <Row>
           <Col className="d-flex justify-content-center mt-3">
             <Pagination>
               <Pagination.First
-                onClick={() => handlePageChange(1)}
+                onClick={() => paginate(1)}
                 disabled={currentPage === 1}
               />
               <Pagination.Prev
-                onClick={() => handlePageChange(currentPage - 1)}
+                onClick={() => paginate(currentPage - 1)}
                 disabled={currentPage === 1}
               />
-              {/* Display page numbers */}
-              {pageNumbers.map((number) => {
-                // Show 5 pages around current page
-                if (
-                  number === 1 ||
-                  number === totalPages ||
-                  (number >= currentPage - 2 && number <= currentPage + 2)
-                ) {
-                  return (
-                    <Pagination.Item
-                      key={number}
-                      active={number === currentPage}
-                      onClick={() => handlePageChange(number)}>
-                      {number}
-                    </Pagination.Item>
-                  );
-                } else if (
-                  number === currentPage - 3 ||
-                  number === currentPage + 3
-                ) {
-                  return <Pagination.Ellipsis key={number} />;
-                }
-                return null;
-              })}
+
+              {renderPaginationItems()}
+
               <Pagination.Next
-                onClick={() => handlePageChange(currentPage + 1)}
+                onClick={() => paginate(currentPage + 1)}
                 disabled={currentPage === totalPages}
               />
               <Pagination.Last
-                onClick={() => handlePageChange(totalPages)}
+                onClick={() => paginate(totalPages)}
                 disabled={currentPage === totalPages}
               />
             </Pagination>
