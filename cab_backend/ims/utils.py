@@ -3,25 +3,8 @@ from django.conf import settings
 import os
 from datetime import datetime
 import logging
-from docx2pdf import convert
 
 logger = logging.getLogger(__name__)
-
-# PDF CONVERSION USING DOCX2PDF
-def convert_docx_to_pdf(docx_path):
-    try:
-        pdf_path = docx_path.replace('.docx', '.pdf')
-        convert(docx_path, pdf_path)
-        
-        if os.path.exists(pdf_path):
-            logger.info(f"Successfully converted {docx_path} to PDF")
-            return pdf_path
-        else:
-            logger.error("PDF conversion completed but file not found")
-            return None
-    except Exception as e:
-        logger.error(f"PDF conversion error: {str(e)}")
-        return None
 
 def replace_text_in_table(table, placeholders):
     """Replaces placeholders in a Word table while preserving formatting (bold, italics, etc.)."""
@@ -48,7 +31,7 @@ def replace_text_in_table(table, placeholders):
                         run.text = modified_text[index: index + run_length]  # Replace only this part
                         index += run_length  # Move to the next part
                         
-def generate_reports_doc(report, use_async_conversion=True):
+def generate_reports_doc(report):
     template_path = os.path.join(settings.BASE_DIR, 'Document Format', 'MONTHLY SUMMARY REPORT.docx')
     doc = Document(template_path)
 
@@ -138,8 +121,5 @@ def generate_reports_doc(report, use_async_conversion=True):
     except PermissionError as e:
         print(f"Permission denied: {e}")
         raise
-
-    # Use the subprocess method for PDF conversion
-    pdf_path = convert_docx_to_pdf(output_path)
     
-    return output_path, pdf_path
+    return output_path

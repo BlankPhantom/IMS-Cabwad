@@ -72,8 +72,8 @@ const WeeklyConsumption = () => {
             if (data.length === 0) {
                 setError("No consumption data available for the selected period");
             }
-
-            setMonthlyConsumptionData(data);
+    
+            setMonthlyConsumptionData(data.results);
         } catch (error) {
             console.error("Error fetching monthly consumption:", error);
             setError(error.message || "Failed to load monthly consumption data");

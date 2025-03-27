@@ -213,7 +213,7 @@ const MonthlyConsumption = () => {
         {
           method: "GET",
           headers: {
-            Authorization: `Token ${token}`,
+            'Authorization': `Token ${token}`,
           },
         }
       );
@@ -312,36 +312,6 @@ const MonthlyConsumption = () => {
           />
         </Col>
       </Row>
-
-      <Row>
-        <Col className="d-flex justify-content-center mt-3">
-          <Button
-            className="shadow"
-            onClick={handleGenerateReports}
-            disabled={conversionProgress}>
-            {conversionProgress
-              ? "Generating Report..."
-              : "GENERATE MONTHLY REPORT"}
-          </Button>
-        </Col>
-      </Row>
-
-      {conversionProgress && (
-        <>
-          <Row>
-            <Col className="d-flex justify-content-center mt-3">
-              <div className="spinner-border text-primary" role="status"></div>
-            </Col>
-          </Row>
-          <Row>
-            <Col className="d-flex justify-content-center">
-              <span className="text-muted">
-                Generating report, please wait...
-              </span>
-            </Col>
-          </Row>
-        </>
-      )}
 
       <Row>
         <Table responsive bordered striped hover className="tableStyle mt-3">

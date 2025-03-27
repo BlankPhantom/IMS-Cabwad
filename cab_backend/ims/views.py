@@ -805,6 +805,7 @@ logger = logging.getLogger(__name__)
 
 @csrf_exempt
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def download_report_doc(request, year, month):
     try:
         # Validate input parameters
@@ -836,7 +837,7 @@ def download_report_doc(request, year, month):
         
         # Generate the report
         try:
-            doc_path, pdf_path = generate_reports_doc(report)
+            doc_path = generate_reports_doc(report)
         except Exception as doc_gen_error:
             logger.error(f"Failed to generate report: {str(doc_gen_error)}", exc_info=True)
             return Response({
@@ -844,12 +845,8 @@ def download_report_doc(request, year, month):
                 "details": str(doc_gen_error)
             }, status=500)
         
-        # Determine file to serve (PDF preferred, fallback to DOCX)
-        if pdf_path and os.path.exists(pdf_path):
-            file_path = pdf_path
-            filename = f"report_{year}_{month}.pdf"
-            content_type = 'application/pdf'
-        elif os.path.exists(doc_path):
+        # Determine file to serve (DOCX)
+        if os.path.exists(doc_path):
             file_path = doc_path
             filename = f"report_{year}_{month}.docx"
             content_type = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
@@ -858,26 +855,20 @@ def download_report_doc(request, year, month):
             return Response({
                 "error": "No valid report file found",
                 "details": {
-                    "docx_path": doc_path,
-                    "pdf_path": pdf_path
+                    "docx_path": doc_path
                 }
             }, status=500)
         
         # Serve the file for download
         try:
-            response = FileResponse(
-                open(file_path, 'rb'), 
-                as_attachment=True, 
-                filename=filename,
-                content_type=content_type
-            )
+            response = FileResponse(open(file_path, 'rb'), as_attachment=True, filename=filename, content_type=content_type)
             
             # Basic caching headers
             response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
             response['Pragma'] = 'no-cache'
             response['Expires'] = '0'
             
-            logger.info(f"Report downloaded: Year {year}, Month {month}, Format: {filename.split('.')[-1].upper()}")
+            logger.info(f"Report downloaded: Year {year}, Month {month}, Format: DOCX")
             
             return response
         
@@ -894,4 +885,3 @@ def download_report_doc(request, year, month):
             "error": "An unexpected error occurred",
             "details": str(unexpected_error)
         }, status=500)
-        
