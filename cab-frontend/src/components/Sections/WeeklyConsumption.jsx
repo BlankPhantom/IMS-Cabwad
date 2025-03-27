@@ -18,7 +18,7 @@ const WeeklyConsumption = () => {
         return 4;
     };
 
-    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth()+1);
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [monthlyConsumptionData, setMonthlyConsumptionData] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -47,7 +47,7 @@ const WeeklyConsumption = () => {
         setError(null);
         try {
             const queryParams = new URLSearchParams({
-                month: selectedMonth + 1, // Add 1 to convert from 0-indexed to 1-indexed
+                month: selectedMonth , // Add 1 to convert from 0-indexed to 1-indexed
                 year: selectedYear,
                 ...(selectedSection && { sectionID: selectedSection }) // Conditionally add section if selected
             });
@@ -89,7 +89,7 @@ const WeeklyConsumption = () => {
         
         // Special handling for current month
         const currentDate = new Date();
-        if (month === currentDate.getMonth() && year === currentDate.getFullYear()) {
+        if (month === currentDate.getMonth()+1 && year === currentDate.getFullYear()) {
             setSelectedWeek(getCurrentWeekOfMonth());
         }
     };
