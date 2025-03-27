@@ -64,7 +64,8 @@ const EditMasterModal = ({ show, handleClose, itemData, handleInputChange, handl
                             name="classificationID" 
                             value={selectedClassification}
                             onChange={handleClassificationChange} 
-                            required>
+                            required 
+                            disabled>
                             <option value="">{itemData?.classificationName}</option>
                                 {classifications.map((classification) => (
                                 <option key={classification.id} value={classification.classificationID}>
