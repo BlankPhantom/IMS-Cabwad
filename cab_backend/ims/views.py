@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.utils.timezone import now
 from django.http import JsonResponse
 from django.db.models import Sum
-
+from rest_framework.pagination import PageNumberPagination
 logger = logging.getLogger(__name__)
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
@@ -27,7 +27,11 @@ class IsSuperAdmin(BasePermission):
     """Allows access only to superadmins."""
     def has_permission(self, request, view):
         return request.user and request.user.is_superuser
-
+class Pagination(PageNumberPagination):
+    page_size = 20  # Load 20 items per request
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+    
 @api_view(['POST'])
 @authentication_classes([])
 def login(request):
@@ -152,9 +156,11 @@ def toggle_user_activation(request, user_id):
 
 @api_view(['GET'])
 def item_list_all(request):
+    paginator = Pagination()
     items = Item.objects.all()
-    serializer = ItemSerializer(items, many=True, context={'request': request})
-    return Response(serializer.data)
+    result_page = paginator.paginate_queryset(items, request)
+    serializer = ItemSerializer(result_page, many=True, context={'request': request})
+    return paginator.get_paginated_response(serializer.data)
 
 @api_view(['GET'])
 def item_list_detail(request, id):
@@ -245,9 +251,11 @@ def get_beginning_bal(request):
         beginning_bal = beginning_bal.filter(created_at__month=month)
     if year:
         beginning_bal = beginning_bal.filter(created_at__year=year)
-    
-    serializer = BeginningBalanceSerializer(beginning_bal, many=True)
-    return Response(serializer.data)
+               
+    paginator = Pagination()
+    result_page = paginator.paginate_queryset(beginning_bal, request)
+    serializer = BeginningBalanceSerializer(result_page, many=True, context={'request': request})
+    return paginator.get_paginated_response(serializer.data)
 
 @csrf_exempt
 def copy_items_to_balance(request):
@@ -440,16 +448,18 @@ def transaction_product_delete(request, id, detailID):
 def get_running_balance(request):
     month = request.query_params.get('month')
     year = request.query_params.get('year')
-
+    
     running_balances = RunningBalance.objects.all()
 
     if month:
         running_balances = running_balances.filter(created_at__month=month)
     if year:
         running_balances = running_balances.filter(created_at__year=year)
-
-    serializer = RunningBalanceSerializer(running_balances, many=True)
-    return Response(serializer.data)
+        
+    paginator = Pagination()
+    result_page = paginator.paginate_queryset(running_balances, request)
+    serializer = RunningBalanceSerializer(result_page, many=True)
+    return paginator.get_paginated_response(serializer.data)
 
 import logging
 from django.utils import timezone
@@ -637,7 +647,7 @@ def get_monthly_consumption(request):
     month = request.query_params.get('month')
     year = request.query_params.get('year')
     section_id = request.query_params.get('sectionID')
-
+    
     # Filter MonthlyConsumption based on the provided parameters
     monthly_consumption = MonthlyConsumption.objects.all()
 
@@ -648,12 +658,15 @@ def get_monthly_consumption(request):
     if section_id:
         monthly_consumption = monthly_consumption.filter(sectionID=section_id)
 
+    paginator = Pagination()
+    
     # Order by week to ensure proper weekly breakdown
     monthly_consumption = monthly_consumption.order_by('week')
 
+    result_page = paginator.paginate_queryset(monthly_consumption, request)
     # Serialize the filtered data
-    serializer = MonthlyConsumptionSerializer(monthly_consumption, many=True)
-    return Response(serializer.data)
+    serializer = MonthlyConsumptionSerializer(result_page, many=True)
+    return paginator.get_paginated_response(serializer.data)
 
 # @csrf_exempt  # Remove in production; use proper authentication
 # def xlsm_to_json(request):
