@@ -684,7 +684,7 @@ const Transactions = () => {
                                             ))
                                         ) : (
                                             <tr>
-                                                <td colSpan="12" className="text-center text-muted">No products added</td>
+                                                <td colSpan="20" className="text-center text-muted">No products added</td>
                                             </tr>
                                         )}
                                     </React.Fragment>
