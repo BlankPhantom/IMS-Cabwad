@@ -175,7 +175,6 @@ const AccManagement = () => {
             const updatedUser = await response.json();
 
             // Close modal and refresh user list
-            alert("User updated successfully!");
             setShowEditModal(false);
             fetchUsers();
         } catch (e) {
