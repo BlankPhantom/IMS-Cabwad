@@ -252,42 +252,63 @@ const MonthlyConsumption = () => {
       style={{ width: "100%" }}
       fluid
       className="d-flex flex-column justify-content-center mt-5">
-      <Row className="sectionTitle">
-        <Col>
-          <h2 style={{ fontWeight: "650" }}>Monthly Consumption</h2>
+      <Row className="g-3 align-items-center">
+        <Col xs={12} className="text-center">
+          <h2 className="mb-2" style={{ fontWeight: '650' }}>Monthly Consumption</h2>
         </Col>
-      </Row>
 
-      <Row className="mt-3 d-flex align-items-center justify-content-between">
-        <Col md={6}>
-          <MonthYearPicker onMonthYearChange={handleMonthYearChange} />
+        <Col xs={12} className="text-center mb-2">
+          <Button
+            variant="primary"
+            onClick={handleGenerateReports}
+            disabled={conversionProgress}
+            className="px-4 py-2"
+          >
+            {conversionProgress ? "Generating Report..." : "Generate Monthly Report"}
+          </Button>
         </Col>
-        <Col md={4}>
-          <Form.Group controlId="sectionSelect">
-            <Form.Select
-              name="section"
-              value={selectedSection}
-              onChange={handleSectionChange}>
-              <option value="">All Sections</option>
-              {sections.map((section) => (
-                <option key={section.sectionID} value={section.sectionID}>
-                  {section.sectionName}
-                </option>
-              ))}
-            </Form.Select>
-          </Form.Group>
-        </Col>
-      </Row>
 
-      <Row>
-        <Col className="d-flex justify-content-end mt-4">
-          <input
+        {conversionProgress && (
+          <Col xs={12} className="text-center mt-2">
+            <div
+              className="spinner-border text-primary"
+              role="status"
+            >
+              <span className="visually-hidden">Loading...</span>
+            </div>
+            <p className="text-muted mb-0">Generating report, please wait...</p>
+          </Col>
+        )}
+
+        <Col className="d-flex align-items-center">
+          <MonthYearPicker
+            onMonthYearChange={handleMonthYearChange}
+            className="me-2"
+          />
+          <Form.Select
+            value={selectedSection}
+            onChange={handleSectionChange}
+            style={{width: '175px', padding: '3px', borderRadius: '4px', border: '.5px solid rgb(212, 212, 212)', marginLeft: '10px'}}
+          >
+            <option value="">All Sections</option>
+            {sections.map((section) => (
+              <option
+                key={section.sectionID}
+                value={section.sectionID}
+              >
+                {section.sectionName}
+              </option>
+            ))}
+          </Form.Select>
+        </Col>
+
+        <Col className="d-flex justify-content-end">
+          <Form.Control
+            style={{width: '300px'}}
             type="search"
-            className="form-control"
             placeholder="Search"
             value={searchTerm}
             onChange={handleSearchChange}
-            style={{ width: "300px" }}
           />
         </Col>
       </Row>

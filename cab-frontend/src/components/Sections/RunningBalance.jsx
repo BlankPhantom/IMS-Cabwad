@@ -270,35 +270,34 @@ const RunningBalance = () => {
         </Col>
       </Row>
 
-      <Row className="mb-3">
-        <Col>
+      <Row className="mt-2 align-items-center">
+        <Col xs="auto">
           <MonthYearPicker
             onMonthYearChange={handleMonthYearChange}
             initialMonth={selectedMonth}
             initialYear={selectedYear}
           />
         </Col>
-      </Row>
-
-      <Row>
-        <Col className="d-flex align-items-center">
+        <Col xs="auto">
           <Form.Select
             className="form-select"
-            style={{ width: "300px" }}
+            style={{width: '130px', padding: '3px', borderRadius: '4px', border: '.5px solid rgb(212, 212, 212)' }}
             value={remarks}
-            onChange={handleRemarksFilter}>
+            onChange={handleRemarksFilter}
+          >
             <option value="">All</option>
             <option value="Non-Moving">Non-Moving</option>
             <option value="Slow Moving">Slow Moving</option>
             <option value="Fast Moving">Fast Moving</option>
           </Form.Select>
+        </Col>
+        <Col xs="auto">
           <Form.Check
             type="checkbox"
             id="available-only"
             label="With Available Stocks"
             checked={showAvailableOnly}
             onChange={handleAvailableOnlyFilter}
-            className="ms-3 d-flex align-items-center"
           />
         </Col>
         <Col className="d-flex justify-content-end">
