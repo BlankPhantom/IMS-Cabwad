@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Container, Row, Col, Card, Button, Form } from "react-bootstrap";
+import { Container, Row, Col, Card, Button, Form, Modal } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
@@ -15,11 +15,12 @@ const BackupRestore = () => {
   const [restoreMessage, setRestoreMessage] = useState("");
   const [file, setFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showRestoreWarningModal, setShowRestoreWarningModal] = useState(false);
   const navigate = useNavigate();
 
   // Handle back navigation
   const handleBack = () => {
-    navigate(-1); // Navigate to the previous page
+    navigate(-1);
   };
 
   const handleBackup = async () => {
@@ -27,9 +28,8 @@ const BackupRestore = () => {
       setIsLoading(true);
       setBackupMessage("Starting backup process...");
   
-      const token = localStorage.getItem("access_token"); // Get JWT token
+      const token = localStorage.getItem("access_token");
   
-      // First, request the backup file from the backend
       const response = await fetch(API_ENDPOINTS.BACKUP, {
         method: "GET",
         headers: {
@@ -41,18 +41,15 @@ const BackupRestore = () => {
         throw new Error("Backup failed. Ensure you are logged in with admin privileges.");
       }
   
-      // Convert response into a blob for downloading
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
   
-      // Create a link element to trigger the download
       const a = document.createElement("a");
       a.href = url;
-      a.download = "inventory_backup_" + new Date().toISOString().replace(/[:.]/g, '-') + ".sql";  // Add timestamp to filename
+      a.download = "inventory_backup_" + new Date().toISOString().replace(/[:.]/g, '-') + ".sql";
       document.body.appendChild(a);
       a.click();
   
-      // Cleanup
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
   
@@ -63,14 +60,20 @@ const BackupRestore = () => {
       setIsLoading(false);
     }
   };
-  
 
   // Function to handle database restore
-  const handleRestore = async () => {
+  const handleRestoreInitiate = () => {
     if (!file) {
       setRestoreMessage("Please select a backup file to restore.");
       return;
     }
+    // Show warning modal before actual restore
+    setShowRestoreWarningModal(true);
+  };
+
+  const confirmRestore = async () => {
+    // Close the warning modal
+    setShowRestoreWarningModal(false);
 
     try {
       setIsLoading(true);
@@ -79,22 +82,22 @@ const BackupRestore = () => {
       const formData = new FormData();
       formData.append("backup_file", file);
 
-      const token = localStorage.getItem("access_token"); // Get JWT token
+      const token = localStorage.getItem("access_token");
       const response = await fetch(API_ENDPOINTS.RESTORE, {
         method: "POST",
         headers: {
-          Authorization: `Token ${token}`, // Include token in the header
+          Authorization: `Token ${token}`,
         },
-        body: formData, // Pass FormData directly
+        body: formData,
       });
 
       if (response.ok) {
         const data = await response.json();
         setRestoreMessage(data.message);
-        setFile(null);
-        // Reset the file input
-        const fileInput = document.getElementById("fileUpload");
-        if (fileInput) fileInput.value = "";
+        
+        // Logout after successful restore
+        localStorage.removeItem("access_token");
+        navigate("/");
       } else {
         const errorData = await response.json();
         setRestoreMessage(
@@ -105,6 +108,10 @@ const BackupRestore = () => {
       setRestoreMessage("An error occurred while connecting to the server.");
     } finally {
       setIsLoading(false);
+      setFile(null);
+      // Reset the file input
+      const fileInput = document.getElementById("fileUpload");
+      if (fileInput) fileInput.value = "";
     }
   };
 
@@ -212,7 +219,7 @@ const BackupRestore = () => {
                   width: "100%",
                   padding: "8px 16px",
                 }}
-                onClick={handleRestore}
+                onClick={handleRestoreInitiate}
                 disabled={isLoading || !file}>
                 {isLoading ? "Processing..." : "Restore"}
               </Button>
@@ -245,6 +252,41 @@ const BackupRestore = () => {
           </p>
         )}
       </Row>
+
+      {/* Restore Warning Modal */}
+      <Modal 
+        show={showRestoreWarningModal} 
+        onHide={() => setShowRestoreWarningModal(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Database Restore Warning</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p className="text-danger"><strong>Important: Database Restoration Notice</strong></p>
+          <ul>
+            <li>Restoring the database will reset all user accounts</li>
+            <li>All user passwords will be reset to their default values (cabwad123)</li>
+            <li>You will be automatically logged out after restoration</li>
+            <li>Please change your password after logging back in</li>
+          </ul>
+          <p>Are you sure you want to proceed with the database restoration?</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button 
+            variant="secondary" 
+            onClick={() => setShowRestoreWarningModal(false)}
+          >
+            Cancel
+          </Button>
+          <Button 
+            variant="danger" 
+            onClick={confirmRestore}
+          >
+            Confirm Restore
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };
