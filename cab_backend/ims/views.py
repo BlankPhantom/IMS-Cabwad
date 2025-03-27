@@ -670,8 +670,6 @@ def get_monthly_consumption(request):
 
 @api_view(['GET'])
 def export_consumption_to_excel(request):
-    # Use request.GET for standard Django views
-    # Use request.query_params for DRF views
     section_id = request.GET.get('sectionID') or request.query_params.get('sectionID')
     month = request.GET.get('month') or request.query_params.get('month')
     year = request.GET.get('year') or request.query_params.get('year')
@@ -680,7 +678,7 @@ def export_consumption_to_excel(request):
     consumption_data = MonthlyConsumption.objects.all()
     
     # Apply filters if provided
-    if section_id:
+    if section_id and int(section_id) != 0:  # Export all if sectionID is 0
         consumption_data = consumption_data.filter(sectionID=section_id)
     if month:
         consumption_data = consumption_data.filter(date__month=month)
@@ -691,7 +689,7 @@ def export_consumption_to_excel(request):
     df = pd.DataFrame(list(consumption_data.values(
         'date', 
         'week', 
-        'itemID',  # Changed from itemName to match your model
+        'itemID', 
         'itemName', 
         'consumption', 
         'cost', 
@@ -700,10 +698,12 @@ def export_consumption_to_excel(request):
     
     # Create filename based on filters
     filename_parts = []
-    if section_id:
+    if section_id and int(section_id) != 0:
         section = Section.objects.filter(sectionID=section_id).first()
         if section:
             filename_parts.append(f"section_{section.sectionName}")
+    else:
+        filename_parts.append("all_sections")
     if month:
         filename_parts.append(f"Month_{month}")
     if year:
@@ -716,7 +716,8 @@ def export_consumption_to_excel(request):
     with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp_file:
         temp_file_path = tmp_file.name
         with pd.ExcelWriter(temp_file_path, engine='openpyxl') as writer:
-            df.to_excel(writer, index=False, sheet_name='Monthly Consumption')
+            sheet_name = section.sectionName if section_id and int(section_id) != 0 and section else "All Sections"
+            df.to_excel(writer, index=False, sheet_name=sheet_name)
     
     # Serve the file for download
     response = FileResponse(open(temp_file_path, 'rb'), as_attachment=True, filename=filename)

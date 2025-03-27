@@ -196,6 +196,7 @@ const MonthlyConsumption = () => {
 
     return pageNumbers;
   };
+
   const handleExportReports = async () => {
     const token = localStorage.getItem("access_token")
     const queryParams = new URLSearchParams({
@@ -203,6 +204,9 @@ const MonthlyConsumption = () => {
       month: selectedMonth + 1, // Add 1 to convert from 0-indexed to 1-indexed
       year: selectedYear,
     });
+    // if (!selectedSection) {
+    //   queryParams.delete("sectionID");
+    // }
     try {
       if(!token){
         alert("Authorization token is missing. Please log in again.");
@@ -321,7 +325,7 @@ const MonthlyConsumption = () => {
             onChange={handleSectionChange}
             style={{width: '175px', padding: '3px', borderRadius: '4px', border: '.5px solid rgb(212, 212, 212)', marginLeft: '10px'}}
           >
-            <option value="">All Sections</option>
+            <option value="0">All Sections</option>
             {sections.map((section) => (
               <option
                 key={section.sectionID}
