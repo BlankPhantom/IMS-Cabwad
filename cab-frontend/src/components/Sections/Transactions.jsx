@@ -229,7 +229,7 @@ const Transactions = () => {
 
         setTimeout(() => {
             setLoading(false);
-        }, 500); 
+        }, 500);
     };
 
     const handleSearch = (e) => {
@@ -580,6 +580,10 @@ const Transactions = () => {
             </Row>
 
             <Row>
+
+            </Row>
+
+            <Row className="mt-3 d-flex align-items-center justify-content-between">
                 <Col>
                     <MonthYearPicker
                         onMonthYearChange={handleMonthYearChange}
@@ -588,10 +592,7 @@ const Transactions = () => {
                         allowAllMonths={true}
                     />
                 </Col>
-            </Row>
-
-            <Row>
-                <Col className="d-flex justify-content-end mt-3">
+                <Col className="d-flex justify-content-end">
                     <input
                         type="search"
                         className="form-control"
@@ -655,7 +656,7 @@ const Transactions = () => {
                                                 <BtnEditDeleteTransaction
                                                     onEdit={handleEdit}
                                                     fetchTransactionsWithProducts={fetchTransactionsWithProducts}
-                                                    onDelete={confirmDelete} 
+                                                    onDelete={confirmDelete}
                                                     onUpdate={handleUpdateTransaction}
                                                     transaction={transaction}
                                                     handleTransactionChange={handleTransactionChange}

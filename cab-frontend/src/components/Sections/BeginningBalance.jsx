@@ -218,14 +218,11 @@ const BeginningBalance = () => {
                 </Col>
             </Row>
 
-            <Row>
-                <Col>
+            <Row className="d-flex justify-content-center mt-3">
+            <Col>
                     <MonthYearPicker onMonthYearChange={handleMonthYearChange} />
                 </Col>
-            </Row>
-
-            <Row>
-                <Col className="d-flex justify-content-end mt-3">
+                <Col className="d-flex justify-content-end">
                     <input
                         type="search"
                         placeholder="Search"

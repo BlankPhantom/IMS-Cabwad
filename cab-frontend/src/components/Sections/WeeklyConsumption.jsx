@@ -10,7 +10,7 @@ const WeeklyConsumption = () => {
     const getCurrentWeekOfMonth = () => {
         const today = new Date();
         const dayOfMonth = today.getDate();
-        
+
         // Simple calculation dividing the month into 4 weeks
         if (dayOfMonth <= 7) return 1;
         if (dayOfMonth <= 14) return 2;
@@ -18,7 +18,7 @@ const WeeklyConsumption = () => {
         return 4;
     };
 
-    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth()+1);
+    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [monthlyConsumptionData, setMonthlyConsumptionData] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -47,11 +47,11 @@ const WeeklyConsumption = () => {
         setError(null);
         try {
             const queryParams = new URLSearchParams({
-                month: selectedMonth , // Add 1 to convert from 0-indexed to 1-indexed
+                month: selectedMonth, // Add 1 to convert from 0-indexed to 1-indexed
                 year: selectedYear,
                 ...(selectedSection && { sectionID: selectedSection }) // Conditionally add section if selected
             });
-    
+
             const response = await fetch(
                 `${API_ENDPOINTS.MONTHLY_CONSUMPTION}?${queryParams}`,
                 {
@@ -62,17 +62,17 @@ const WeeklyConsumption = () => {
                     },
                 }
             );
-    
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-    
+
             const data = await response.json();
-    
+
             if (data.length === 0) {
                 setError("No consumption data available for the selected period");
             }
-    
+
             setMonthlyConsumptionData(data);
         } catch (error) {
             console.error("Error fetching monthly consumption:", error);
@@ -86,10 +86,10 @@ const WeeklyConsumption = () => {
     const handleMonthYearChange = (month, year) => {
         setSelectedMonth(month);
         setSelectedYear(year);
-        
+
         // Special handling for current month
         const currentDate = new Date();
-        if (month === currentDate.getMonth()+1 && year === currentDate.getFullYear()) {
+        if (month === currentDate.getMonth() + 1 && year === currentDate.getFullYear()) {
             setSelectedWeek(getCurrentWeekOfMonth());
         }
     };
@@ -113,12 +113,12 @@ const WeeklyConsumption = () => {
     // Prepare data for Plotly
     const prepareChartData = () => {
         if (!monthlyConsumptionData.length) return null;
-    
+
         // Group and aggregate data by item name for the selected week
         const aggregatedData = monthlyConsumptionData.reduce((acc, item) => {
             if (item.week === selectedWeek) {
                 const existingItem = acc.find(i => i.itemName === item.itemName);
-                
+
                 if (existingItem) {
                     existingItem.consumption += item.consumption;
                 } else {
@@ -130,10 +130,10 @@ const WeeklyConsumption = () => {
             }
             return acc;
         }, []);
-    
+
         // Sort by consumption amount (optional)
         aggregatedData.sort((a, b) => b.consumption - a.consumption);
-    
+
         // Create individual traces for each product to have them in the legend
         return aggregatedData.map(item => ({
             x: [item.itemName],
@@ -154,15 +154,14 @@ const WeeklyConsumption = () => {
             </Row>
 
             <Row className="mt-3 d-flex align-items-center justify-content-between">
-                <Col md={4}>
+                <Col className="d-flex align-items-center">
                     <MonthYearPicker onMonthYearChange={handleMonthYearChange} />
-                </Col>
-                <Col md={4}>
                     <Form.Group controlId="sectionSelect">
                         <Form.Select
                             name="section"
                             value={selectedSection}
                             onChange={handleSectionChange}
+                            style={{ width: '175px', padding: '3px', borderRadius: '4px', border: '.5px solid rgb(212, 212, 212)', marginLeft: '10px' }}
                         >
                             <option value="">All Sections</option>
                             {sections.map((section) => (
@@ -182,6 +181,7 @@ const WeeklyConsumption = () => {
                             name="week"
                             value={selectedWeek}
                             onChange={handleWeekChange}
+                            style={{ width: '160px' }}
                         >
                             <option value="1">Week 1</option>
                             <option value="2">Week 2</option>
@@ -204,12 +204,12 @@ const WeeklyConsumption = () => {
                             layout={{
                                 title: `Week ${selectedWeek} Estimated Product Consumption`,
                                 barmode: 'group',
-                                xaxis: { 
+                                xaxis: {
                                     title: 'Products',
-                                    visible: false, 
+                                    visible: false,
                                     showticklabels: true
                                 },
-                                yaxis: { 
+                                yaxis: {
                                     title: 'Estimated Consumption Quantity',
                                     tickformat: ',d', // Format tick labels without negative sign
                                     tickprefix: '-'   // Add negative prefix to tick labels
