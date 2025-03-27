@@ -204,9 +204,7 @@ const MonthlyConsumption = () => {
       month: selectedMonth + 1, // Add 1 to convert from 0-indexed to 1-indexed
       year: selectedYear,
     });
-    // if (!selectedSection) {
-    //   queryParams.delete("sectionID");
-    // }
+
     try {
       if(!token){
         alert("Authorization token is missing. Please log in again.");
