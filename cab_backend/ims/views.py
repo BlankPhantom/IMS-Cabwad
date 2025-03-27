@@ -15,7 +15,7 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 import pandas as pd
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import default_storage
 from ims.models import (Item, BeginningBalance, Classification, Measurement, Section, Purpose, TransactionProduct, 
@@ -668,6 +668,63 @@ def get_monthly_consumption(request):
     serializer = MonthlyConsumptionSerializer(result_page, many=True)
     return paginator.get_paginated_response(serializer.data)
 
+@api_view(['GET'])
+def export_consumption_to_excel(request):
+    # Use request.GET for standard Django views
+    # Use request.query_params for DRF views
+    section_id = request.GET.get('sectionID') or request.query_params.get('sectionID')
+    month = request.GET.get('month') or request.query_params.get('month')
+    year = request.GET.get('year') or request.query_params.get('year')
+    
+    # Query the consumption data based on the parameters
+    consumption_data = MonthlyConsumption.objects.all()
+    
+    # Apply filters if provided
+    if section_id:
+        consumption_data = consumption_data.filter(sectionID=section_id)
+    if month:
+        consumption_data = consumption_data.filter(date__month=month)
+    if year:
+        consumption_data = consumption_data.filter(date__year=year)
+    
+    # Convert the queryset to a DataFrame
+    df = pd.DataFrame(list(consumption_data.values(
+        'date', 
+        'week', 
+        'itemID',  # Changed from itemName to match your model
+        'itemName', 
+        'consumption', 
+        'cost', 
+        'total'
+    )))
+    
+    # Create filename based on filters
+    filename_parts = []
+    if section_id:
+        section = Section.objects.filter(sectionID=section_id).first()
+        if section:
+            filename_parts.append(f"section_{section.sectionName}")
+    if month:
+        filename_parts.append(f"Month_{month}")
+    if year:
+        filename_parts.append(f"year_{year}")
+    
+    filename = "_".join(filename_parts) if filename_parts else "all_consumption"
+    filename += "_report.xlsx"
+    
+    # Create a temporary file to save the Excel file
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp_file:
+        temp_file_path = tmp_file.name
+        with pd.ExcelWriter(temp_file_path, engine='openpyxl') as writer:
+            df.to_excel(writer, index=False, sheet_name='Monthly Consumption')
+    
+    # Serve the file for download
+    response = FileResponse(open(temp_file_path, 'rb'), as_attachment=True, filename=filename)
+    
+    # Clean up the temporary file after serving
+    response['Cleanup-Temp-File'] = temp_file_path  # Custom header for cleanup
+    return response
+
 # @csrf_exempt  # Remove in production; use proper authentication
 # def xlsm_to_json(request):
 #     if request.method == "POST" and request.FILES.get("file"):
@@ -800,6 +857,7 @@ from django.views.decorators.csrf import csrf_exempt
 import os
 import logging
 from ims.utils import generate_reports_doc
+import tempfile
 
 logger = logging.getLogger(__name__)
 

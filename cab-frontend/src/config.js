@@ -30,7 +30,7 @@ export const API_ENDPOINTS = {
 
     //Monthly Consumption Endpoint
     MONTHLY_CONSUMPTION: `${BASE_URL}ims/monthly-consumption/`,
-    MONTHLY_CONSUMPTION_TOTAL: `${BASE_URL}ims/monthly-consumption-total/`,
+    EXPORT_CONSUMPTION: `${BASE_URL}ims/export-consumption/`,
 
     // Transaction Endpoints (Considering transaction details and products as one)
     TRANSACTION_LIST: `${BASE_URL}ims/transaction-detail/`,

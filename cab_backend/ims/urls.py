@@ -48,6 +48,7 @@ urlpatterns = [
     path('transaction-product/delete/<int:detailID>/<int:id>/', views.transaction_product_delete, name='delete-transaction-product'),
 
     path('monthly-consumption/', views.get_monthly_consumption, name="get-monthly-consumption"),
+    path('export-consumption/', views.export_consumption_to_excel, name="export_consumption_to_excel"),
 
     path('download-report/<int:year>/<int:month>/', views.download_report_doc, name='download-report'),
     

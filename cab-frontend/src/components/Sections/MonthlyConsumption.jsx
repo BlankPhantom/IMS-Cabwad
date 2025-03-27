@@ -196,7 +196,38 @@ const MonthlyConsumption = () => {
 
     return pageNumbers;
   };
-
+  const handleExportReports = async () => {
+    const token = localStorage.getItem("access_token")
+    const queryParams = new URLSearchParams({
+      sectionID: selectedSection,
+      month: selectedMonth + 1, // Add 1 to convert from 0-indexed to 1-indexed
+      year: selectedYear,
+    });
+    try {
+      if(!token){
+        alert("Authorization token is missing. Please log in again.");
+        return;
+      }
+      const response = await fetch(`${API_ENDPOINTS.EXPORT_CONSUMPTION}?${queryParams}`, {
+        method: "GET",
+        headers: {
+          'Authorization': `Token ${token}`,
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const blob = await response.blob();
+      const section_name = sections.find(section => section.sectionID === Number(selectedSection))?.sectionName || "All Sections";
+      const filename = `${section_name} Consumption on ${selectedYear}-${selectedMonth+1}`;
+      saveAs(blob, filename);
+    } catch(e){
+      console.error("Error fetching monthly consumption:", e);
+      setError("Failed to load monthly consumption data.");
+    }
+  }
+  
   const handleGenerateReports = async () => {
     try {
       setConversionProgress(true); // Start progress
@@ -300,6 +331,14 @@ const MonthlyConsumption = () => {
               </option>
             ))}
           </Form.Select>
+          <Button
+            variant="primary"
+            onClick={handleExportReports}
+            disabled={conversionProgress}
+            style={{width: '175px', height: '31px', padding: '0px', borderRadius: '4px', border: '.5px solid rgb(212, 212, 212)', marginLeft: '10px'}}
+          >
+            {conversionProgress ? "Generating Report..." : "Export Monthly Report"}
+          </Button>
         </Col>
 
         <Col className="d-flex justify-content-end">
