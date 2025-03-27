@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import "../table.css";
 import { API_ENDPOINTS } from "../../config.js";
 import { Container, Table, Col, Row, Pagination, Modal, Button } from "react-bootstrap";
@@ -8,10 +8,11 @@ import EditMasterModal from "../Modals/EditMasterModal.jsx";
 
 const Masterlist = () => {
     const [items, setItems] = useState([]);
-    const [currentItems, setCurrentItems] = useState([]);
+    const [filteredItems, setFilteredItems] = useState([]);
     const [classifications, setClassifications] = useState([]);
     const [measurements, setMeasurements] = useState([]);
     const [showModal, setShowModal] = useState(false);
+    const [currentItem, setCurrentItem] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
@@ -19,43 +20,7 @@ const Masterlist = () => {
     const [itemToDelete, setItemToDelete] = useState(null);
     // Pagination states
     const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const [totalItems, setTotalItems] = useState(0);
     const [itemsPerPage] = useState(20);
-
-    const fetchItems = async (page = 1) => {
-        setLoading(true);
-        const token = localStorage.getItem('access_token');
-
-        try {
-            const response = await fetch(`${API_ENDPOINTS.ITEM_LIST}?page=${page}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`,
-                },
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                
-                // DRF Pagination structure
-                setItems(data.results);
-                setCurrentItems(data.results);
-                setTotalPages(Math.ceil(data.count / itemsPerPage));
-                setTotalItems(data.count);
-                setCurrentPage(page);
-            } else {
-                console.error('Failed to fetch items');
-                setError("Failed to load items data.");
-            }
-        } catch (error) {
-            console.error('Error fetching items:', error);
-            setError("Failed to load items data.");
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const fetchClassifications = async () => {
         const token = localStorage.getItem('access_token');
@@ -104,27 +69,59 @@ const Masterlist = () => {
         }
     }
 
-     // Search handler 
-     const handleSearchChange = (e) => {
+    useEffect(() => {
+        fetchClassifications();
+        fetchMeasurements();
+    }, []);
+
+    // fetch items with token
+    const fetchItems = async () => {
+        setLoading(true);
+        const token = localStorage.getItem('access_token');
+
+        try {
+            const response = await fetch(API_ENDPOINTS.ITEM_LIST, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Token ${token}`,
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setItems(data);
+                setFilteredItems(data);
+            } else {
+                console.error('Failed to fetch items');
+                setError("Failed to load items data.");
+            }
+        } catch (error) {
+            console.error('Error fetching items:', error);
+            setError("Failed to load items data.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchItems();
+    }, []);
+
+    // Search handler
+    const handleSearchChange = (e) => {
         const term = e.target.value;
         setSearchTerm(term);
 
-        if (!term) {
-            // Reset to first page of all items
-            fetchItems(1);
-            return;
-        }
-
-        // Filter items locally 
+        // Filter items based on search term
         const filtered = items.filter((item) =>
-            (item.itemID && item.itemID.toLowerCase().includes(term.toLowerCase())) ||
-            (item.itemName && item.itemName.toLowerCase().includes(term.toLowerCase())) ||
-            (item.classificationName && item.classificationName.toLowerCase().includes(term.toLowerCase()))
+            item.itemID.toLowerCase().includes(term.toLowerCase()) ||
+            item.itemName.toLowerCase().includes(term.toLowerCase()) ||
+            item.classificationName.toLowerCase().includes(term.toLowerCase())
         );
 
-        setCurrentItems(filtered);
-        setCurrentPage(1);
-        setTotalPages(Math.ceil(filtered.length / itemsPerPage));
+        setFilteredItems(filtered);
+        setCurrentPage(1); // Reset to first page when searching
     };
 
     const handleDelete = (id) => {
@@ -154,7 +151,7 @@ const Masterlist = () => {
                 throw new Error("Failed to delete item");
             }
             fetchItems();
-            setCurrentItems(null);
+            setCurrentItem(null);
         } catch (e) {
             console.error("Error deleting item:", e);
             window.alert('Failed to delete item.');
@@ -164,14 +161,14 @@ const Masterlist = () => {
     const handleEdit = (id) => {
         const item = items.find(item => item.itemID === id);
         if (item) {
-            setCurrentItems(item);
+            setCurrentItem(item);
             setShowModal(true);
         }
     };
 
     const handleCloseModal = () => {
         setShowModal(false);
-        setCurrentItems(null);
+        setCurrentItem(null);
     };
 
     const handleSaveChanges = async (updatedItemData) => {
@@ -198,86 +195,98 @@ const Masterlist = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setCurrentItems(prevState => ({
+        setCurrentItem(prevState => ({
             ...prevState,
             [name]: name === 'classificationID' || name === 'measurementID' ? parseInt(value, 10) : value,
         }));
     };
 
-    useEffect(() => {
-        fetchItems();
-        fetchClassifications();
-        fetchMeasurements();
-    }, []); 
+    // Pagination logic
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
 
-    const paginate = (pageNumber) => {
-        if (pageNumber >= 1 && pageNumber <= totalPages) {
-            fetchItems(pageNumber);
-        }
-    };
+    const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
 
-    // Render pagination items
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+    // Generate pagination items
     const renderPaginationItems = () => {
-        const pageNumbers = [];
-        const totalPagesToShow = 5;
-        let startPage, endPage;
+        const items = [];
 
-        if (totalPages <= totalPagesToShow) {
-            startPage = 1;
-            endPage = totalPages;
-        } else {
-            if (currentPage <= Math.ceil(totalPagesToShow / 2)) {
-                startPage = 1;
-                endPage = totalPagesToShow;
-            } else if (currentPage + Math.floor(totalPagesToShow / 2) >= totalPages) {
-                startPage = totalPages - totalPagesToShow + 1;
-                endPage = totalPages;
-            } else {
-                startPage = currentPage - Math.floor(totalPagesToShow / 2);
-                endPage = currentPage + Math.floor(totalPagesToShow / 2);
-            }
-        }
+        // Previous button
+        items.push(
+            <Pagination.First
+                key="first"
+                onClick={() => paginate(1)}
+                disabled={currentPage === 1}
+            />
+        );
 
-        // First page button
-        if (startPage > 1) {
-            pageNumbers.push(
-                <Pagination.Item key="first" onClick={() => paginate(1)}>
+        items.push(
+            <Pagination.Prev
+                key="prev"
+                onClick={() => currentPage > 1 && paginate(currentPage - 1)}
+                disabled={currentPage === 1}
+            />
+        );
+
+        // Show first page
+        if (currentPage > 2) {
+            items.push(
+                <Pagination.Item key={1} onClick={() => paginate(1)}>
                     1
                 </Pagination.Item>
             );
-            if (startPage > 2) {
-                pageNumbers.push(<Pagination.Ellipsis key="first-ellipsis" />);
+
+            // Show ellipsis if needed
+            if (currentPage > 3) {
+                items.push(<Pagination.Ellipsis key="ellipsis1" disabled />);
             }
         }
 
-        // Page number buttons
-        for (let i = startPage; i <= endPage; i++) {
-            pageNumbers.push(
-                <Pagination.Item 
-                    key={i} 
-                    active={i === currentPage}
-                    onClick={() => paginate(i)}
-                >
+        // Current page and neighbors
+        for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) {
+            items.push(
+                <Pagination.Item key={i} active={i === currentPage} onClick={() => paginate(i)}>
                     {i}
                 </Pagination.Item>
             );
         }
 
-        // Last page button
-        if (endPage < totalPages) {
-            if (endPage < totalPages - 1) {
-                pageNumbers.push(<Pagination.Ellipsis key="last-ellipsis" />);
+        // Show ellipsis and last page if needed
+        if (currentPage < totalPages - 1) {
+            if (currentPage < totalPages - 2) {
+                items.push(<Pagination.Ellipsis key="ellipsis2" disabled />);
             }
-            pageNumbers.push(
-                <Pagination.Item key="last" onClick={() => paginate(totalPages)}>
+
+            items.push(
+                <Pagination.Item key={totalPages} onClick={() => paginate(totalPages)}>
                     {totalPages}
                 </Pagination.Item>
             );
         }
 
-        return pageNumbers;
+        // Next button
+        items.push(
+            <Pagination.Next
+                key="next"
+                onClick={() => currentPage < totalPages && paginate(currentPage + 1)}
+                disabled={currentPage === totalPages}
+            />
+        );
+
+        items.push(
+            <Pagination.Last
+                key="last"
+                onClick={() => paginate(totalPages)}
+                disabled={currentPage === totalPages}
+            />
+        );
+
+        return items;
     };
-    
+
 
     return (
         <Container style={{ width: '100%' }} fluid className="d-flex flex-column justify-content-center mt-2">
@@ -299,7 +308,6 @@ const Masterlist = () => {
                 </Col>
             </Row>
 
-            {/* Table */}
             <Row>
                 <Table responsive bordered striped hover className="tableStyle mt-3">
                     <thead>
@@ -313,9 +321,7 @@ const Masterlist = () => {
                     <tbody>
                         {loading ? (
                             <tr>
-                                <td colSpan="4" className="text-center">
-                                    Loading more items...
-                                </td>
+                                <td colSpan="4" className="text-center">Loading data...</td>
                             </tr>
                         ) : error ? (
                             <tr>
@@ -337,7 +343,7 @@ const Masterlist = () => {
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="4">No items found</td>
+                                <td colSpan="4" className="text-center">No items found</td>
                             </tr>
                         )}
                     </tbody>
@@ -345,30 +351,10 @@ const Masterlist = () => {
             </Row>
 
             {/* Pagination */}
-            {!loading && !error && totalPages > 1 && (
+            {!loading && !error && filteredItems.length > 0 && (
                 <Row>
                     <Col className="d-flex justify-content-center mt-3">
-                        <Pagination>
-                            <Pagination.First 
-                                onClick={() => paginate(1)} 
-                                disabled={currentPage === 1} 
-                            />
-                            <Pagination.Prev 
-                                onClick={() => paginate(currentPage - 1)} 
-                                disabled={currentPage === 1} 
-                            />
-                            
-                            {renderPaginationItems()}
-
-                            <Pagination.Next 
-                                onClick={() => paginate(currentPage + 1)} 
-                                disabled={currentPage === totalPages} 
-                            />
-                            <Pagination.Last 
-                                onClick={() => paginate(totalPages)} 
-                                disabled={currentPage === totalPages} 
-                            />
-                        </Pagination>
+                        <Pagination>{renderPaginationItems()}</Pagination>
                     </Col>
                 </Row>
             )}
@@ -412,7 +398,7 @@ const Masterlist = () => {
             <EditMasterModal
                 show={showModal}
                 handleClose={handleCloseModal}
-                itemData={currentItems}
+                itemData={currentItem}
                 handleInputChange={handleChange}
                 handleSave={handleSaveChanges}
                 classifications={classifications}

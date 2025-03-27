@@ -6,7 +6,7 @@ import MonthYearPicker from "../MonthYearPicker";
 
 const BeginningBalance = () => {
     const [items, setItems] = useState([]);
-    const [currentItems, setCurrentItems] = useState([]);
+    const [filteredItems, setFilteredItems] = useState([]);
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [loading, setLoading] = useState(true);
@@ -15,85 +15,72 @@ const BeginningBalance = () => {
 
     // Pagination states
     const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const [totalItems, setTotalItems] = useState(0);
     const [itemsPerPage] = useState(20);
 
-    // Search functionality
-    const fetchItems = async (page = 1) => {
+    // Fetch Beginning Balance Data with Token
+    const fetchBeginningBalance = async () => {
         const token = localStorage.getItem("access_token");
-        setLoading(true);
-
         try {
+            let response;
+        
+           
+            // Fetch data for specific month and year
             const queryParams = new URLSearchParams({
-                month: selectedMonth + 1,
+                month: selectedMonth + 1 , 
                 year: selectedYear,
-                page,
             });
-
-            const response = await fetch(`${API_ENDPOINTS.BEGINNING_BAL_LIST}?${queryParams}`, {
+            response = await fetch(`${API_ENDPOINTS.BEGINNING_BAL_LIST}?${queryParams}`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Token ${token}`,
                 },
             });
+            
 
             if (!response.ok) {
                 throw new Error("Failed to fetch beginning balance data");
             }
 
             const data = await response.json();
-
-            // If no data exists, create new entries
-            if (data.results.length === 0) {
-                await fetch(API_ENDPOINTS.BEGINNING_BAL_CREATE, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        'Authorization': `Token ${token}`,
-                    },
-                });
-
-                // Refetch after creating
-                const recreatedResponse = await fetch(`${API_ENDPOINTS.BEGINNING_BAL_LIST}?${queryParams}`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Token ${token}`,
-                    },
-                });
-
-                const recreatedData = await recreatedResponse.json();
-                updateItemsState(recreatedData, page);
-            } else {
-                updateItemsState(data, page);
-            }
-        } catch (error) {
-            console.error("Error in fetch items:", error);
+            setItems(data);
+            setFilteredItems(data);
+            setCurrentPage(1); // Reset to first page when new data is loaded
+        } catch (e) {
+            console.error("Error fetching beginning balance:", e);
             setError("Failed to load beginning balance data.");
         } finally {
             setLoading(false);
         }
     };
 
-    const updateItemsState = (data, page) => {
-        setItems(data.results);
-        setCurrentItems(data.results);
-        setTotalPages(Math.ceil(data.count / itemsPerPage));
-        setTotalItems(data.count);
-        setCurrentPage(page);
+    // Create Beginning Balance
+    const createBeginningBal = async () => {
+        const token = localStorage.getItem("access_token");
+        if (!token) {
+            console.error("Authorization token is missing.");
+            alert("Authorization token is missing. Please log in again.");
+            return;
+        }
+        try {
+            await fetch(API_ENDPOINTS.BEGINNING_BAL_CREATE, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Token ${token}`,
+                },
+            });
+            fetchBeginningBalance();
+        } catch (e) {
+            console.error("Error creating beginning balance:", e);
+            setError("Failed to create beginning balance data.");
+        }
     };
-    
+
+    // Search functionality
     const handleSearch = (event) => {
         const term = event.target.value.toLowerCase();
         setSearchTerm(term);
-
-        if (!term) {
-            // Reset to first page of all items
-            fetchItems(1);
-            return;
-        }
 
         const filtered = items.filter(item =>
             item.itemID.toString().toLowerCase().includes(term) ||
@@ -101,89 +88,120 @@ const BeginningBalance = () => {
             item.measureName.measureName.toLowerCase().includes(term)
         );
 
-        setCurrentItems(filtered);
+        setFilteredItems(filtered);
         setCurrentPage(1); // Reset to first page when search filter changes
-        setTotalPages(Math.ceil(filtered.length / itemsPerPage));
     };
 
     // Month and Year change handler
     const handleMonthYearChange = (month, year) => {
         setLoading(true);
-
         setSelectedMonth(month);
         setSelectedYear(year);
     };
 
-    const paginate = (pageNumber) => {
-        if (pageNumber >= 1 && pageNumber <= totalPages) {
-            fetchItems(pageNumber);
-        }
+    // Pagination handler
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
     };
 
-    // Render pagination items
-    const renderPaginationItems = () => {
-        const pageNumbers = [];
-        const totalPagesToShow = 5;
-        let startPage, endPage;
+    // Get current items for the current page
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
 
-        if (totalPages <= totalPagesToShow) {
-            startPage = 1;
-            endPage = totalPages;
-        } else {
-            if (currentPage <= Math.ceil(totalPagesToShow / 2)) {
-                startPage = 1;
-                endPage = totalPagesToShow;
-            } else if (currentPage + Math.floor(totalPagesToShow / 2) >= totalPages) {
-                startPage = totalPages - totalPagesToShow + 1;
-                endPage = totalPages;
-            } else {
-                startPage = currentPage - Math.floor(totalPagesToShow / 2);
-                endPage = currentPage + Math.floor(totalPagesToShow / 2);
-            }
-        }
+    // Calculate total pages
+    const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
 
-        // First page button
-        if (startPage > 1) {
-            pageNumbers.push(
-                <Pagination.Item key="first" onClick={() => paginate(1)}>
-                    1
-                </Pagination.Item>
-            );
-            if (startPage > 2) {
-                pageNumbers.push(<Pagination.Ellipsis key="first-ellipsis" />);
-            }
-        }
-
-        // Page number buttons
-        for (let i = startPage; i <= endPage; i++) {
-            pageNumbers.push(
-                <Pagination.Item 
-                    key={i} 
-                    active={i === currentPage}
-                    onClick={() => paginate(i)}
-                >
-                    {i}
-                </Pagination.Item>
-            );
-        }
-
-        // Last page button
-        if (endPage < totalPages) {
-            if (endPage < totalPages - 1) {
-                pageNumbers.push(<Pagination.Ellipsis key="last-ellipsis" />);
-            }
-            pageNumbers.push(
-                <Pagination.Item key="last" onClick={() => paginate(totalPages)}>
-                    {totalPages}
-                </Pagination.Item>
-            );
-        }
-
-        return pageNumbers;
-    };
+    // Generate page numbers
+    const pageNumbers = [];
+    for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(i);
+    }
 
     useEffect(() => {
-        fetchItems(currentPage);
+        // Use a flag to track if we're currently fetching/creating
+        let isMounted = true;
+        let isProcessing = false;
+        
+        const fetchAndCreateIfNeeded = async () => {
+            if (isProcessing) return;
+            isProcessing = true;
+            
+            const token = localStorage.getItem("access_token");
+            try {
+                // First, check if data exists for this month/year
+                const queryParams = new URLSearchParams({
+                    month: selectedMonth + 1,
+                    year: selectedYear,
+                });
+                
+                const checkResponse = await fetch(`${API_ENDPOINTS.BEGINNING_BAL_LIST}?${queryParams}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Token ${token}`,
+                    },
+                });
+                
+                if (!checkResponse.ok) {
+                    throw new Error("Failed to check beginning balance data");
+                }
+                
+                const existingData = await checkResponse.json();
+                
+                // Only create if no data exists AND component is still mounted
+                if (existingData.length === 0 && isMounted) {
+                    console.log("No data found for selected month/year. Creating new entries...");
+                    
+                    await fetch(API_ENDPOINTS.BEGINNING_BAL_CREATE, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Token ${token}`,
+                        },
+                    });
+                }
+                
+                // Only fetch final data if component is still mounted
+                if (isMounted) {
+                    // Fetch the updated data
+                    const finalResponse = await fetch(`${API_ENDPOINTS.BEGINNING_BAL_LIST}?${queryParams}`, {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Token ${token}`,
+                        },
+                    });
+                    
+                    if (!finalResponse.ok) {
+                        throw new Error("Failed to fetch updated beginning balance data");
+                    }
+                    
+                    const finalData = await finalResponse.json();
+                    setItems(finalData);
+                    setFilteredItems(finalData);
+                    setCurrentPage(1);
+                }
+                
+            } catch (e) {
+                console.error("Error in fetch and create flow:", e);
+                if (isMounted) {
+                    setError("Failed to initialize beginning balance data.");
+                }
+            } finally {
+                isProcessing = false;
+                if (isMounted) {
+                    setLoading(false);
+                }
+            }
+        };
+        
+        fetchAndCreateIfNeeded();
+        
+        // Cleanup function to prevent state updates if component unmounts
+        return () => {
+            isMounted = false;
+        };
     }, [selectedMonth, selectedYear]);
 
     const formatCurrency = (value) => {
@@ -261,34 +279,57 @@ const BeginningBalance = () => {
             </Row>
 
             {/* Pagination */}
-            {!loading && !error && totalPages > 1 && (
+            {!loading && !error && filteredItems.length > 0 && (
                 <Row>
                     <Col className="d-flex justify-content-center mt-3">
                         <Pagination>
-                            <Pagination.First 
-                                onClick={() => paginate(1)} 
-                                disabled={currentPage === 1} 
+                            <Pagination.First
+                                onClick={() => handlePageChange(1)}
+                                disabled={currentPage === 1}
                             />
-                            <Pagination.Prev 
-                                onClick={() => paginate(currentPage - 1)} 
-                                disabled={currentPage === 1} 
+                            <Pagination.Prev
+                                onClick={() => handlePageChange(currentPage - 1)}
+                                disabled={currentPage === 1}
                             />
-                            
-                            {renderPaginationItems()}
 
-                            <Pagination.Next 
-                                onClick={() => paginate(currentPage + 1)} 
-                                disabled={currentPage === totalPages} 
+                            {/* Display page numbers */}
+                            {pageNumbers.map(number => {
+                                // Show 5 pages around current page
+                                if (
+                                    number === 1 ||
+                                    number === totalPages ||
+                                    (number >= currentPage - 2 && number <= currentPage + 2)
+                                ) {
+                                    return (
+                                        <Pagination.Item
+                                            key={number}
+                                            active={number === currentPage}
+                                            onClick={() => handlePageChange(number)}
+                                        >
+                                            {number}
+                                        </Pagination.Item>
+                                    );
+                                } else if (
+                                    number === currentPage - 3 ||
+                                    number === currentPage + 3
+                                ) {
+                                    return <Pagination.Ellipsis key={number} />;
+                                }
+                                return null;
+                            })}
+
+                            <Pagination.Next
+                                onClick={() => handlePageChange(currentPage + 1)}
+                                disabled={currentPage === totalPages}
                             />
-                            <Pagination.Last 
-                                onClick={() => paginate(totalPages)} 
-                                disabled={currentPage === totalPages} 
+                            <Pagination.Last
+                                onClick={() => handlePageChange(totalPages)}
+                                disabled={currentPage === totalPages}
                             />
                         </Pagination>
                     </Col>
                 </Row>
-            )} 
-             
+            )}
         </Container>
     );
 };

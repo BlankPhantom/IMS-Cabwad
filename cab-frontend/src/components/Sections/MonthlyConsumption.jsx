@@ -1,14 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../table.css";
-import {
-  Container,
-  Table,
-  Col,
-  Row,
-  Form,
-  Button,
-  Pagination,
-} from "react-bootstrap";
+import { Container, Table, Col, Row, Form, Button, Pagination } from "react-bootstrap";
 import MonthYearPicker from "../MonthYearPicker";
 import { API_ENDPOINTS } from "../../config";
 import { saveAs } from "file-saver";
@@ -19,7 +11,7 @@ const MonthlyConsumption = () => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [sections, setSections] = useState([]);
   const [consumptionData, setConsumptionData] = useState([]);
-  const [currentItems, setCurrentItems] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -27,8 +19,6 @@ const MonthlyConsumption = () => {
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
   const [itemsPerPage] = useState(20);
 
   useEffect(() => {
@@ -44,16 +34,14 @@ const MonthlyConsumption = () => {
   useEffect(() => {
     if (searchTerm) {
       const lowercasedTerm = searchTerm.toLowerCase();
-      const filtered = consumptionData.filter((item) =>
-        Object.values(item).some((value) =>
+      const filtered = consumptionData.filter(item =>
+        Object.values(item).some(value =>
           String(value).toLowerCase().includes(lowercasedTerm)
         )
       );
-      setCurrentItems(filtered);
-      setTotalPages(Math.ceil(filtered.length / itemsPerPage));
+      setFilteredData(filtered);
     } else {
-      setCurrentItems(consumptionData);
-      setTotalPages(Math.ceil(consumptionData.length / itemsPerPage));
+      setFilteredData(consumptionData);
     }
     setCurrentPage(1); // Reset to first page when search filter changes
   }, [searchTerm, consumptionData]);
@@ -72,7 +60,7 @@ const MonthlyConsumption = () => {
     }
   };
 
-  const fetchMonthlyConsumption = async (page = 1) => {
+  const fetchMonthlyConsumption = async () => {
     setLoading(true);
     setError(null);
     try {
@@ -80,7 +68,6 @@ const MonthlyConsumption = () => {
         month: selectedMonth + 1, // Add 1 to convert from 0-indexed to 1-indexed
         year: selectedYear,
         sectionID: selectedSection,
-        page,
       });
 
       const response = await fetch(
@@ -90,13 +77,9 @@ const MonthlyConsumption = () => {
         throw new Error("Failed to fetch monthly consumption data.");
       }
       const data = await response.json();
-      // DRF Pagination structure
-      setConsumptionData(data.results);
-      setCurrentItems(data.results);
-      setTotalPages(Math.ceil(data.count / itemsPerPage));
-      setTotalItems(data.count);
-      setCurrentPage(page);
-      updateMonthlyState(data, page);
+      setConsumptionData(data);
+      
+      setCurrentPage(1); // Reset to first page when new data is loaded
     } catch (error) {
       console.error("Error fetching monthly consumption:", error);
       setError("Failed to load monthly consumption data.");
@@ -104,14 +87,6 @@ const MonthlyConsumption = () => {
       setLoading(false);
     }
   };
-
-  const updateMonthlyState = (data, page) => {
-    setConsumptionData(data.results);
-    setCurrentItems(data.results);
-    setTotalPages(Math.ceil(data.count / itemsPerPage));
-    setTotalItems(data.count);
-    setCurrentPage(page);
-};
 
   // Handle Section Change
   const handleSectionChange = (event) => {
@@ -129,73 +104,24 @@ const MonthlyConsumption = () => {
     setSearchTerm(event.target.value);
   };
 
-  // pagination
-  const paginate = (pageNumber) => {
-    if (pageNumber >= 1 && pageNumber <= totalPages) {
-      fetchRunningBalance(pageNumber);
-    }
+  // Pagination handler
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
-  // Render pagination items
-  const renderPaginationItems = () => {
-    const pageNumbers = [];
-    const totalPagesToShow = 5;
-    let startPage, endPage;
+  // Get current items for the current page
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
 
-    if (totalPages <= totalPagesToShow) {
-      startPage = 1;
-      endPage = totalPages;
-    } else {
-      if (currentPage <= Math.ceil(totalPagesToShow / 2)) {
-        startPage = 1;
-        endPage = totalPagesToShow;
-      } else if (currentPage + Math.floor(totalPagesToShow / 2) >= totalPages) {
-        startPage = totalPages - totalPagesToShow + 1;
-        endPage = totalPages;
-      } else {
-        startPage = currentPage - Math.floor(totalPagesToShow / 2);
-        endPage = currentPage + Math.floor(totalPagesToShow / 2);
-      }
-    }
+  // Calculate total pages
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
-    // First page button
-    if (startPage > 1) {
-      pageNumbers.push(
-        <Pagination.Item key="first" onClick={() => paginate(1)}>
-          1
-        </Pagination.Item>
-      );
-      if (startPage > 2) {
-        pageNumbers.push(<Pagination.Ellipsis key="first-ellipsis" />);
-      }
-    }
-
-    // Page number buttons
-    for (let i = startPage; i <= endPage; i++) {
-      pageNumbers.push(
-        <Pagination.Item
-          key={i}
-          active={i === currentPage}
-          onClick={() => paginate(i)}>
-          {i}
-        </Pagination.Item>
-      );
-    }
-
-    // Last page button
-    if (endPage < totalPages) {
-      if (endPage < totalPages - 1) {
-        pageNumbers.push(<Pagination.Ellipsis key="last-ellipsis" />);
-      }
-      pageNumbers.push(
-        <Pagination.Item key="last" onClick={() => paginate(totalPages)}>
-          {totalPages}
-        </Pagination.Item>
-      );
-    }
-
-    return pageNumbers;
-  };
+  // Generate page numbers
+  const pageNumbers = [];
+  for (let i = 1; i <= totalPages; i++) {
+    pageNumbers.push(i);
+  }
 
   const handleGenerateReports = async () => {
     try {
@@ -209,7 +135,7 @@ const MonthlyConsumption = () => {
 
       // Fetch the report from API (modify endpoint based on file type)
       const response = await fetch(
-        API_ENDPOINTS.DOWNLOAD_REPORTS(selectedYear, selectedMonth+1, "docx"),
+        API_ENDPOINTS.DOWNLOAD_REPORTS(selectedYear, selectedMonth, "docx"),
         {
           method: "GET",
           headers: {
@@ -226,7 +152,7 @@ const MonthlyConsumption = () => {
       const blob = await response.blob();
 
       // Determine file name & extension
-      const fileName = `Monthly_Report_${selectedYear}_${selectedMonth+1}.docx`;
+      const fileName = `Monthly_Report_${selectedYear}_${selectedMonth}.docx`;
 
       // Save the file
       saveAs(blob, fileName);
@@ -239,14 +165,12 @@ const MonthlyConsumption = () => {
       setConversionProgress(false); // End progress
     }
   };
-
   const formatCurrency = (value) => {
-    return `₱${parseFloat(value).toLocaleString("en-PH", {
+    return `₱${parseFloat(value).toLocaleString('en-PH', {
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
+      maximumFractionDigits: 2
     })}`;
   };
-
   return (
     <Container
       style={{ width: "100%" }}
@@ -294,13 +218,8 @@ const MonthlyConsumption = () => {
 
       <Row>
         <Col className="d-flex justify-content-center mt-3">
-          <Button
-            className="shadow"
-            onClick={handleGenerateReports}
-            disabled={conversionProgress}>
-            {conversionProgress
-              ? "Generating Report..."
-              : "GENERATE MONTHLY REPORT"}
+          <Button className="shadow" onClick={handleGenerateReports} disabled={conversionProgress}>
+            {conversionProgress ? "Generating Report..." : "GENERATE MONTHLY REPORT"}
           </Button>
         </Col>
       </Row>
@@ -309,14 +228,14 @@ const MonthlyConsumption = () => {
         <>
           <Row>
             <Col className="d-flex justify-content-center mt-3">
-              <div className="spinner-border text-primary" role="status"></div>
+              <div
+                className="spinner-border text-primary" role="status">
+              </div>
             </Col>
           </Row>
           <Row>
             <Col className="d-flex justify-content-center">
-              <span className="text-muted">
-                Generating report, please wait...
-              </span>
+              <span className="text-muted">Generating report, please wait...</span>
             </Col>
           </Row>
         </>
@@ -374,27 +293,51 @@ const MonthlyConsumption = () => {
       </Row>
 
       {/* Pagination */}
-      {!loading && !error && totalPages > 1 && (
+      {!loading && !error && filteredData.length > 0 && (
         <Row>
           <Col className="d-flex justify-content-center mt-3">
             <Pagination>
               <Pagination.First
-                onClick={() => paginate(1)}
+                onClick={() => handlePageChange(1)}
                 disabled={currentPage === 1}
               />
               <Pagination.Prev
-                onClick={() => paginate(currentPage - 1)}
+                onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
               />
 
-              {renderPaginationItems()}
+              {/* Display page numbers */}
+              {pageNumbers.map(number => {
+                // Show 5 pages around current page
+                if (
+                  number === 1 ||
+                  number === totalPages ||
+                  (number >= currentPage - 2 && number <= currentPage + 2)
+                ) {
+                  return (
+                    <Pagination.Item
+                      key={number}
+                      active={number === currentPage}
+                      onClick={() => handlePageChange(number)}
+                    >
+                      {number}
+                    </Pagination.Item>
+                  );
+                } else if (
+                  number === currentPage - 3 ||
+                  number === currentPage + 3
+                ) {
+                  return <Pagination.Ellipsis key={number} />;
+                }
+                return null;
+              })}
 
               <Pagination.Next
-                onClick={() => paginate(currentPage + 1)}
+                onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
               />
               <Pagination.Last
-                onClick={() => paginate(totalPages)}
+                onClick={() => handlePageChange(totalPages)}
                 disabled={currentPage === totalPages}
               />
             </Pagination>
