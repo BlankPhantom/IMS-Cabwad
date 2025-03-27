@@ -8,6 +8,7 @@ django-cors-headers
 django-seed
 cryptography
 docx2pdf
+openpyxl
 python-docx
 pandas
 mysql-connector-python
