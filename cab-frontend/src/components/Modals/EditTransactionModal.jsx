@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Form, Button, Row, Col, Alert, Spinner } from 'react-bootstrap';
+import { Modal, Form, Button, Row, Col, Alert } from 'react-bootstrap';
 import { API_ENDPOINTS } from "../../config";
 import { faPenToSquare, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -13,10 +13,6 @@ const EditTransactionModal = ({
     handleShow,
     onSuccess,
 }) => {
-    const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
-    const [productToDelete, setProductToDelete] = useState(null);
-    const [isEditing, setIsEditing] = useState(false);
-    const [isSubmitting, setIsSubmitting] = useState(false);
     const [editProductData, setEditProductData] = useState({});
     const [showEditProductModal, setShowEditProductModal] = useState(false);
     const [editProductIndex, setEditProductIndex] = useState(null);
@@ -146,16 +142,6 @@ const EditTransactionModal = ({
         } catch (error) {
             console.error("Error fetching transaction products:", error);
         }
-    };
-
-    const handleShowConfirmDeleteModal = (product) => {
-        setProductToDelete(product);
-        setShowConfirmDeleteModal(true);
-    };
-
-    const handleCloseConfirmDeleteModal = () => {
-        setProductToDelete(null);
-        setShowConfirmDeleteModal(false);
     };
 
     const handleShowProductModal = () => {
@@ -291,9 +277,9 @@ const EditTransactionModal = ({
             returnedQuantity: "",
         }));
 
-        // Clear validation errors when changing transaction type
-        setValidationError('');
-        setEditValidationError('');
+         // Clear validation errors when changing transaction type
+         setValidationError('');
+         setEditValidationError('');
     };
 
     const handleProductSelect = (product) => {
@@ -367,11 +353,10 @@ const EditTransactionModal = ({
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setIsSubmitting(true); // Start loading
         try {
             const token = localStorage.getItem("access_token");
 
-            // Step 1: Update the transaction details
+            // ✅ Step 1: Update the transaction details
             const transactionResponse = await fetch(API_ENDPOINTS.UPDATE_TRANSACTION(transactionData.transactionDetailsID), {
                 method: "PUT",
                 headers: {
@@ -385,8 +370,10 @@ const EditTransactionModal = ({
 
             console.log("✅ Transaction updated successfully!");
 
-            // Step 2: Submit all newly added products
+            // ✅ Step 2: Submit all newly added products (only if localProducts is not empty)
             if (localProducts.length > 0) {
+                console.log("🛒 Adding new products:", localProducts);
+
                 const productRequests = localProducts.map(productData => {
                     const productPayload = {
                         transactionDetailsID: transactionData.transactionDetailsID,
@@ -413,22 +400,31 @@ const EditTransactionModal = ({
                     });
                 });
 
-                await Promise.allSettled(productRequests);
+                // ✅ Await all product requests
+                const results = await Promise.allSettled(productRequests);
+
+                results.forEach((result, index) => {
+                    if (result.status === "rejected") {
+                        console.error(`❌ Failed to add product ${localProducts[index].productName}:`, result.reason);
+                    } else {
+                        console.log(`✅ Product ${localProducts[index].productName} added successfully!`);
+                    }
+                });
             }
 
-            // Refresh transactions
+            // ✅ Step 3: Refresh transactions **before closing the modal**
+            setTransactions([]);  // ✅ Clear transactions before fetching new ones
+
             if (typeof onSuccess === 'function') {
-                await onSuccess();
+                await onSuccess(); // Wait for refresh to complete
             }
 
             setLocalProducts([]);
             handleClose();
-            window.location.reload();
+            window.location.reload(); 
         } catch (error) {
             console.error("❌ Error saving transaction:", error);
             alert("Failed to save changes. Please try again.");
-        } finally {
-            setIsSubmitting(false); // Stop loading
         }
     };
     const handleEditProduct = (index) => {
@@ -511,7 +507,6 @@ const EditTransactionModal = ({
 
     const handleSaveExistingProduct = async (e) => {
         e.preventDefault();
-        setIsEditing(true); // Start loading
         try {
             const token = localStorage.getItem("access_token");
 
@@ -558,13 +553,13 @@ const EditTransactionModal = ({
         } catch (error) {
             console.error("Error updating product:", error);
             alert(`Failed to update product: ${error.message}`);
-        } finally {
-            setIsEditing(false); // Stop loading
         }
     };
 
-    const handleDeleteExistingProduct = async () => {
-        if (!productToDelete) return;
+    const handleDeleteExistingProduct = async (product) => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this product?");
+
+        if (!confirmDelete) return;
 
         try {
             const token = localStorage.getItem("access_token");
@@ -572,12 +567,12 @@ const EditTransactionModal = ({
             const response = await fetch(
                 API_ENDPOINTS.DELETE_TRANSACTION_PRODUCT(
                     transactionData.transactionDetailsID,
-                    productToDelete.transactionProductID
+                    product.transactionProductID
                 ),
                 {
                     method: "DELETE",
                     headers: {
-                        Authorization: `Token ${token}`,
+                        "Authorization": `Token ${token}`,
                     },
                 }
             );
@@ -589,7 +584,6 @@ const EditTransactionModal = ({
 
             // Refresh transaction products after successful deletion
             await fetchProductsForTransaction(transactionData.transactionDetailsID);
-            handleCloseConfirmDeleteModal();
         } catch (error) {
             console.error("Error deleting product:", error);
             alert(`Failed to delete product: ${error.message}`);
@@ -711,7 +705,7 @@ const EditTransactionModal = ({
                                         </span>
                                         <span
                                             style={{ color: "red", cursor: "pointer" }}
-                                            onClick={() => handleShowConfirmDeleteModal(product)}
+                                            onClick={() => handleDeleteExistingProduct(product)}
                                         >
                                             <FontAwesomeIcon icon={faTrashAlt} />
                                         </span>
@@ -739,47 +733,15 @@ const EditTransactionModal = ({
                             </li>
                         ))}
                         <div className="d-flex justify-content-end gap-2 mt-3">
-                            <Button variant="danger" onClick={handleCloseEditTransactionModal} disabled={isSubmitting}>
+                            <Button variant="danger" onClick={() => { handleCloseEditTransactionModal() }}>
                                 Cancel
                             </Button>
-                            <Button type="submit" variant="primary" disabled={isSubmitting}>
-                                {isSubmitting ? (
-                                    <>
-                                        <Spinner
-                                            as="span"
-                                            animation="border"
-                                            size="sm"
-                                            role="status"
-                                            aria-hidden="true"
-                                            className="me-2"
-                                        />
-                                        Saving...
-                                    </>
-                                ) : (
-                                    "Save Changes"
-                                )}
+                            <Button type="submit" variant="primary">
+                                Save Changes
                             </Button>
                         </div>
                     </Form>
                 </Modal.Body>
-            </Modal>
-
-            <Modal show={showConfirmDeleteModal} onHide={handleCloseConfirmDeleteModal} centered>
-                <Modal.Header closeButton>
-                    <Modal.Title>Confirm Deletion</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    Are you sure you want to delete the product{" "}
-                    <strong>{productToDelete?.productName}</strong>?
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCloseConfirmDeleteModal}>
-                        Cancel
-                    </Button>
-                    <Button variant="danger" onClick={handleDeleteExistingProduct}>
-                        Delete
-                    </Button>
-                </Modal.Footer>
             </Modal>
 
             {/* ADD PRODUCT MODAL */}
@@ -894,7 +856,7 @@ const EditTransactionModal = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Cost</Form.Label>
-                            <Form.Control type="number" name="cost" value={productData.cost} onChange={handleProductChange} required min="0" step="0.01" />
+                            <Form.Control type="number" name="cost" value={productData.cost} onChange={handleProductChange} required  min="0" step="0.01" />
                         </Form.Group>
 
                         {validationError && (
@@ -1025,7 +987,7 @@ const EditTransactionModal = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Cost</Form.Label>
-                            <Form.Control type="number" name="cost" value={editProductData.cost} onChange={handleEditProductChange} min="0" step="0.01" />
+                            <Form.Control type="number" name="cost" value={editProductData.cost} onChange={handleEditProductChange} min="0" step="0.01"  />
                         </Form.Group>
 
                         {editValidationError && (
@@ -1155,7 +1117,7 @@ const EditTransactionModal = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label>Cost</Form.Label>
-                            <Form.Control type="number" name="cost" value={editProductData.cost || ""} onChange={handleEditProductChange} min="0" step="0.01" />
+                            <Form.Control type="number" name="cost" value={editProductData.cost || ""} onChange={handleEditProductChange}  min="0" step="0.01" />
                         </Form.Group>
 
                         {editValidationError && (
@@ -1164,37 +1126,11 @@ const EditTransactionModal = ({
                             </Alert>
                         )}
                         <div className="d-flex justify-content-end gap-2">
-                            <Button
-                                variant="danger"
-                                onClick={() => {
-                                    setShowEditExistingProductModal(false);
-                                    handleShow();
-                                    setEditValidationError('');
-                                }}
-                                disabled={isEditing}
-                            >
+                            <Button variant="danger" onClick={() => { setShowEditExistingProductModal(false); handleShow(); setEditValidationError(''); }}>
                                 Cancel
                             </Button>
-                            <Button
-                                type="submit"
-                                variant="primary"
-                                disabled={isEditing}
-                            >
-                                {isEditing ? (
-                                    <>
-                                        <Spinner
-                                            as="span"
-                                            animation="border"
-                                            size="sm"
-                                            role="status"
-                                            aria-hidden="true"
-                                            className="me-2"
-                                        />
-                                        Saving...
-                                    </>
-                                ) : (
-                                    "Save Changes"
-                                )}
+                            <Button type="submit" onClick={() => { handleShow(); setShowEditExistingProductModal(false); }} variant="primary">
+                                Save Changes
                             </Button>
                         </div>
                     </Form>

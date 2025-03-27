@@ -35,7 +35,16 @@ const SideNavB = () => {
                         );
                     })}
                 </Nav>
-                
+
+                <Nav className="mt-auto p-3">
+                    <Nav.Link style={{ fontWeight: "400"}}
+                        as={Link}
+                        to="/dashboardB/backup-restore"
+                        className={`nav-link-custom ${location.pathname === "/dashboardB/backup-restore" ? 'active-link' : 'text-white'}`}
+                    >
+                        Back Up and Restore
+                    </Nav.Link>
+                </Nav>
                 <Nav className="mt-auto p-3">
                     <Nav.Link style={{ fontWeight: "400"}}
                         className="text-white"
