@@ -15,6 +15,7 @@ import { saveAs } from "file-saver";
 
 const MonthlyConsumption = () => {
   const [selectedSection, setSelectedSection] = useState("");
+  const [isExporting, setIsExporting] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [sections, setSections] = useState([]);
@@ -79,9 +80,13 @@ const MonthlyConsumption = () => {
       const queryParams = new URLSearchParams({
         month: selectedMonth + 1, // Add 1 to convert from 0-indexed to 1-indexed
         year: selectedYear,
-        sectionID: selectedSection,
         page,
       });
+
+      // Only include sectionID if a specific section is selected
+      if (selectedSection !== "0") {
+        queryParams.append("sectionID", selectedSection);
+      }
 
       const response = await fetch(
         `${API_ENDPOINTS.MONTHLY_CONSUMPTION}?${queryParams}`
@@ -90,13 +95,11 @@ const MonthlyConsumption = () => {
         throw new Error("Failed to fetch monthly consumption data.");
       }
       const data = await response.json();
-      // DRF Pagination structure
       setConsumptionData(data.results);
       setCurrentItems(data.results);
       setTotalPages(Math.ceil(data.count / itemsPerPage));
       setTotalItems(data.count);
       setCurrentPage(page);
-      updateMonthlyState(data, page);
     } catch (error) {
       console.error("Error fetching monthly consumption:", error);
       setError("Failed to load monthly consumption data.");
@@ -111,7 +114,7 @@ const MonthlyConsumption = () => {
     setTotalPages(Math.ceil(data.count / itemsPerPage));
     setTotalItems(data.count);
     setCurrentPage(page);
-};
+  };
 
   // Handle Section Change
   const handleSectionChange = (event) => {
@@ -198,7 +201,8 @@ const MonthlyConsumption = () => {
   };
 
   const handleExportReports = async () => {
-    const token = localStorage.getItem("access_token")
+    setIsExporting(true); // Start loading
+    const token = localStorage.getItem("access_token");
     const queryParams = new URLSearchParams({
       sectionID: selectedSection,
       month: selectedMonth + 1, // Add 1 to convert from 0-indexed to 1-indexed
@@ -206,30 +210,40 @@ const MonthlyConsumption = () => {
     });
 
     try {
-      if(!token){
+      if (!token) {
         alert("Authorization token is missing. Please log in again.");
+        setIsExporting(false); // Stop loading
         return;
       }
-      const response = await fetch(`${API_ENDPOINTS.EXPORT_CONSUMPTION}?${queryParams}`, {
-        method: "GET",
-        headers: {
-          'Authorization': `Token ${token}`,
-        },
-      });
-      
+      const response = await fetch(
+        `${API_ENDPOINTS.EXPORT_CONSUMPTION}?${queryParams}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Token ${token}`,
+          },
+        }
+      );
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const blob = await response.blob();
-      const section_name = sections.find(section => section.sectionID === Number(selectedSection))?.sectionName || "All Sections";
-      const filename = `${section_name} Consumption on ${selectedYear}-${selectedMonth+1}`;
+      const section_name =
+        sections.find(
+          (section) => section.sectionID === Number(selectedSection)
+        )?.sectionName || "All Sections";
+      const filename = `${section_name} Consumption on ${selectedYear}-${selectedMonth + 1
+        }`;
       saveAs(blob, filename);
-    } catch(e){
+    } catch (e) {
       console.error("Error fetching monthly consumption:", e);
       setError("Failed to load monthly consumption data.");
+    } finally {
+      setIsExporting(false); // Stop loading
     }
-  }
-  
+  };
+
   const handleGenerateReports = async () => {
     try {
       setConversionProgress(true); // Start progress
@@ -242,7 +256,7 @@ const MonthlyConsumption = () => {
 
       // Fetch the report from API (modify endpoint based on file type)
       const response = await fetch(
-        API_ENDPOINTS.DOWNLOAD_REPORTS(selectedYear, selectedMonth+1, "docx"),
+        API_ENDPOINTS.DOWNLOAD_REPORTS(selectedYear, selectedMonth + 1, "docx"),
         {
           method: "GET",
           headers: {
@@ -259,7 +273,7 @@ const MonthlyConsumption = () => {
       const blob = await response.blob();
 
       // Determine file name & extension
-      const fileName = `Monthly_Report_${selectedYear}_${selectedMonth+1}.docx`;
+      const fileName = `Monthly_Report_${selectedYear}_${selectedMonth + 1}.docx`;
 
       // Save the file
       saveAs(blob, fileName);
@@ -294,24 +308,23 @@ const MonthlyConsumption = () => {
           <Button
             variant="primary"
             onClick={handleGenerateReports}
-            disabled={conversionProgress}
+            disabled={conversionProgress || currentItems.length === 0}
             className="px-4 py-2"
           >
-            {conversionProgress ? "Generating Report..." : "Generate Monthly Report"}
+            {conversionProgress ? (
+              <>
+                <span
+                  className="spinner-border spinner-border-sm me-2"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
+                Generating Report...
+              </>
+            ) : (
+              "Generate Monthly Report"
+            )}
           </Button>
         </Col>
-
-        {conversionProgress && (
-          <Col xs={12} className="text-center mt-2">
-            <div
-              className="spinner-border text-primary"
-              role="status"
-            >
-              <span className="visually-hidden">Loading...</span>
-            </div>
-            <p className="text-muted mb-0">Generating report, please wait...</p>
-          </Col>
-        )}
 
         <Col className="d-flex align-items-center">
           <MonthYearPicker
@@ -321,14 +334,17 @@ const MonthlyConsumption = () => {
           <Form.Select
             value={selectedSection}
             onChange={handleSectionChange}
-            style={{width: '175px', padding: '3px', borderRadius: '4px', border: '.5px solid rgb(212, 212, 212)', marginLeft: '10px'}}
+            style={{
+              width: '175px',
+              padding: '3px',
+              borderRadius: '4px',
+              border: '.5px solid rgb(212, 212, 212)',
+              marginLeft: '10px',
+            }}
           >
             <option value="0">All Sections</option>
             {sections.map((section) => (
-              <option
-                key={section.sectionID}
-                value={section.sectionID}
-              >
+              <option key={section.sectionID} value={section.sectionID}>
                 {section.sectionName}
               </option>
             ))}
@@ -336,16 +352,34 @@ const MonthlyConsumption = () => {
           <Button
             variant="primary"
             onClick={handleExportReports}
-            disabled={conversionProgress}
-            style={{width: '175px', height: '31px', padding: '0px', borderRadius: '4px', border: '.5px solid rgb(212, 212, 212)', marginLeft: '10px'}}
+            disabled={isExporting || currentItems.length === 0} 
+            style={{
+              width: "175px",
+              height: "31px",
+              padding: "0px",
+              borderRadius: "4px",
+              border: ".5px solid rgb(212, 212, 212)",
+              marginLeft: "10px",
+            }}
           >
-            {conversionProgress ? "Generating Report..." : "Export Monthly Report"}
+            {isExporting ? (
+              <>
+                <span
+                  className="spinner-border spinner-border-sm me-2"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
+                Exporting...
+              </>
+            ) : (
+              "Export Monthly Report"
+            )}
           </Button>
         </Col>
 
         <Col className="d-flex justify-content-end">
           <Form.Control
-            style={{width: '300px'}}
+            style={{ width: '300px' }}
             type="search"
             placeholder="Search"
             value={searchTerm}
