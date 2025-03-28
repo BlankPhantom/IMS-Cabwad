@@ -49,11 +49,6 @@ const RunningBalance = () => {
 
       const data = await response.json();
       // DRF Pagination structure
-      setRunningBalanceData(data.results);
-      setCurrentItems(data.results);
-      setTotalPages(Math.ceil(data.count / itemsPerPage));
-      setTotalItems(data.count);
-      setCurrentPage(page);
       updateRunningState(data, page);
 
     } catch (err) {
@@ -88,7 +83,7 @@ const RunningBalance = () => {
       );
     } else if (!term) {
       // Reset to first page of all items
-      fetchItems(1);
+      fetchRunningBalance(1);
       return;
     }
 
