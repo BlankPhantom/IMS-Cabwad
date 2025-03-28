@@ -1,4 +1,5 @@
 import logging
+import tempfile
 from django.utils import timezone
 from django.utils.timezone import now
 from django.http import JsonResponse
@@ -15,6 +16,9 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 import pandas as pd
+from openpyxl import load_workbook
+from openpyxl.drawing.image import Image
+from django.conf import settings
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import default_storage
@@ -244,6 +248,7 @@ def item_delete(request, id):
 def get_beginning_bal(request):
     month = request.query_params.get('month')
     year = request.query_params.get('year')
+    measurement_id = request.query_params.get('measurementID')
 
     beginning_bal = BeginningBalance.objects.all()
 
@@ -251,10 +256,12 @@ def get_beginning_bal(request):
         beginning_bal = beginning_bal.filter(created_at__month=month)
     if year:
         beginning_bal = beginning_bal.filter(created_at__year=year)
+    if measurement_id:
+        beginning_bal = beginning_bal.filter(measurementID=measurement_id)
                
     paginator = Pagination()
     result_page = paginator.paginate_queryset(beginning_bal, request)
-    serializer = BeginningBalanceSerializer(result_page, many=True, context={'request': request})
+    serializer = BeginningBalanceSerializer(result_page, many=True)
     return paginator.get_paginated_response(serializer.data)
 
 @csrf_exempt
@@ -670,9 +677,19 @@ def get_monthly_consumption(request):
 
 @api_view(['GET'])
 def export_consumption_to_excel(request):
+    # Extract filter parameters
     section_id = request.GET.get('sectionID') or request.query_params.get('sectionID')
     month = request.GET.get('month') or request.query_params.get('month')
     year = request.GET.get('year') or request.query_params.get('year')
+    
+    # Convert month number to month name
+    month_names = {
+        '1': 'January', '2': 'February', '3': 'March', 
+        '4': 'April', '5': 'May', '6': 'June', 
+        '7': 'July', '8': 'August', '9': 'September', 
+        '10': 'October', '11': 'November', '12': 'December'
+    }
+    month_name = month_names.get(str(month), 'All Months')
     
     # Query the consumption data based on the parameters
     consumption_data = MonthlyConsumption.objects.all()
@@ -689,6 +706,7 @@ def export_consumption_to_excel(request):
     df = pd.DataFrame(list(consumption_data.values(
         'date', 
         'week', 
+        'sectionName',
         'itemID', 
         'itemName', 
         'consumption', 
@@ -698,6 +716,7 @@ def export_consumption_to_excel(request):
     
     # Create filename based on filters
     filename_parts = []
+    section = None
     if section_id and int(section_id) != 0:
         section = Section.objects.filter(sectionID=section_id).first()
         if section:
@@ -705,19 +724,62 @@ def export_consumption_to_excel(request):
     else:
         filename_parts.append("all_sections")
     if month:
-        filename_parts.append(f"Month_{month}")
+        filename_parts.append(f"Month_{month_name}")
     if year:
         filename_parts.append(f"year_{year}")
     
     filename = "_".join(filename_parts) if filename_parts else "all_consumption"
     filename += "_report.xlsx"
     
+    # Path to the template and logo
+    template_path = os.path.join(settings.BASE_DIR, 'Document Format', 'MONTHLY CONSUMPTION SECTION.xlsx')
+    logo_path = os.path.join(settings.BASE_DIR, 'Document Format', 'CABWAD LOGO.png')
+    
     # Create a temporary file to save the Excel file
     with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp_file:
         temp_file_path = tmp_file.name
-        with pd.ExcelWriter(temp_file_path, engine='openpyxl') as writer:
-            sheet_name = section.sectionName if section_id and int(section_id) != 0 and section else "All Sections"
-            df.to_excel(writer, index=False, sheet_name=sheet_name)
+        
+        # Load the template workbook
+        wb = load_workbook(template_path)
+        
+        # Get the first worksheet
+        ws = wb.active
+        
+        # Insert logo
+        if os.path.exists(logo_path):
+            img = Image(logo_path)
+            # Adjust size and position as needed
+            img.width = 120
+            img.height = 120
+            img.anchor = 'A1'
+            ws.add_image(img)
+        
+        # Improved placeholder replacement
+        for row in range(1, 10):  # Check first 10 rows
+            for col in range(1, 10):  # Check first 10 columns
+                cell = ws.cell(row=row, column=col)
+                if cell.value and isinstance(cell.value, str):
+                    # Replace multiple placeholders in the same cell
+                    new_value = cell.value.replace('(section)', section.sectionName if section else 'All Sections')
+                    new_value = new_value.replace('(month)', month_name)
+                    new_value = new_value.replace('(year)', year or 'All Years')
+                    cell.value = new_value
+        
+        # Write DataFrame headers and data starting from row 9
+        headers = ['Date', 'Week', 'Section Name', 'Item ID', 'Item Name', 'Consumption', 'Cost', 'Total']
+        for c_idx, header in enumerate(headers, start=1):
+            cell = ws.cell(row=9, column=c_idx, value=header)
+            cell.font = cell.font(bold=True)  # Make the header bold
+        for c_idx, header in enumerate(headers, start=1):
+            ws.cell(row=9, column=c_idx, value=header)
+        
+        # Write data rows
+        for r_idx, row in enumerate(df.values.tolist(), start=10):
+            for c_idx, value in enumerate(row, start=1):
+                ws.cell(row=r_idx, column=c_idx, value=value)
+        
+        # Save the workbook
+        wb.save(temp_file_path)
     
     # Serve the file for download
     response = FileResponse(open(temp_file_path, 'rb'), as_attachment=True, filename=filename)

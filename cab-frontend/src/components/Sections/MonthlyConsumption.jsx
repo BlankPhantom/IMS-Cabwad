@@ -108,14 +108,6 @@ const MonthlyConsumption = () => {
     }
   };
 
-  const updateMonthlyState = (data, page) => {
-    setConsumptionData(data.results);
-    setCurrentItems(data.results);
-    setTotalPages(Math.ceil(data.count / itemsPerPage));
-    setTotalItems(data.count);
-    setCurrentPage(page);
-  };
-
   // Handle Section Change
   const handleSectionChange = (event) => {
     setSelectedSection(event.target.value);
@@ -233,8 +225,9 @@ const MonthlyConsumption = () => {
         sections.find(
           (section) => section.sectionID === Number(selectedSection)
         )?.sectionName || "All Sections";
-      const filename = `${section_name} Consumption on ${selectedYear}-${selectedMonth + 1
-        }`;
+      const filename = `${section_name} Consumption on ${selectedYear}-${
+        selectedMonth + 1
+      }`;
       saveAs(blob, filename);
     } catch (e) {
       console.error("Error fetching monthly consumption:", e);
@@ -260,7 +253,7 @@ const MonthlyConsumption = () => {
         {
           method: "GET",
           headers: {
-            'Authorization': `Token ${token}`,
+            Authorization: `Token ${token}`,
           },
         }
       );
@@ -273,7 +266,9 @@ const MonthlyConsumption = () => {
       const blob = await response.blob();
 
       // Determine file name & extension
-      const fileName = `Monthly_Report_${selectedYear}_${selectedMonth + 1}.docx`;
+      const fileName = `Monthly_Report_${selectedYear}_${
+        selectedMonth + 1
+      }.docx`;
 
       // Save the file
       saveAs(blob, fileName);
@@ -301,7 +296,9 @@ const MonthlyConsumption = () => {
       className="d-flex flex-column justify-content-center mt-5">
       <Row className="g-3 align-items-center">
         <Col xs={12} className="text-center">
-          <h2 className="mb-2" style={{ fontWeight: '650' }}>Monthly Consumption</h2>
+          <h2 className="mb-2" style={{ fontWeight: "650" }}>
+            Monthly Consumption
+          </h2>
         </Col>
 
         <Col xs={12} className="text-center mb-2">
@@ -309,15 +306,13 @@ const MonthlyConsumption = () => {
             variant="primary"
             onClick={handleGenerateReports}
             disabled={conversionProgress || currentItems.length === 0}
-            className="px-4 py-2"
-          >
+            className="px-4 py-2">
             {conversionProgress ? (
               <>
                 <span
                   className="spinner-border spinner-border-sm me-2"
                   role="status"
-                  aria-hidden="true"
-                ></span>
+                  aria-hidden="true"></span>
                 Generating Report...
               </>
             ) : (
@@ -335,13 +330,12 @@ const MonthlyConsumption = () => {
             value={selectedSection}
             onChange={handleSectionChange}
             style={{
-              width: '175px',
-              padding: '3px',
-              borderRadius: '4px',
-              border: '.5px solid rgb(212, 212, 212)',
-              marginLeft: '10px',
-            }}
-          >
+              width: "175px",
+              padding: "3px",
+              borderRadius: "4px",
+              border: ".5px solid rgb(212, 212, 212)",
+              marginLeft: "10px",
+            }}>
             <option value="0">All Sections</option>
             {sections.map((section) => (
               <option key={section.sectionID} value={section.sectionID}>
@@ -352,7 +346,7 @@ const MonthlyConsumption = () => {
           <Button
             variant="primary"
             onClick={handleExportReports}
-            disabled={isExporting || currentItems.length === 0} 
+            disabled={isExporting || currentItems.length === 0}
             style={{
               width: "175px",
               height: "31px",
@@ -360,15 +354,13 @@ const MonthlyConsumption = () => {
               borderRadius: "4px",
               border: ".5px solid rgb(212, 212, 212)",
               marginLeft: "10px",
-            }}
-          >
+            }}>
             {isExporting ? (
               <>
                 <span
                   className="spinner-border spinner-border-sm me-2"
                   role="status"
-                  aria-hidden="true"
-                ></span>
+                  aria-hidden="true"></span>
                 Exporting...
               </>
             ) : (
@@ -379,7 +371,7 @@ const MonthlyConsumption = () => {
 
         <Col className="d-flex justify-content-end">
           <Form.Control
-            style={{ width: '300px' }}
+            style={{ width: "300px" }}
             type="search"
             placeholder="Search"
             value={searchTerm}

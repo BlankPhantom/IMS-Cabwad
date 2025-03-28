@@ -126,6 +126,7 @@ class MonthlyConsumption(models.Model):
     transactionProductID = models.ForeignKey(TransactionProduct, null=True, blank=True, on_delete=models.CASCADE)
     monthlyConsumptionID = models.AutoField(primary_key=True)
     sectionID = models.ForeignKey(Section, null=True, blank=True, on_delete=models.CASCADE)
+    sectionName = models.CharField(max_length=500, default="")
     date = models.DateField(blank=True, null=True)
     week = models.IntegerField(default=0)
     itemID = models.ForeignKey(Item, on_delete=models.CASCADE)
@@ -135,6 +136,10 @@ class MonthlyConsumption(models.Model):
     total = models.FloatField()
     created_at = models.DateTimeField(default= timezone.now)
 
+    def save(self, *args, **kwargs):
+        if self.sectionID:
+            self.sectionName = self.sectionID.sectionName
+        super(MonthlyConsumption, self).save(*args, **kwargs)
 class MonthlyConsumptionTotal(models.Model):
     id = models.AutoField(primary_key=True)
     totalNSC = models.IntegerField(default=0)

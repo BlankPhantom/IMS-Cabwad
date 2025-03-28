@@ -43,8 +43,8 @@ def generate_reports_doc(report):
             return "0.00"
 
     placeholders = {
-        '{{month}}': datetime.now().strftime("%B"),
-        '{{year}}': datetime.now().strftime("%Y"),
+        '{{month}}': datetime(1900, int(getattr(report, 'month', 1)+1) if str(getattr(report, 'month', '')).isdigit()+1 else 1, 1).strftime("%B"),
+        '{{year}}': str(getattr(report, 'year', datetime.now().year)),
         
         '(tNSC0)': '₱' + format_number(report.totalNSC),
         '(tProd0)': '₱' + format_number(report.totalProd),
@@ -123,3 +123,12 @@ def generate_reports_doc(report):
         raise
     
     return output_path
+
+def generate_reports_excel(report):
+    template_path = os.path.join(settings.BASE_DIR, 'Document Format', 'MONTHLY CONSUMPTION SECTION.xlsx')
+    doc = Document(template_path)
+    
+    placeholders = {
+        '{{month}}': datetime.now().strftime("%B"),
+        '{{year}}': datetime.now().strftime("%Y"),
+    }
