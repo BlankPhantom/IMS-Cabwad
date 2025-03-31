@@ -138,6 +138,11 @@ DATABASES = {
     }
 }
 
+# DB_HOST='imscabwad.mysql.pythonanywhere-services.com',
+# DB_USER='imscabwad',
+# DB_PASSWORD='cabwad123',
+# DB_NAME='ims_cabwad',
+
 DB_HOST='localhost',
 DB_USER='root',
 DB_PASSWORD='Cloud5024',

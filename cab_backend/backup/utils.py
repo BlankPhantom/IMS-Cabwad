@@ -10,6 +10,14 @@ from django.contrib.auth.hashers import make_password
 # Set up logging
 logger = logging.getLogger(__name__)
 
+# def get_db_config():
+#     """Get database configuration from environment variables or settings"""
+#     return {
+#         'host': os.environ.get('DB_HOST', 'imscabwad.mysql.pythonanywhere-services.com'),
+#         'user': os.environ.get('DB_USER', 'imscabwad'),
+#         'password': os.environ.get('DB_PASSWORD', 'cabwad123'),
+#         'database': os.environ.get('DB_NAME', 'ims_cabwad'),
+#     }
 def get_db_config():
     """Get database configuration from environment variables or settings"""
     return {
