@@ -17,13 +17,16 @@ urlpatterns = [
     path('item/update/<str:id>/', views.item_update, name='update-item'),
     path('item/delete/<str:id>/', views.item_delete, name='delete-item'),
     path('item/', views.item_list_all, name='get-item'),
+    path('search-item/', views.item_list_search, name='get-item-search'),
     path('item/<str:id>/', views.item_list_detail, name='get-item-detail'),
 
     path("beginning-bal/", views.get_beginning_bal, name="get-beginning-balance"),
+    path("search-beginning-bal/", views.search_beginning_bal, name="get-beginning-balance"),
     path('copy-items/', views.copy_items_to_balance, name='copy-items'),
     path('beginning-bal/create/', views.beginning_balance_bulk_create, name='create-beginning-balance'),
 
     path('run-bal/', views.get_running_balance, name='get-running-balance'),
+    path('search-run-bal/', views.search_running_balance, name='get-running-balance'),
     path('run-bal/create/', views.create_update_runbal, name='create-running-balance'),
 
     path('section/', views.section_list_all, name='get-section'),
@@ -48,6 +51,7 @@ urlpatterns = [
     path('transaction-product/delete/<int:detailID>/<int:id>/', views.transaction_product_delete, name='delete-transaction-product'),
 
     path('monthly-consumption/', views.get_monthly_consumption, name="get-monthly-consumption"),
+    path('search-monthly-consumption/', views.search_monthly_consumption, name="get-monthly-consumption"),
     path('export-consumption/', views.export_consumption_to_excel, name="export_consumption_to_excel"),
 
     path('download-report/<int:year>/<int:month>/', views.download_report_doc, name='download-report'),

@@ -8,6 +8,8 @@ import { Pagination } from "react-bootstrap";
 const RunningBalance = () => {
   const [runningBalanceData, setRunningBalanceData] = useState([]);
   const [currentItems, setCurrentItems] = useState([]);
+  const [selectedMeasurement, setSelectedMeasurement] = useState("");
+  const [measurements, setMeasurements] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [remarks, setRemarks] = useState("");
@@ -22,7 +24,30 @@ const RunningBalance = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [itemsPerPage] = useState(20);
 
-  const fetchRunningBalance = async (page=1) => {
+  //fetch measurements
+  const fetchMeasurements = async () => {
+    const token = localStorage.getItem("access_token");
+    setLoading(true);
+
+    try {
+      const response = await fetch(API_ENDPOINTS.MEASUREMENTS_LIST, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`,
+        },
+      });
+      if (!response) {
+        throw new Error("fetching measurement failed ");
+      }
+      const data = await response.json();
+      setMeasurements(data);
+    } catch (e) {
+      console.error("Error fetching measurements:", e);
+    }
+  };
+
+  const fetchRunningBalance = async (page = 1) => {
     const token = localStorage.getItem("access_token");
     try {
       setLoading(true);
@@ -32,6 +57,10 @@ const RunningBalance = () => {
         year: selectedYear,
         page,
       });
+
+      if (selectedMeasurement && selectedMeasurement !== "0") {
+        queryParams.append("measurementID", selectedMeasurement);
+      }
 
       const url = `${API_ENDPOINTS.RUNNING_BAL_LIST}?${queryParams}`;
 
@@ -50,7 +79,6 @@ const RunningBalance = () => {
       const data = await response.json();
       // DRF Pagination structure
       updateRunningState(data, page);
-
     } catch (err) {
       console.error("Error fetching running balance:", err);
       setError("Failed to load running balance data.");
@@ -65,41 +93,74 @@ const RunningBalance = () => {
     setTotalPages(Math.ceil(data.count / itemsPerPage));
     setTotalItems(data.count);
     setCurrentPage(page);
-};
+  };
 
   // Handle search functionality
   const handleSearch = (event) => {
-    const term = event.target.value.toLowerCase();
+    const term = event.target.value;
     setSearchTerm(term);
 
-    let filtered = runningBalanceData;
-
-    // Apply search filter
-    if (term) {
-      filtered = filtered.filter(
-        (item) =>
-          item.itemID.toLowerCase().includes(term) ||
-          item.itemName.toLowerCase().includes(term)
-      );
-    } else if (!term) {
-      // Reset to first page of all items
-      fetchRunningBalance(1);
+    if (term.trim().length === 0) {
+      fetchRunningBalance(1); // If search is cleared, use regular fetch
       return;
     }
 
-    // Keep "available only" filter if active
-    if (showAvailableOnly) {
-      filtered = filtered.filter((item) => item.itemQuantity > 0);
+    performSearch(term, 1);
+  };
+
+  // Actual search function
+  const performSearch = async (term, page = 1) => {
+    if (!term.trim()) {
+      fetchRunningBalance(page);
+      return;
     }
 
-    // Keep remarks filter if active
-    if (remarks) {
-      filtered = filtered.filter((item) => item.remarks === remarks);
-    }
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("access_token");
+      const queryParams = new URLSearchParams({
+        search: term.trim(),
+        page: page,
+        month: selectedMonth + 1,
+        year: selectedYear,
+      });
 
-    setCurrentItems(filtered);
-    setCurrentPage(1);
-    setTotalPages(Math.ceil(filtered.length / itemsPerPage));
+      if (selectedMeasurement && selectedMeasurement !== "0") {
+        queryParams.append("measurementID", selectedMeasurement);
+      }
+
+      const response = await fetch(
+        `${API_ENDPOINTS.RUNNING_BAL_SEARCH}?${queryParams}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Token ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Search failed");
+      }
+
+      const data = await response.json();
+      updateRunningState(data, page);
+    } catch (error) {
+      console.error("Search failed", error);
+      setError("Failed to search running balance data.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Function for pagination during search
+  const paginateSearch = (pageNumber) => {
+    if (searchTerm.trim()) {
+      performSearch(searchTerm, pageNumber);
+    } else {
+      fetchRunningBalance(pageNumber);
+    }
   };
 
   const handleRemarksFilter = (event) => {
@@ -141,13 +202,18 @@ const RunningBalance = () => {
   // Fetch data when month/year changes, but only if already initialized
   useEffect(() => {
     fetchRunningBalance();
-  }, [selectedMonth, selectedYear]);
+    fetchMeasurements();
+  }, [selectedMonth, selectedYear, selectedMeasurement]);
 
   const formatCurrency = (value) => {
     return `₱${parseFloat(value).toLocaleString("en-PH", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     })}`;
+  };
+
+  const handleMeasurementChange = (event) => {
+    setSelectedMeasurement(event.target.value);
   };
 
   const handleAvailableOnlyFilter = (event) => {
@@ -181,77 +247,81 @@ const RunningBalance = () => {
     }
 
     setCurrentPage(1);
-    
   };
 
   const paginate = (pageNumber) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
+      if (searchTerm.trim().length > 0) {
+        // If we're in search mode, use search endpoint for pagination
+        paginateSearch(pageNumber);
+      } else {
+        // Otherwise use regular fetch
         fetchRunningBalance(pageNumber);
+      }
     }
   };
 
   // Render pagination items
   const renderPaginationItems = () => {
-      const pageNumbers = [];
-      const totalPagesToShow = 5;
-      let startPage, endPage;
+    const pageNumbers = [];
+    const totalPagesToShow = 5;
+    let startPage, endPage;
 
-      if (totalPages <= totalPagesToShow) {
-          startPage = 1;
-          endPage = totalPages;
+    if (totalPages <= totalPagesToShow) {
+      startPage = 1;
+      endPage = totalPages;
+    } else {
+      if (currentPage <= Math.ceil(totalPagesToShow / 2)) {
+        startPage = 1;
+        endPage = totalPagesToShow;
+      } else if (currentPage + Math.floor(totalPagesToShow / 2) >= totalPages) {
+        startPage = totalPages - totalPagesToShow + 1;
+        endPage = totalPages;
       } else {
-          if (currentPage <= Math.ceil(totalPagesToShow / 2)) {
-              startPage = 1;
-              endPage = totalPagesToShow;
-          } else if (currentPage + Math.floor(totalPagesToShow / 2) >= totalPages) {
-              startPage = totalPages - totalPagesToShow + 1;
-              endPage = totalPages;
-          } else {
-              startPage = currentPage - Math.floor(totalPagesToShow / 2);
-              endPage = currentPage + Math.floor(totalPagesToShow / 2);
-          }
+        startPage = currentPage - Math.floor(totalPagesToShow / 2);
+        endPage = currentPage + Math.floor(totalPagesToShow / 2);
       }
+    }
 
-      // First page button
-      if (startPage > 1) {
-          pageNumbers.push(
-              <Pagination.Item key="first" onClick={() => paginate(1)}>
-                  1
-              </Pagination.Item>
-          );
-          if (startPage > 2) {
-              pageNumbers.push(<Pagination.Ellipsis key="first-ellipsis" />);
-          }
+    // First page button
+    if (startPage > 1) {
+      pageNumbers.push(
+        <Pagination.Item key="first" onClick={() => paginate(1)}>
+          1
+        </Pagination.Item>
+      );
+      if (startPage > 2) {
+        pageNumbers.push(<Pagination.Ellipsis key="first-ellipsis" />);
       }
+    }
 
-      // Page number buttons
-      for (let i = startPage; i <= endPage; i++) {
-          pageNumbers.push(
-              <Pagination.Item 
-                  key={i} 
-                  active={i === currentPage}
-                  onClick={() => paginate(i)}
-              >
-                  {i}
-              </Pagination.Item>
-          );
+    // Page number buttons
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(
+        <Pagination.Item
+          key={i}
+          active={i === currentPage}
+          onClick={() => paginate(i)}>
+          {i}
+        </Pagination.Item>
+      );
+    }
+
+    // Last page button
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        pageNumbers.push(<Pagination.Ellipsis key="last-ellipsis" />);
       }
+      pageNumbers.push(
+        <Pagination.Item key="last" onClick={() => paginate(totalPages)}>
+          {totalPages}
+        </Pagination.Item>
+      );
+    }
 
-      // Last page button
-      if (endPage < totalPages) {
-          if (endPage < totalPages - 1) {
-              pageNumbers.push(<Pagination.Ellipsis key="last-ellipsis" />);
-          }
-          pageNumbers.push(
-              <Pagination.Item key="last" onClick={() => paginate(totalPages)}>
-                  {totalPages}
-              </Pagination.Item>
-          );
-      }
+    return pageNumbers;
+  };
 
-      return pageNumbers;
-  };  
-  
   return (
     <Container
       style={{ width: "100%" }}
@@ -266,20 +336,48 @@ const RunningBalance = () => {
       </Row>
 
       <Row className="mt-2 align-items-center">
-        <Col xs="auto">
+        <Col
+          className="d-flex justify-contents-start align-items-center"
+          xs="auto">
           <MonthYearPicker
             onMonthYearChange={handleMonthYearChange}
             initialMonth={selectedMonth}
             initialYear={selectedYear}
           />
-        </Col>
-        <Col xs="auto">
+
+          <Form.Select
+            value={selectedMeasurement}
+            onChange={handleMeasurementChange}
+            style={{
+              width: "175px",
+              height: "31px",
+              padding: "3px",
+              borderRadius: "4px",
+              border: ".5px solid rgb(212, 212, 212)",
+              marginLeft: "10px",
+              marginTop: "1px",
+            }}>
+            <option value="0">All Measurements</option>
+            {measurements.map((measurement) => (
+              <option
+                key={measurement.measurementID}
+                value={measurement.measurementID}>
+                {measurement.measureName}
+              </option>
+            ))}
+          </Form.Select>
           <Form.Select
             className="form-select"
-            style={{width: '130px', padding: '3px', borderRadius: '4px', border: '.5px solid rgb(212, 212, 212)' }}
+            style={{
+              width: "130px",
+              height: "31px",
+              padding: "3px",
+              borderRadius: "4px",
+              border: ".5px solid rgb(212, 212, 212)",
+              marginLeft: "10px",
+            }}
             value={remarks}
-            onChange={handleRemarksFilter}
-          >
+            onChange={handleRemarksFilter}>
             <option value="">All</option>
             <option value="Non-Moving">Non-Moving</option>
             <option value="Slow Moving">Slow Moving</option>

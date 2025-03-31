@@ -95,11 +95,7 @@ const MonthlyConsumption = () => {
         throw new Error("Failed to fetch monthly consumption data.");
       }
       const data = await response.json();
-      setConsumptionData(data.results);
-      setCurrentItems(data.results);
-      setTotalPages(Math.ceil(data.count / itemsPerPage));
-      setTotalItems(data.count);
-      setCurrentPage(page);
+      updateMonthlyState(data, page);
     } catch (error) {
       console.error("Error fetching monthly consumption:", error);
       setError("Failed to load monthly consumption data.");
@@ -108,6 +104,13 @@ const MonthlyConsumption = () => {
     }
   };
 
+  const updateMonthlyState = (data, page) => {
+    setConsumptionData(data.results);
+    setCurrentItems(data.results);
+    setTotalPages(Math.ceil(data.count / itemsPerPage));
+    setTotalItems(data.count);
+    setCurrentPage(page);
+  }
   // Handle Section Change
   const handleSectionChange = (event) => {
     setSelectedSection(event.target.value);
@@ -119,9 +122,59 @@ const MonthlyConsumption = () => {
     setSelectedYear(year);
   };
 
-  // Handle Search Input Change
+  // Direct search function without debouncing
   const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
+    const term = event.target.value;
+    setSearchTerm(term);
+
+    if (term.trim().length === 0) {
+      fetchMonthlyConsumption(1); // If search is cleared, use regular fetch
+      return;
+    }
+
+    performSearch(term, 1);
+  };
+
+  // Actual search function
+  const performSearch = async (term, page = 1) => {
+    if (!term.trim()) {
+      fetchMonthlyConsumption(page);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("access_token");
+      const queryParams = new URLSearchParams({
+        search: term.trim(),
+        page: page,
+        month: selectedMonth + 1,
+        year: selectedYear,
+      });
+
+      const response = await fetch(
+        `${API_ENDPOINTS.MONTHLY_CONSUMPTION_SEARCH}?${queryParams}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Token ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Search failed");
+      }
+
+      const data = await response.json();
+      updateMonthlyState(data, page);
+    } catch (error) {
+      console.error("Search failed", error);
+      setError("Failed to search beginning balance data.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   // pagination

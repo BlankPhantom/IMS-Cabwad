@@ -27,24 +27,24 @@ const BeginningBalance = () => {
     setLoading(true);
 
     try {
-        const response = await fetch(API_ENDPOINTS.MEASUREMENTS_LIST, {
-            method: 'GET',
-            headers: {
-                "Content-Type": "application/json",
-                'Authorization': `Token ${token}`
-            }
-        })
-        if(!response){
-            throw new Error("fetching measurement failed ");
-        }
-        const data = await response.json();
-        setMeasurements(data)
-    } catch(e) {
-        console.error("Error fetching measurements:", e);
+      const response = await fetch(API_ENDPOINTS.MEASUREMENTS_LIST, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`,
+        },
+      });
+      if (!response) {
+        throw new Error("fetching measurement failed ");
+      }
+      const data = await response.json();
+      setMeasurements(data);
+    } catch (e) {
+      console.error("Error fetching measurements:", e);
     }
-  }
-    
-  // Search functionality
+  };
+
+  // Fetch items function
   const fetchItems = async (page = 1) => {
     const token = localStorage.getItem("access_token");
     setLoading(true);
@@ -57,7 +57,7 @@ const BeginningBalance = () => {
       });
 
       // Only append measurementID if it's not "0"
-      if (selectedMeasurement !== "0") {
+      if (selectedMeasurement && selectedMeasurement !== "0") {
         queryParams.append("measurementID", selectedMeasurement);
       }
 
@@ -113,6 +113,65 @@ const BeginningBalance = () => {
     }
   };
 
+  // Direct search function without debouncing
+  const handleSearch = (event) => {
+    const term = event.target.value;
+    setSearchTerm(term);
+
+    if (term.trim().length === 0) {
+      fetchItems(1); // If search is cleared, use regular fetch
+      return;
+    }
+
+    performSearch(term, 1);
+  };
+
+  // Actual search function
+  const performSearch = async (term, page = 1) => {
+    if (!term.trim()) {
+      fetchItems(page);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("access_token");
+      const queryParams = new URLSearchParams({
+        search: term.trim(),
+        page: page,
+        month: selectedMonth + 1,
+        year: selectedYear,
+      });
+
+      if (selectedMeasurement && selectedMeasurement !== "0") {
+        queryParams.append("measurementID", selectedMeasurement);
+      }
+
+      const response = await fetch(
+        `${API_ENDPOINTS.BEGINNING_BAL_SEARCH}?${queryParams}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Token ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Search failed");
+      }
+
+      const data = await response.json();
+      updateItemsState(data, page);
+    } catch (error) {
+      console.error("Search failed", error);
+      setError("Failed to search beginning balance data.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const updateItemsState = (data, page) => {
     setItems(data.results);
     setCurrentItems(data.results);
@@ -121,42 +180,31 @@ const BeginningBalance = () => {
     setCurrentPage(page);
   };
 
-  const handleSearch = (event) => {
-    const term = event.target.value;
-    setSearchTerm(term);
-
-    if (!term) {
-      // Reset to first page of all items
-      fetchItems(1);
-      return;
-    }
-
-    const filtered = items.filter(
-      (item) =>
-        item.itemID.toString().toLowerCase().includes(term) ||
-        item.itemName.toLowerCase().includes(term)
-    );
-
-    setCurrentItems(filtered);
-    setCurrentPage(1); // Reset to first page when search filter changes
-    setTotalPages(Math.ceil(filtered.length / itemsPerPage));
-  };
-
   const handleMeasurementChange = (event) => {
     setSelectedMeasurement(event.target.value);
-    console.log(selectedMeasurement)
   };
+
   // Month and Year change handler
   const handleMonthYearChange = (month, year) => {
     setLoading(true);
-
     setSelectedMonth(month);
     setSelectedYear(year);
   };
 
+  // Function for pagination during search
+  const paginateSearch = (pageNumber) => {
+    performSearch(searchTerm, pageNumber);
+  };
+
   const paginate = (pageNumber) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
-      fetchItems(pageNumber);
+      if (searchTerm.trim().length > 0) {
+        // If we're in search mode, use search endpoint for pagination
+        paginateSearch(pageNumber);
+      } else {
+        // Otherwise use regular fetch
+        fetchItems(pageNumber);
+      }
     }
   };
 
@@ -222,7 +270,7 @@ const BeginningBalance = () => {
   };
 
   useEffect(() => {
-    fetchItems(currentPage);
+    fetchItems(1);
     fetchMeasurements();
   }, [selectedMonth, selectedYear, selectedMeasurement]);
 
@@ -249,20 +297,22 @@ const BeginningBalance = () => {
         <Col className="d-flex justify-content-start">
           <MonthYearPicker onMonthYearChange={handleMonthYearChange} />
           <Form.Select
-          value={selectedMeasurement}
-          onChange={handleMeasurementChange}
-          style={{
-            width: "175px",
-            height: "31px",
-            padding: "3px",
-            borderRadius: "4px",
-            border: ".5px solid rgb(212, 212, 212)",
-            marginLeft: "10px",
-            marginTop: "1px"
-          }}>
+            value={selectedMeasurement}
+            onChange={handleMeasurementChange}
+            style={{
+              width: "175px",
+              height: "31px",
+              padding: "3px",
+              borderRadius: "4px",
+              border: ".5px solid rgb(212, 212, 212)",
+              marginLeft: "10px",
+              marginTop: "1px",
+            }}>
             <option value="0">All Measurements</option>
             {measurements.map((measurement) => (
-              <option key={measurement.measurementID} value={measurement.measurementID}>
+              <option
+                key={measurement.measurementID}
+                value={measurement.measurementID}>
                 {measurement.measureName}
               </option>
             ))}

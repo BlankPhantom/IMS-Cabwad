@@ -16,20 +16,24 @@ export const API_ENDPOINTS = {
 
     //Item Endpoints
     ITEM_LIST: `${BASE_URL}ims/item/`,
+    ITEM_SEARCH: `${BASE_URL}ims/item-search/`,
     ADD_ITEM: `${BASE_URL}ims/item/create/`,
     UPDATE_ITEM: (itemID) => `${BASE_URL}ims/item/update/${itemID}/`,
     DELETE_ITEM: (itemID) => `${BASE_URL}ims/item/delete/${itemID}/`,
 
     //Beginning Balance Endpoint
     BEGINNING_BAL_LIST: `${BASE_URL}ims/beginning-bal/`,
+    BEGINNING_BAL_SEARCH: `${BASE_URL}ims/search-beginning-bal/`,
     BEGINNING_BAL_CREATE: `${BASE_URL}ims/copy-items/`,
 
     //Running Balance Endpoint
     RUNNING_BAL_LIST: `${BASE_URL}ims/run-bal/`,
+    RUNNING_BAL_SEARCH: `${BASE_URL}ims/search-run-bal/`,
     RUNNING_BAL_CREATE: `${BASE_URL}ims/run-bal/create/`,
 
     //Monthly Consumption Endpoint
     MONTHLY_CONSUMPTION: `${BASE_URL}ims/monthly-consumption/`,
+    MONTHLY_CONSUMPTION_SEARCH: `${BASE_URL}ims/search-monthly-consumption/`,
     EXPORT_CONSUMPTION: `${BASE_URL}ims/export-consumption/`,
 
     // Transaction Endpoints (Considering transaction details and products as one)
