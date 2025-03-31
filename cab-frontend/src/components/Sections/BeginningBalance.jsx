@@ -19,7 +19,7 @@ const BeginningBalance = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
-  const [itemsPerPage] = useState(20);
+  const [itemsPerPage] = useState(5);
 
   //fetch measurements
   const fetchMeasurements = async () => {

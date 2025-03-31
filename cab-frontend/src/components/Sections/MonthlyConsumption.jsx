@@ -41,24 +41,6 @@ const MonthlyConsumption = () => {
     fetchMonthlyConsumption();
   }, [selectedMonth, selectedYear, selectedSection]);
 
-  // Search effect to filter data
-  useEffect(() => {
-    if (searchTerm) {
-      const lowercasedTerm = searchTerm.toLowerCase();
-      const filtered = consumptionData.filter((item) =>
-        Object.values(item).some((value) =>
-          String(value).toLowerCase().includes(lowercasedTerm)
-        )
-      );
-      setCurrentItems(filtered);
-      setTotalPages(Math.ceil(filtered.length / itemsPerPage));
-    } else {
-      setCurrentItems(consumptionData);
-      setTotalPages(Math.ceil(consumptionData.length / itemsPerPage));
-    }
-    setCurrentPage(1); // Reset to first page when search filter changes
-  }, [searchTerm, consumptionData]);
-
   // Fetch sections for the dropdown
   const fetchSections = async () => {
     try {
@@ -105,12 +87,18 @@ const MonthlyConsumption = () => {
   };
 
   const updateMonthlyState = (data, page) => {
+    console.log("API response data:", data);
+    console.log("Items per page:", itemsPerPage);
+    console.log("Results count:", data.count);
+    const calculatedTotalPages = Math.ceil(data.count / itemsPerPage);
+    console.log("Calculated total pages:", calculatedTotalPages);
+
     setConsumptionData(data.results);
     setCurrentItems(data.results);
-    setTotalPages(Math.ceil(data.count / itemsPerPage));
+    setTotalPages(calculatedTotalPages);
     setTotalItems(data.count);
     setCurrentPage(page);
-  }
+  };
   // Handle Section Change
   const handleSectionChange = (event) => {
     setSelectedSection(event.target.value);
@@ -146,11 +134,16 @@ const MonthlyConsumption = () => {
     try {
       const token = localStorage.getItem("access_token");
       const queryParams = new URLSearchParams({
-        search: term.trim(),
-        page: page,
-        month: selectedMonth + 1,
+        month: selectedMonth + 1, // Add 1 to convert from 0-indexed to 1-indexed
         year: selectedYear,
+        search: term.trim(),
+        page,
       });
+
+      // Only include sectionID if a specific section is selected
+      if (selectedSection !== "0") {
+        queryParams.append("sectionID", selectedSection);
+      }
 
       const response = await fetch(
         `${API_ENDPOINTS.MONTHLY_CONSUMPTION_SEARCH}?${queryParams}`,
@@ -177,72 +170,25 @@ const MonthlyConsumption = () => {
     }
   };
 
+  // Function for pagination during search
+  const paginateSearch = (pageNumber) => {
+    if (searchTerm.trim()) {
+      performSearch(searchTerm, pageNumber);
+    } else {
+      fetchMonthlyConsumption(pageNumber);
+    }
+  };
   // pagination
   const paginate = (pageNumber) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
-      fetchRunningBalance(pageNumber);
-    }
-  };
-
-  // Render pagination items
-  const renderPaginationItems = () => {
-    const pageNumbers = [];
-    const totalPagesToShow = 5;
-    let startPage, endPage;
-
-    if (totalPages <= totalPagesToShow) {
-      startPage = 1;
-      endPage = totalPages;
-    } else {
-      if (currentPage <= Math.ceil(totalPagesToShow / 2)) {
-        startPage = 1;
-        endPage = totalPagesToShow;
-      } else if (currentPage + Math.floor(totalPagesToShow / 2) >= totalPages) {
-        startPage = totalPages - totalPagesToShow + 1;
-        endPage = totalPages;
+      if (searchTerm.trim().length > 0) {
+        // If we're in search mode, use search endpoint for pagination
+        paginateSearch(pageNumber);
       } else {
-        startPage = currentPage - Math.floor(totalPagesToShow / 2);
-        endPage = currentPage + Math.floor(totalPagesToShow / 2);
+        // Otherwise use regular fetch
+        fetchMonthlyConsumption(pageNumber);
       }
     }
-
-    // First page button
-    if (startPage > 1) {
-      pageNumbers.push(
-        <Pagination.Item key="first" onClick={() => paginate(1)}>
-          1
-        </Pagination.Item>
-      );
-      if (startPage > 2) {
-        pageNumbers.push(<Pagination.Ellipsis key="first-ellipsis" />);
-      }
-    }
-
-    // Page number buttons
-    for (let i = startPage; i <= endPage; i++) {
-      pageNumbers.push(
-        <Pagination.Item
-          key={i}
-          active={i === currentPage}
-          onClick={() => paginate(i)}>
-          {i}
-        </Pagination.Item>
-      );
-    }
-
-    // Last page button
-    if (endPage < totalPages) {
-      if (endPage < totalPages - 1) {
-        pageNumbers.push(<Pagination.Ellipsis key="last-ellipsis" />);
-      }
-      pageNumbers.push(
-        <Pagination.Item key="last" onClick={() => paginate(totalPages)}>
-          {totalPages}
-        </Pagination.Item>
-      );
-    }
-
-    return pageNumbers;
   };
 
   const handleExportReports = async () => {
@@ -340,6 +286,67 @@ const MonthlyConsumption = () => {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     })}`;
+  };
+
+  // Render pagination items
+  const renderPaginationItems = () => {
+    const pageNumbers = [];
+    const totalPagesToShow = 5;
+    let startPage, endPage;
+
+    if (totalPages <= totalPagesToShow) {
+      startPage = 1;
+      endPage = totalPages;
+    } else {
+      if (currentPage <= Math.ceil(totalPagesToShow / 2)) {
+        startPage = 1;
+        endPage = totalPagesToShow;
+      } else if (currentPage + Math.floor(totalPagesToShow / 2) >= totalPages) {
+        startPage = totalPages - totalPagesToShow + 1;
+        endPage = totalPages;
+      } else {
+        startPage = currentPage - Math.floor(totalPagesToShow / 2);
+        endPage = currentPage + Math.floor(totalPagesToShow / 2);
+      }
+    }
+
+    // First page button
+    if (startPage > 1) {
+      pageNumbers.push(
+        <Pagination.Item key="first" onClick={() => paginate(1)}>
+          1
+        </Pagination.Item>
+      );
+      if (startPage > 2) {
+        pageNumbers.push(<Pagination.Ellipsis key="first-ellipsis" />);
+      }
+    }
+
+    // Page number buttons
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(
+        <Pagination.Item
+          key={i}
+          active={i === currentPage}
+          onClick={() => paginate(i)}>
+          {i}
+        </Pagination.Item>
+      );
+    }
+
+    // Last page button
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        pageNumbers.push(<Pagination.Ellipsis key="last-ellipsis" />);
+      }
+      pageNumbers.push(
+        <Pagination.Item key="last" onClick={() => paginate(totalPages)}>
+          {totalPages}
+        </Pagination.Item>
+      );
+    }
+
+    return pageNumbers;
   };
 
   return (

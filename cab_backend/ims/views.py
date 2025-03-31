@@ -179,7 +179,6 @@ def item_list_detail(request, id):
 @api_view(['GET'])
 def item_list_search(request):
     search_term = request.query_params.get('search', '')
-    paginator = Pagination()
     
     # Use Q objects for more complex searching
     items = Item.objects.filter(
@@ -188,6 +187,7 @@ def item_list_search(request):
         Q(classificationID__classification__icontains=search_term)
     )
     
+    paginator = Pagination()
     result_page = paginator.paginate_queryset(items, request)
     serializer = ItemSerializer(result_page, many=True, context={'request': request})
     return paginator.get_paginated_response(serializer.data)

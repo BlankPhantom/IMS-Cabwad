@@ -16,7 +16,7 @@ export const API_ENDPOINTS = {
 
     //Item Endpoints
     ITEM_LIST: `${BASE_URL}ims/item/`,
-    ITEM_SEARCH: `${BASE_URL}ims/item-search/`,
+    ITEM_SEARCH: `${BASE_URL}ims/search-item/`,
     ADD_ITEM: `${BASE_URL}ims/item/create/`,
     UPDATE_ITEM: (itemID) => `${BASE_URL}ims/item/update/${itemID}/`,
     DELETE_ITEM: (itemID) => `${BASE_URL}ims/item/delete/${itemID}/`,
