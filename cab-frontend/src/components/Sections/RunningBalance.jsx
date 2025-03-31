@@ -62,6 +62,15 @@ const RunningBalance = () => {
         queryParams.append("measurementID", selectedMeasurement);
       }
 
+      if (remarks && remarks !== "") {
+        queryParams.append("remarks", remarks);
+      }
+
+      // Add available_only parameter if filter is active
+      if (showAvailableOnly) {
+        queryParams.append("available_only", "true");
+      }
+
       const url = `${API_ENDPOINTS.RUNNING_BAL_LIST}?${queryParams}`;
 
       const response = await fetch(url, {
@@ -111,7 +120,7 @@ const RunningBalance = () => {
   // Actual search function
   const performSearch = async (term, page = 1) => {
     if (!term.trim()) {
-      fetchRunningBalance(page);
+      fetchRunningBalance(1);
       return;
     }
 
@@ -126,6 +135,15 @@ const RunningBalance = () => {
 
       if (selectedMeasurement && selectedMeasurement !== "0") {
         queryParams.append("measurementID", selectedMeasurement);
+      }
+
+      if (remarks && remarks !== "") {
+        queryParams.append("remarks", remarks);
+      }
+
+      // Add available_only parameter if filter is active
+      if (showAvailableOnly) {
+        queryParams.append("available_only", "true");
       }
 
       const response = await fetch(
@@ -165,31 +183,11 @@ const RunningBalance = () => {
   const handleRemarksFilter = (event) => {
     const remark = event.target.value;
     setRemarks(remark);
-
-    let filtered = runningBalanceData;
-
-    // Apply remarks filter
-    if (remark) {
-      filtered = filtered.filter((item) => item.remarks === remark);
-    }
-
-    // Keep search filter if active
-    if (searchTerm) {
-      filtered = filtered.filter(
-        (item) =>
-          item.itemID.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.itemName.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    // Keep "available only" filter if active
-    if (showAvailableOnly) {
-      filtered = filtered.filter((item) => item.itemQuantity > 0);
-    }
-
-    setCurrentItems(filtered);
-    setCurrentPage(1);
-    setTotalPages(Math.ceil(filtered.length / itemsPerPage));
+  };
+  
+  const handleAvailableOnlyFilter = (event) => {
+    const checked = event.target.checked;
+    setShowAvailableOnly(checked);
   };
 
   // Handle month and year change
@@ -200,9 +198,9 @@ const RunningBalance = () => {
 
   // Fetch data when month/year changes, but only if already initialized
   useEffect(() => {
-    fetchRunningBalance();
+    fetchRunningBalance(1);
     fetchMeasurements();
-  }, [selectedMonth, selectedYear, selectedMeasurement]);
+  }, [selectedMonth, selectedYear, selectedMeasurement, remarks, showAvailableOnly]);
 
   const formatCurrency = (value) => {
     return `₱${parseFloat(value).toLocaleString("en-PH", {
@@ -213,39 +211,6 @@ const RunningBalance = () => {
 
   const handleMeasurementChange = (event) => {
     setSelectedMeasurement(event.target.value);
-  };
-
-  const handleAvailableOnlyFilter = (event) => {
-    const checked = event.target.checked;
-    setShowAvailableOnly(checked);
-
-    // Apply filter based on selection
-    if (checked) {
-      const filtered = runningBalanceData.filter(
-        (item) => item.itemQuantity > 0
-      );
-      setCurrentItems(filtered);
-    } else {
-      // Reapply any existing filters (search term and remarks)
-      let filtered = runningBalanceData;
-
-      if (searchTerm) {
-        filtered = filtered.filter(
-          (item) =>
-            item.itemID.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.itemName.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-      }
-
-      if (remarks) {
-        filtered = filtered.filter((item) => item.remarks === remarks);
-      }
-
-      setCurrentItems(filtered);
-      setTotalPages(Math.ceil(filtered.length / itemsPerPage));
-    }
-
-    setCurrentPage(1);
   };
 
   const paginate = (pageNumber) => {

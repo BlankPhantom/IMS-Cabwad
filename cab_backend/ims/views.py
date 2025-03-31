@@ -496,6 +496,8 @@ def get_running_balance(request):
     month = request.query_params.get('month')
     year = request.query_params.get('year')
     measurement_id = request.query_params.get('measurementID')
+    remarks = request.query_params.get('remarks')
+    available_only = request.query_params.get('available_only')
     
     running_balances = RunningBalance.objects.all()
 
@@ -505,6 +507,11 @@ def get_running_balance(request):
         running_balances = running_balances.filter(created_at__year=year)
     if measurement_id:
         running_balances = running_balances.filter(measurementID=measurement_id)
+    if remarks:
+        running_balances = running_balances.filter(remarks=remarks)
+    if available_only == 'true':
+        # Make sure this is filtering for greater than 0, not greater than or equal to 0
+        running_balances = running_balances.filter(itemQuantity__gt=0)
         
     paginator = Pagination()
     result_page = paginator.paginate_queryset(running_balances, request)
@@ -516,6 +523,7 @@ def search_running_balance(request):
     month = request.query_params.get('month')
     year = request.query_params.get('year')
     measurement_id = request.query_params.get('measurementID')
+    available_only = request.query_params.get('available_only')
     search_term = request.query_params.get('search', '')
     
     paginator = Pagination()
@@ -530,6 +538,9 @@ def search_running_balance(request):
         running_balances = running_balances.filter(created_at__year=year)
     if measurement_id:
         running_balances = running_balances.filter(measurementID=measurement_id)
+    if available_only == 'true':
+        # Make sure this is filtering for greater than 0, not greater than or equal to 0
+        running_balances = running_balances.filter(itemQuantity__gt=0)
         
     
     result_page = paginator.paginate_queryset(running_balances, request)
@@ -586,7 +597,6 @@ def create_update_runbal(request):
         transferToWH_sum=Sum('transferToWH'),
         issuedQty_sum=Sum('issuedQty'),
         returnedQty_sum=Sum('returnedQty'),
-        consumption_sum=Sum('consumption')
     ):
         itemID = item_data['itemID']
         transaction_sums[itemID] = {
@@ -596,7 +606,6 @@ def create_update_runbal(request):
             'transferToWH_sum': item_data['transferToWH_sum'] or 0,
             'issuedQty_sum': item_data['issuedQty_sum'] or 0,
             'returnedQty_sum': item_data['returnedQty_sum'] or 0,
-            'consumption_sum': item_data['consumption_sum'] or 0
         }
     
     # Pre-fetch consumption data grouped by item and week
@@ -657,7 +666,6 @@ def create_update_runbal(request):
             'transferToWH_sum': 0,
             'issuedQty_sum': 0,
             'returnedQty_sum': 0,
-            'consumption_sum': 0
         })
         
         # Update summary fields
@@ -669,7 +677,7 @@ def create_update_runbal(request):
         running_balance.transferToWH = sums['transferToWH_sum']
         running_balance.issuedQty = sums['issuedQty_sum']
         running_balance.returnedQty = sums['returnedQty_sum']
-        running_balance.consumption = sums['consumption_sum']
+        running_balance.consumption = running_balance.returnedQty - running_balance.issuedQty
         running_balance.unitCost = item.unitCost
         running_balance.totalCost = item.unitCost * running_balance.itemQuantity
         
