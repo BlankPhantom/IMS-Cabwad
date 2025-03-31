@@ -47,30 +47,36 @@ const RunningBalance = () => {
     }
   };
 
+  // Build common query params for all API calls
+  const buildQueryParams = (page = 1) => {
+    const queryParams = new URLSearchParams({
+      month: selectedMonth + 1,
+      year: selectedYear,
+      page,
+    });
+
+    if (selectedMeasurement && selectedMeasurement !== "0") {
+      queryParams.append("measurementID", selectedMeasurement);
+    }
+
+    if (remarks && remarks !== "") {
+      queryParams.append("remarks", remarks);
+    }
+
+    // Add available_only parameter if filter is active
+    if (showAvailableOnly) {
+      queryParams.append("available_only", "true");
+    }
+
+    return queryParams;
+  };
+
   const fetchRunningBalance = async (page = 1) => {
     const token = localStorage.getItem("access_token");
     try {
       setLoading(true);
 
-      const queryParams = new URLSearchParams({
-        month: selectedMonth + 1,
-        year: selectedYear,
-        page,
-      });
-
-      if (selectedMeasurement && selectedMeasurement !== "0") {
-        queryParams.append("measurementID", selectedMeasurement);
-      }
-
-      if (remarks && remarks !== "") {
-        queryParams.append("remarks", remarks);
-      }
-
-      // Add available_only parameter if filter is active
-      if (showAvailableOnly) {
-        queryParams.append("available_only", "true");
-      }
-
+      const queryParams = buildQueryParams(page);
       const url = `${API_ENDPOINTS.RUNNING_BAL_LIST}?${queryParams}`;
 
       const response = await fetch(url, {
@@ -108,46 +114,29 @@ const RunningBalance = () => {
   const handleSearch = (event) => {
     const term = event.target.value;
     setSearchTerm(term);
-
-    if (term.trim().length === 0) {
-      fetchRunningBalance(1); // If search is cleared, use regular fetch
-      return;
-    }
-
-    performSearch(term, 1);
+    setCurrentPage(1); // Reset to first page when searching
+    
+    // We'll handle the actual search in the useEffect
   };
 
-  // Actual search function
+  // Perform search with current filters
   const performSearch = async (term, page = 1) => {
-    if (!term.trim()) {
-      fetchRunningBalance(1);
-      return;
-    }
-
     try {
       const token = localStorage.getItem("access_token");
-      const queryParams = new URLSearchParams({
-        search: term.trim(),
-        page: page,
-        month: selectedMonth + 1,
-        year: selectedYear,
-      });
-
-      if (selectedMeasurement && selectedMeasurement !== "0") {
-        queryParams.append("measurementID", selectedMeasurement);
+      
+      const queryParams = buildQueryParams(page);
+      
+      // Add search term if present
+      if (term.trim()) {
+        queryParams.append("search", term.trim());
       }
 
-      if (remarks && remarks !== "") {
-        queryParams.append("remarks", remarks);
-      }
-
-      // Add available_only parameter if filter is active
-      if (showAvailableOnly) {
-        queryParams.append("available_only", "true");
-      }
-
+      const endpoint = term.trim() 
+        ? API_ENDPOINTS.RUNNING_BAL_SEARCH 
+        : API_ENDPOINTS.RUNNING_BAL_LIST;
+      
       const response = await fetch(
-        `${API_ENDPOINTS.RUNNING_BAL_SEARCH}?${queryParams}`,
+        `${endpoint}?${queryParams}`,
         {
           method: "GET",
           headers: {
@@ -171,36 +160,35 @@ const RunningBalance = () => {
     }
   };
 
-  // Function for pagination during search
-  const paginateSearch = (pageNumber) => {
-    if (searchTerm.trim()) {
-      performSearch(searchTerm, pageNumber);
-    } else {
-      fetchRunningBalance(pageNumber);
-    }
-  };
-
   const handleRemarksFilter = (event) => {
     const remark = event.target.value;
     setRemarks(remark);
+    setCurrentPage(1); // Reset to first page when filter changes
   };
   
   const handleAvailableOnlyFilter = (event) => {
     const checked = event.target.checked;
     setShowAvailableOnly(checked);
+    setCurrentPage(1); // Reset to first page when filter changes
   };
 
   // Handle month and year change
   const handleMonthYearChange = (month, year) => {
     setSelectedMonth(month);
     setSelectedYear(year);
+    setCurrentPage(1); // Reset to first page when date changes
   };
 
-  // Fetch data when month/year changes, but only if already initialized
+  // Single useEffect to handle all filter changes
   useEffect(() => {
-    fetchRunningBalance(1);
+    // Always use performSearch which handles both search and regular fetching
+    performSearch(searchTerm, currentPage);
+  }, [selectedMonth, selectedYear, selectedMeasurement, remarks, showAvailableOnly, searchTerm, currentPage]);
+
+  // Initial setup
+  useEffect(() => {
     fetchMeasurements();
-  }, [selectedMonth, selectedYear, selectedMeasurement, remarks, showAvailableOnly]);
+  }, []);
 
   const formatCurrency = (value) => {
     return `₱${parseFloat(value).toLocaleString("en-PH", {
@@ -211,17 +199,14 @@ const RunningBalance = () => {
 
   const handleMeasurementChange = (event) => {
     setSelectedMeasurement(event.target.value);
+    setCurrentPage(1); // Reset to first page when filter changes
   };
 
   const paginate = (pageNumber) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
-      if (searchTerm.trim().length > 0) {
-        // If we're in search mode, use search endpoint for pagination
-        paginateSearch(pageNumber);
-      } else {
-        // Otherwise use regular fetch
-        fetchRunningBalance(pageNumber);
-      }
+      setCurrentPage(pageNumber);
+      // No need to call fetchRunningBalance or performSearch here
+      // as the useEffect will handle it
     }
   };
 
