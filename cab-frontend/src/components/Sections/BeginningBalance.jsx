@@ -19,7 +19,7 @@ const BeginningBalance = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
-  const [itemsPerPage] = useState(5);
+  const [itemsPerPage] = useState(20);
 
   //fetch measurements
   const fetchMeasurements = async () => {
@@ -133,7 +133,6 @@ const BeginningBalance = () => {
       return;
     }
 
-    setLoading(true);
     try {
       const token = localStorage.getItem("access_token");
       const queryParams = new URLSearchParams({

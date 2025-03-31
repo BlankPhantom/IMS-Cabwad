@@ -115,7 +115,6 @@ const RunningBalance = () => {
       return;
     }
 
-    setLoading(true);
     try {
       const token = localStorage.getItem("access_token");
       const queryParams = new URLSearchParams({
@@ -378,7 +377,7 @@ const RunningBalance = () => {
             }}
             value={remarks}
             onChange={handleRemarksFilter}>
-            <option value="">All</option>
+            <option value="">All Remarks</option>
             <option value="Non-Moving">Non-Moving</option>
             <option value="Slow Moving">Slow Moving</option>
             <option value="Fast Moving">Fast Moving</option>

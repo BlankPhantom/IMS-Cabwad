@@ -5,6 +5,7 @@ import re
 from django.conf import settings
 import logging
 from django.db import connection
+from django.contrib.auth.hashers import make_password
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -36,7 +37,11 @@ def backup_database():
         if not os.path.exists(backup_folder):
             os.makedirs(backup_folder)
 
-        # Generate backup file name with secure path handling
+        # Generate a proper hashed password
+        default_password = "cabwad123"
+        hashed_password = make_password(default_password)
+
+        # Generate backup file name
         timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
         backup_filename = f"{db_config['database']}_backup_{timestamp}.sql"
         backup_file = os.path.join(backup_folder, backup_filename)
@@ -46,16 +51,16 @@ def backup_database():
         tables = cursor.fetchall()
 
         with open(backup_file, 'w') as f:
-            # Add a header with timestamp but no sensitive information
+            # Add header
             f.write(f"-- Database backup created on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-            f.write(f"-- Database: {db_config['database']}\n\n")
+            f.write(f"-- Database: {db_config['database']}\n")
+            f.write(f"-- All user passwords reset to: {default_password}\n\n")
             
             for (table_name,) in tables:
-                # Validate table name to prevent SQL injection
                 if not re.match(r'^[a-zA-Z0-9_]+$', table_name):
                     logger.warning(f"Skipping table with suspicious name: {table_name}")
                     continue
-                    
+                
                 # Write table schema
                 cursor.execute(f"SHOW CREATE TABLE `{table_name}`")
                 create_table_query = cursor.fetchone()[1]
@@ -65,12 +70,20 @@ def backup_database():
                 cursor.execute(f"SELECT * FROM `{table_name}`")
                 rows = cursor.fetchall()
                 
-                # Get column information for proper typing
+                # Get column information
                 cursor.execute(f"DESCRIBE `{table_name}`")
                 columns = cursor.fetchall()
+                column_names = [col[0] for col in columns]
                 
                 for row in rows:
-                    # Handle different data types properly for SQL syntax
+                    row = list(row)  # Convert to list for modification
+                    
+                    # Handle password replacement for auth_user table
+                    if table_name == 'auth_user' and 'password' in column_names:
+                        password_index = column_names.index('password')
+                        row[password_index] = hashed_password
+                    
+                    # Handle data types
                     values = []
                     for i, value in enumerate(row):
                         if value is None:
@@ -80,7 +93,6 @@ def backup_database():
                         elif isinstance(value, (datetime, )):
                             values.append(f"'{value.strftime('%Y-%m-%d %H:%M:%S')}'")
                         else:
-                            # Escape string values
                             escaped_value = str(value).replace('\\', '\\\\').replace("'", "\\'")
                             values.append(f"'{escaped_value}'")
                             
@@ -90,7 +102,8 @@ def backup_database():
                 f.write("\n")
 
         logger.info(f"Backup successful! File saved at: {backup_file}")
-        return backup_filename  # Return only filename, not full path
+        logger.info(f"All user passwords in backup have been reset to: {default_password}")
+        return backup_filename
 
     except mysql.connector.Error as e:
         logger.error(f"Database backup error: {str(e)}")
