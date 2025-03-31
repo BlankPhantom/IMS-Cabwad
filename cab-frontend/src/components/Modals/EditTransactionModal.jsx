@@ -116,16 +116,26 @@ const EditTransactionModal = ({
 
     const fetchProducts = async () => {
         try {
+            console.log("Starting to fetch products...");
             const response = await fetch(API_ENDPOINTS.ITEM_LIST);
+            console.log("Response received:", response.status);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
-            setProducts(data);
+            console.log("Products data received:", data);
+
+            // Extract the results array from the paginated response
+            const productsArray = data.results || [];
+            console.log("First product:", productsArray[0]);
+
+            setProducts(productsArray); // Store just the results array
         } catch (error) {
             console.error("Error fetching products:", error);
+            setProducts([]);
         }
     };
+
 
     const fetchProductsForTransaction = async (transactionDetailsID) => {
         try {
@@ -247,13 +257,26 @@ const EditTransactionModal = ({
 
     const handleProductNameChange = (e) => {
         const { value } = e.target;
-        setProductData(prevData => ({
+        setProductData((prevData) => ({
             ...prevData,
-            productName: value
+            productName: value,
         }));
 
         if (value) {
-            const filtered = products.filter(product => product.itemName.toLowerCase().includes(value.toLowerCase()));
+            console.log("Filtering for:", value);
+            const productsArray = Array.isArray(products) ? products : [];
+
+            // Check if the first product has the expected structure
+            if (productsArray.length > 0) {
+                console.log("First product:", productsArray[0]);
+            }
+
+            const filtered = productsArray.filter((product) => {
+                return product && product.itemName &&
+                    product.itemName.toLowerCase().includes(value.toLowerCase());
+            });
+
+            console.log("Filtered products:", filtered);
             setFilteredProducts(filtered);
         } else {
             setFilteredProducts([]);
@@ -269,9 +292,20 @@ const EditTransactionModal = ({
         }));
 
         if (value) {
-            const filtered = products.filter(product =>
-                product.itemName.toLowerCase().includes(value.toLowerCase())
-            );
+            console.log("Filtering for edit:", value);
+            const productsArray = Array.isArray(products) ? products : [];
+
+            // Check if the first product has the expected structure
+            if (productsArray.length > 0) {
+                console.log("First product in edit:", productsArray[0]);
+            }
+
+            const filtered = productsArray.filter((product) => {
+                return product && product.itemName &&
+                    product.itemName.toLowerCase().includes(value.toLowerCase());
+            });
+
+            console.log("Filtered products for edit:", filtered);
             setFilteredProducts(filtered);
         } else {
             setFilteredProducts([]);
