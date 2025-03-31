@@ -3,7 +3,7 @@ import tempfile
 from django.utils import timezone
 from django.utils.timezone import now
 from django.http import JsonResponse
-from django.db.models import Sum
+from django.db.models import Sum, Q
 from rest_framework.pagination import PageNumberPagination
 logger = logging.getLogger(__name__)
 from django.views.decorators.csrf import csrf_exempt
@@ -176,6 +176,21 @@ def item_list_detail(request, id):
     serializer = ItemSerializer(item, context={'request': request})
     return Response(serializer.data)
 
+@api_view(['GET'])
+def item_list_search(request):
+    search_term = request.query_params.get('search', '')
+    paginator = Pagination()
+    
+    # Use Q objects for more complex searching
+    items = Item.objects.filter(
+        Q(itemID__icontains=search_term) | 
+        Q(itemName__icontains=search_term) | 
+        Q(classificationID__classification__icontains=search_term)
+    )
+    
+    result_page = paginator.paginate_queryset(items, request)
+    serializer = ItemSerializer(result_page, many=True, context={'request': request})
+    return paginator.get_paginated_response(serializer.data)
 
 @api_view(['POST'])
 def item_create(request):
@@ -251,15 +266,40 @@ def get_beginning_bal(request):
     measurement_id = request.query_params.get('measurementID')
 
     beginning_bal = BeginningBalance.objects.all()
-
+    
     if month:
         beginning_bal = beginning_bal.filter(created_at__month=month)
     if year:
         beginning_bal = beginning_bal.filter(created_at__year=year)
     if measurement_id:
         beginning_bal = beginning_bal.filter(measurementID=measurement_id)
-               
+        
     paginator = Pagination()
+    result_page = paginator.paginate_queryset(beginning_bal, request)
+    serializer = BeginningBalanceSerializer(result_page, many=True)
+    return paginator.get_paginated_response(serializer.data)
+
+@api_view(['GET'])
+def search_beginning_bal(request):
+    month = request.query_params.get('month')
+    year = request.query_params.get('year')
+    measurement_id = request.query_params.get('measurementID')
+    search_term = request.query_params.get('search', '')
+    paginator = Pagination()
+    
+    beginning_bal = BeginningBalance.objects.filter(
+        Q(itemID__icontains=search_term) |
+        Q(itemName__icontains=search_term)
+    )
+    
+    # Use Q objects for more complex searching
+    if month:
+        beginning_bal = beginning_bal.filter(created_at__month=month)
+    if year:
+        beginning_bal = beginning_bal.filter(created_at__year=year)
+    if measurement_id:
+        beginning_bal = beginning_bal.filter(measurementID=measurement_id)
+        
     result_page = paginator.paginate_queryset(beginning_bal, request)
     serializer = BeginningBalanceSerializer(result_page, many=True)
     return paginator.get_paginated_response(serializer.data)
@@ -455,6 +495,7 @@ def transaction_product_delete(request, id, detailID):
 def get_running_balance(request):
     month = request.query_params.get('month')
     year = request.query_params.get('year')
+    measurement_id = request.query_params.get('measurementID')
     
     running_balances = RunningBalance.objects.all()
 
@@ -462,8 +503,35 @@ def get_running_balance(request):
         running_balances = running_balances.filter(created_at__month=month)
     if year:
         running_balances = running_balances.filter(created_at__year=year)
+    if measurement_id:
+        running_balances = running_balances.filter(measurementID=measurement_id)
         
     paginator = Pagination()
+    result_page = paginator.paginate_queryset(running_balances, request)
+    serializer = RunningBalanceSerializer(result_page, many=True)
+    return paginator.get_paginated_response(serializer.data)
+
+@api_view(['GET'])
+def search_running_balance(request):
+    month = request.query_params.get('month')
+    year = request.query_params.get('year')
+    measurement_id = request.query_params.get('measurementID')
+    search_term = request.query_params.get('search', '')
+    
+    paginator = Pagination()
+    
+    running_balances = RunningBalance.objects.filter(
+        Q(itemName__icontains=search_term)
+    )
+
+    if month:
+        running_balances = running_balances.filter(created_at__month=month)
+    if year:
+        running_balances = running_balances.filter(created_at__year=year)
+    if measurement_id:
+        running_balances = running_balances.filter(measurementID=measurement_id)
+        
+    
     result_page = paginator.paginate_queryset(running_balances, request)
     serializer = RunningBalanceSerializer(result_page, many=True)
     return paginator.get_paginated_response(serializer.data)
@@ -676,6 +744,37 @@ def get_monthly_consumption(request):
     return paginator.get_paginated_response(serializer.data)
 
 @api_view(['GET'])
+def search_monthly_consumption(request):
+    # Get query parameters
+    month = request.query_params.get('month')
+    year = request.query_params.get('year')
+    section_id = request.query_params.get('sectionID')
+    search_term = request.query_params.get('search', '')
+    
+    # Filter MonthlyConsumption based on the provided parameters
+    monthly_consumption = MonthlyConsumption.objects.filter(
+        Q(itemName__icontains=search_term) | 
+        Q(date__icontains=search_term) 
+    )
+
+    if month:
+        monthly_consumption = monthly_consumption.filter(date__month=month)
+    if year:
+        monthly_consumption = monthly_consumption.filter(date__year=year)
+    if section_id:
+        monthly_consumption = monthly_consumption.filter(sectionID=section_id)
+
+    paginator = Pagination()
+    
+    # Order by week to ensure proper weekly breakdown
+    monthly_consumption = monthly_consumption.order_by('week')
+
+    result_page = paginator.paginate_queryset(monthly_consumption, request)
+    # Serialize the filtered data
+    serializer = MonthlyConsumptionSerializer(result_page, many=True)
+    return paginator.get_paginated_response(serializer.data)
+
+@api_view(['GET'])
 def export_consumption_to_excel(request):
     # Extract filter parameters
     section_id = request.GET.get('sectionID') or request.query_params.get('sectionID')
@@ -769,7 +868,7 @@ def export_consumption_to_excel(request):
         headers = ['Date', 'Week', 'Section Name', 'Item ID', 'Item Name', 'Consumption', 'Cost', 'Total']
         for c_idx, header in enumerate(headers, start=1):
             cell = ws.cell(row=9, column=c_idx, value=header)
-            cell.font = cell.font(bold=True)  # Make the header bold
+            
         for c_idx, header in enumerate(headers, start=1):
             ws.cell(row=9, column=c_idx, value=header)
         
