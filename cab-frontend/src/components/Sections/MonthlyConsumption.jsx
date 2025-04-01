@@ -87,12 +87,7 @@ const MonthlyConsumption = () => {
   };
 
   const updateMonthlyState = (data, page) => {
-    console.log("API response data:", data);
-    console.log("Items per page:", itemsPerPage);
-    console.log("Results count:", data.count);
     const calculatedTotalPages = Math.ceil(data.count / itemsPerPage);
-    console.log("Calculated total pages:", calculatedTotalPages);
-
     setConsumptionData(data.results);
     setCurrentItems(data.results);
     setTotalPages(calculatedTotalPages);

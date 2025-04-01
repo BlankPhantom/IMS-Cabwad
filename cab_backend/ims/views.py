@@ -510,7 +510,6 @@ def get_running_balance(request):
     if remarks:
         running_balances = running_balances.filter(remarks=remarks)
     if available_only == 'true':
-        # Make sure this is filtering for greater than 0, not greater than or equal to 0
         running_balances = running_balances.filter(itemQuantity__gt=0)
         
     paginator = Pagination()
@@ -539,7 +538,6 @@ def search_running_balance(request):
     if measurement_id:
         running_balances = running_balances.filter(measurementID=measurement_id)
     if available_only == 'true':
-        # Make sure this is filtering for greater than 0, not greater than or equal to 0
         running_balances = running_balances.filter(itemQuantity__gt=0)
         
     
@@ -747,7 +745,6 @@ def get_monthly_consumption(request):
     monthly_consumption = monthly_consumption.order_by('week')
 
     result_page = paginator.paginate_queryset(monthly_consumption, request)
-    # Serialize the filtered data
     serializer = MonthlyConsumptionSerializer(result_page, many=True)
     return paginator.get_paginated_response(serializer.data)
 
