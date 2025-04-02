@@ -567,7 +567,7 @@ logger = logging.getLogger(__name__)
 def create_update_runbal(request): 
     current_month = timezone.now().month 
     current_year = timezone.now().year 
-    last_month, last_year = (12, current_year - 1) if current_month == 1 else (current_month - 1, current_year)
+    month, last = (12, current_year) if current_month == 1 else (current_month, current_year)
 
     # Use select_related to reduce database queries for related models
     items = Item.objects.all().select_related('measurementID').order_by('itemID')
@@ -576,8 +576,8 @@ def create_update_runbal(request):
     beginning_balances = {
         str(bb.itemID): bb.itemQuantity 
         for bb in BeginningBalance.objects.filter(
-            created_at__year=last_year,
-            created_at__month=last_month,
+            created_at__year=last,
+            created_at__month=month,
         )
     }
 
