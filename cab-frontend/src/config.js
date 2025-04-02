@@ -16,6 +16,7 @@ export const API_ENDPOINTS = {
 
     //Item Endpoints
     ITEM_LIST: `${BASE_URL}ims/item/`,
+    PRODUCT_LIST: `${BASE_URL}ims/item/products/`,
     ITEM_SEARCH: `${BASE_URL}ims/search-item/`,
     ADD_ITEM: `${BASE_URL}ims/item/create/`,
     UPDATE_ITEM: (itemID) => `${BASE_URL}ims/item/update/${itemID}/`,
@@ -57,7 +58,6 @@ export const API_ENDPOINTS = {
     MEASUREMENTS_LIST: `${BASE_URL}ims/measurement/`,
     SECTION_LIST: `${BASE_URL}ims/section/`,
     PURPOSE_LIST: `${BASE_URL}ims/purpose/`,
-    PRODUCT_LIST: `${BASE_URL}ims/product/`,
     AREA_LIST: `${BASE_URL}ims/area/`,
     DOWNLOAD_REPORTS:(year, month) => `${BASE_URL}ims/download-report/${year}/${month}/`,
 

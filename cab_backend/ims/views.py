@@ -157,7 +157,14 @@ def toggle_user_activation(request, user_id):
     user.save()
     return Response({"message": f"User {'activated' if user.is_active else 'deactivated'} successfully"}, status=status.HTTP_200_OK)
 
+#get items without pagination
+@api_view(['GET'])
+def get_all_items(request):
+    items = Item.objects.all()
+    serializer = ItemSerializer(items, many=True,  context={'request': request})
+    return Response(serializer.data)
 
+#get items with pagination
 @api_view(['GET'])
 def item_list_all(request):
     paginator = Pagination()

@@ -96,34 +96,17 @@ const ModalTransaction = ({
   };
 
   const fetchProducts = async () => {
-    try {
-      let allProducts = [];
-      let nextPageUrl = API_ENDPOINTS.ITEM_LIST;
-
-      // Loop to fetch all pages
-      while (nextPageUrl) {
-        const response = await fetch(nextPageUrl);
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+    try{
+      const response = await fetch(API_ENDPOINTS.PRODUCT_LIST, {
+        method: 'GET',
+        headers:{
+          "Content-Type": "application/json",
         }
-
-        const data = await response.json();;
-
-        // Add the current page results to our collection
-        if (data.results && Array.isArray(data.results)) {
-          allProducts = [...allProducts, ...data.results];
-        }
-
-        // Check if there's a next page
-        nextPageUrl = data.next || null;
-      }
-
-
-      setProducts(allProducts);
+      }) 
+      const data = await response.json()
+      setProducts(data);
     } catch (error) {
       console.error("Error fetching products:", error);
-      setProducts([]);
     }
   };
 
