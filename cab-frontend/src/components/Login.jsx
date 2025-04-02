@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { useState, useEffect } from "react";
-import { Button, Container, Form } from "react-bootstrap";
+import { Button, Container, Form, Spinner } from "react-bootstrap";
 import Logo from "/src/assets/cabwadLogo.png";
 import CabFooter from "./CabFooter";
 import { API_ENDPOINTS } from "../config";
@@ -12,6 +12,7 @@ const Login = () => {
   const [password, setPassword] = useState();
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
@@ -29,6 +30,7 @@ const Login = () => {
     e.preventDefault();
     if (!validateLogin()) return;
 
+    setIsLoading(true);
     const loginData = { username, password };
 
     try {
@@ -54,16 +56,19 @@ const Login = () => {
           }
         } else {
           console.error("Login failed: Missing user data", data);
+          setIsLoading(false);
         }
       } else {
         setErrors({
           txtUsername: "Incorrect login details",
           txtPassword: "Incorrect login details",
         });
+        setIsLoading(false);
       }
     } catch (error) {
       console.error("Error during login:", error);
       alert("An error occurred. Please try again later.");
+      setIsLoading(false);
     }
   };
 
@@ -153,6 +158,7 @@ const Login = () => {
                     paddingLeft: "45px",
                     border: errors.txtUsername ? '2px solid red' : '1px solid #ced4da'
                   }}
+                  disabled={isLoading}
                 />
               </div>
               {errors.txtUsername && (
@@ -186,6 +192,7 @@ const Login = () => {
                     paddingRight: "50px",
                     border: errors.txtPassword ? '2px solid red' : '1px solid #ced4da'
                   }}
+                  disabled={isLoading}
                 />
                 <Button
                   variant="link"
@@ -197,6 +204,7 @@ const Login = () => {
                     transform: 'translateY(-50%)',
                     color: '#0041a8'
                   }}
+                  disabled={isLoading}
                 >
                   <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
                 </Button>
@@ -222,8 +230,23 @@ const Login = () => {
                   transition: 'transform 0.2s ease, box-shadow 0.2s ease'
                 }}
                 className="hover-effect"
+                disabled={isLoading}
               >
-                Login
+                {isLoading ? (
+                  <>
+                    <Spinner
+                      as="span"
+                      animation="border"
+                      size="sm"
+                      role="status"
+                      aria-hidden="true"
+                      style={{ marginRight: '8px' }}
+                    />
+                    Logging in...
+                  </>
+                ) : (
+                  'Login'
+                )}
               </Button>
             </div>
           </Form>
