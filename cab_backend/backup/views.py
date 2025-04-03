@@ -8,6 +8,8 @@ import os
 import logging
 from django.conf import settings
 from django.http import FileResponse
+import time
+from threading import Thread
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -46,6 +48,19 @@ class BackupDatabaseView(APIView):
             response['Expires'] = '0'
             
             logger.info(f"Serving backup file for download: {backup_filename}")
+            
+            def delete_file_after_delay(file_path, delay=60):
+                time.sleep(delay)
+                try:
+                    if os.path.exists(file_path):
+                        os.remove(file_path)
+                        logger.info(f"Backup file deleted: {file_path}")
+                except Exception as e:
+                    logger.error(f"Error deleting backup file: {e}")
+
+            # Start a background thread that deletes the file after 1 minute
+            Thread(target=delete_file_after_delay, args=(file_path, 10)).start()
+            
             return response
             
         except ValueError as e:
