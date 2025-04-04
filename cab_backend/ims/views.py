@@ -435,13 +435,13 @@ def get_transaction_by_itemID(request):
     transaction_history = TransactionProduct.objects.all()
     
     if month:
-        transaction_history = TransactionProduct.objects.filter(created_at__month = month)
+        transaction_history = transaction_history.filter(created_at__month = month)
     if year:
-        transaction_history = TransactionProduct.objects.filter(created_at__year = year)
+        transaction_history = transaction_history.filter(created_at__year = year)
     if item_id:
-        transaction_history = TransactionProduct.objects.filter(itemID_id = item_id)
+        transaction_history = transaction_history.filter(itemID_id = item_id)
 
-    serializer = TransactionProductSerializer(transaction_history, many=True, context={'request':request})
+    serializer = TransactionProductSerializer(transaction_history, many = True)
     return Response(serializer.data)
 
 def calculate_week(date_str):

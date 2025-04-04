@@ -1,13 +1,26 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom"; // Import useNavigate
 import { API_ENDPOINTS } from "../../config";
-import { Table, Container, Spinner, Alert, Button, Row } from "react-bootstrap";
+import {
+  Table,
+  Container,
+  Spinner,
+  Alert,
+  Button,
+  Row,
+  Col,
+} from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import MonthYearPicker from "../MonthYearPicker";
 
 const TransactionHistory = () => {
   const { itemID, itemName } = useParams();
   const navigate = useNavigate();
+  const [selectedMonthYear, setSelectedMonthYear] = useState({
+    month: new Date().getMonth(), // Default to current month
+    year: new Date().getFullYear(), // Default to current year
+  });
   const [products, setProducts] = useState([]);
   const [transactionDetails, setTransactionDetails] = useState({});
   const [groupedData, setGroupedData] = useState([]);
@@ -61,9 +74,15 @@ const TransactionHistory = () => {
         throw new Error("No authentication token found");
       }
 
+      const queryParams = new URLSearchParams({
+        month: selectedMonthYear.month + 1,
+        year: selectedMonthYear.year,
+        itemID: itemID,
+      });
+
       const url = `${
         API_ENDPOINTS.TRANSACTION_HISTORY
-      }?itemID=${encodeURIComponent(itemID)}`;
+      }?${queryParams.toString()}`;
       console.log("Fetching from:", url);
 
       const response = await fetch(url, {
@@ -134,9 +153,21 @@ const TransactionHistory = () => {
     }
   };
 
+  const handleMonthYearChange = (month, year) => {
+    setLoading(true);
+    setSelectedMonthYear({
+      month,
+      year,
+    });
+
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
+  };
+
   useEffect(() => {
     loadAllData();
-  }, [itemID]);
+  }, [selectedMonthYear, itemID]);
 
   const formatCurrency = (value) => {
     return `₱${parseFloat(value).toLocaleString("en-PH", {
@@ -170,6 +201,16 @@ const TransactionHistory = () => {
           Transaction History for {itemName} {itemID}
         </h3>
       </Row>
+      <Row className="mt-3 d-flex align-items-center justify-content-between">
+        <Col>
+          <MonthYearPicker
+            onMonthYearChange={handleMonthYearChange}
+            initialMonth={selectedMonthYear.month}
+            initialYear={selectedMonthYear.year}
+            allowAllMonths={true}
+          />
+        </Col>
+      </Row>
       {loading ? (
         <div className="text-center mt-4">
           <Spinner animation="border" />
@@ -178,25 +219,39 @@ const TransactionHistory = () => {
       ) : error ? (
         <Alert variant="danger">{error}</Alert>
       ) : (
-        <Table responsive bordered striped hover className="tableStyle mt-3">
+        <Table id="TtableStyle" responsive bordered striped hover className="tableStyle mt-3">
           <thead className="sticky-header">
             <tr>
               <th>Date</th>
               <th>Week</th>
               <th>MRIS/DR</th>
               <th>Supplier</th>
-              <th>Requested <br /> By</th>
+              <th>
+                Requested <br /> By
+              </th>
               <th>Section</th>
               <th>Purpose</th>
               <th>Item ID</th>
               <th>Product Name</th>
               <th>Area</th>
-              <th>Purchased From <br /> Supplier</th>
-              <th>Return to <br /> Supplier</th>
-              <th>Transfer from <br /> Other Warehouse</th>
-              <th>Transfer to <br /> Other Warehouse</th>
-              <th>Issued <br /> Qty.</th>
-              <th>Returned <br /> Qty.</th>
+              <th>
+                Purchased From <br /> Supplier
+              </th>
+              <th>
+                Return to <br /> Supplier
+              </th>
+              <th>
+                Transfer from <br /> Other Warehouse
+              </th>
+              <th>
+                Transfer to <br /> Other Warehouse
+              </th>
+              <th>
+                Issued <br /> Qty.
+              </th>
+              <th>
+                Returned <br /> Qty.
+              </th>
               <th>Consumption</th>
               <th>Cost</th>
               <th>Total</th>
@@ -207,13 +262,27 @@ const TransactionHistory = () => {
               groupedData.map((transaction, tIndex) => (
                 <React.Fragment key={tIndex}>
                   <tr>
-                    <td rowSpan={transaction.products?.length + 1 || 2}>{transaction.date}</td>
-                    <td rowSpan={transaction.products?.length + 1 || 2}>{transaction.week}</td>
-                    <td rowSpan={transaction.products?.length + 1 || 2}>{transaction.mris}</td>
-                    <td rowSpan={transaction.products?.length + 1 || 2}>{transaction.supplier}</td>
-                    <td rowSpan={transaction.products?.length + 1 || 2}>{transaction.requestedBy}</td>
-                    <td rowSpan={transaction.products?.length + 1 || 2}>{transaction.section || transaction.sectionName}</td>
-                    <td rowSpan={transaction.products?.length + 1 || 2}>{transaction.purpose || transaction.purposeName}</td>
+                    <td rowSpan={transaction.products?.length + 1 || 2}>
+                      {transaction.date}
+                    </td>
+                    <td rowSpan={transaction.products?.length + 1 || 2}>
+                      {transaction.week}
+                    </td>
+                    <td rowSpan={transaction.products?.length + 1 || 2}>
+                      {transaction.mris}
+                    </td>
+                    <td rowSpan={transaction.products?.length + 1 || 2}>
+                      {transaction.supplier}
+                    </td>
+                    <td rowSpan={transaction.products?.length + 1 || 2}>
+                      {transaction.requestedBy}
+                    </td>
+                    <td rowSpan={transaction.products?.length + 1 || 2}>
+                      {transaction.section || transaction.sectionName}
+                    </td>
+                    <td rowSpan={transaction.products?.length + 1 || 2}>
+                      {transaction.purpose || transaction.purposeName}
+                    </td>
                     <td colSpan="12"></td>
                   </tr>
                   {transaction.products?.length > 0 ? (
@@ -235,7 +304,9 @@ const TransactionHistory = () => {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="12" className="text-center text-muted">No products found</td>
+                      <td colSpan="12" className="text-center text-muted">
+                        No products found
+                      </td>
                     </tr>
                   )}
                 </React.Fragment>
