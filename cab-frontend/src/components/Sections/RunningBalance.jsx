@@ -369,21 +369,21 @@ const RunningBalance = () => {
               <th>
                 Unit of <br /> Measurement
               </th>
-              <th>Beginning Balance</th>
+              <th>Beginning <br /> Balance</th>
               <th>
                 Purchased from <br /> Supplier
               </th>
-              <th>Return to Supplier</th>
+              <th>Return to <br /> Supplier</th>
               <th>
                 Transfer From <br /> Other Warehouse
               </th>
               <th>
                 Transfer to <br /> Other Warehouse
               </th>
-              <th>Issued Qty.</th>
-              <th>Returned Qty.</th>
+              <th>Issued <br /> Qty.</th>
+              <th>Returned <br /> Qty.</th>
               <th>Consumption</th>
-              <th>Available Stocks</th>
+              <th>Available <br /> Stocks</th>
               <th>Cost</th>
               <th>Total</th>
               <th>Remarks</th>
