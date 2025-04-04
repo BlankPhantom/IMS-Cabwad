@@ -426,6 +426,26 @@ def get_transaction_product(request, id, detailID):
     serializer = TransactionProductSerializer(transactionProd, context={'request': request})
     return Response(serializer.data)
 
+@api_view(['GET'])
+def get_transaction_by_itemID(request):
+    month = request.query_params.get('month')
+    year = request.query_params.get('year')
+    item_id = request.query_params.get('itemID')
+    
+    transaction_history = TransactionProduct.objects.all()
+    
+    if month:
+        transaction_history = TransactionProduct.objects.filter(created_at__month = month)
+    if year:
+        transaction_history = TransactionProduct.objects.filter(created_at__year = year)
+    if item_id:
+        transaction_history = TransactionProduct.objects.filter(itemID_id = item_id)
+
+    paginator = Pagination()
+    result_page = paginator.paginate_queryset(transaction_history, request)
+    serializer = TransactionProductSerializer(result_page, many=True, context={'request':request})
+    return Response(serializer.data)
+
 def calculate_week(date_str):
     today = now().date()
     week_number = (today.day - 1) // 7 + 1 
