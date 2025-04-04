@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom'; // Import useNavigate
 import { API_ENDPOINTS } from '../../config';
-import { Table, Container, Spinner, Alert, Button } from 'react-bootstrap';
+import { Table, Container, Spinner, Alert, Button, Row } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
@@ -62,20 +62,27 @@ const TransactionHistory = () => {
         <Container style={{ width: "100%" }}
             fluid
             className="d-flex flex-column justify-content-center mt-2">
-            <div className='d-flex justify-content-between align-items-center'>
-                <Button
-                    variant="outline-primary"
-                    className="mt-5"
-                    size='sm'
-                    style={{ fontSize: '15px'}}
-                    onClick={() => navigate(-1)} // Navigate back to the previous page
+            <Row className="d-flex flex-column mt-5">
+                <div className="d-flex justify-content-start">
+                    <Button
+                        variant="outline-primary"
+                        size="sm"
+                        style={{ fontSize: "15px" }}
+                        onClick={() => navigate(-1)} // Navigate back to the previous page
+                    >
+                        <FontAwesomeIcon icon={faArrowLeft} />
+                    </Button>
+                </div>
+                <h3
+                    className="sectionTitle"
+                    style={{
+                        fontWeight: "650",
+                        textAlign: "center", // Center the text
+                    }}
                 >
-                    <FontAwesomeIcon icon={faArrowLeft} />
-                </Button>
-                <h3 className='sectionTitle mt-5' style={{ fontWeight: '650' , marginRight: '200px'}}>
                     Transaction History for {itemName} {itemID}
                 </h3>
-            </div>
+            </Row>
             {loading ? (
                 <Spinner animation="border" />
             ) : error ? (
