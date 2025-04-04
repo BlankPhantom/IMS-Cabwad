@@ -613,7 +613,7 @@ const Transactions = () => {
                                 <th>Week</th>
                                 <th>MRIS/DR</th>
                                 <th>Supplier</th>
-                                <th>Requested By</th>
+                                <th>Requested <br /> By</th>
                                 <th>Section</th>
                                 <th>Purpose</th>
                                 <th>Item ID</th>
@@ -623,8 +623,8 @@ const Transactions = () => {
                                 <th>Return to <br /> Supplier</th>
                                 <th>Transfer from <br /> Other Warehouse</th>
                                 <th>Transfer to <br /> Other Warehouse</th>
-                                <th>Issued Qty.</th>
-                                <th>Returned Qty.</th>
+                                <th>Issued <br /> Qty.</th>
+                                <th>Returned <br /> Qty.</th>
                                 <th>Consumption</th>
                                 <th>Cost</th>
                                 <th>Total</th>
