@@ -441,9 +441,7 @@ def get_transaction_by_itemID(request):
     if item_id:
         transaction_history = TransactionProduct.objects.filter(itemID_id = item_id)
 
-    paginator = Pagination()
-    result_page = paginator.paginate_queryset(transaction_history, request)
-    serializer = TransactionProductSerializer(result_page, many=True, context={'request':request})
+    serializer = TransactionProductSerializer(transaction_history, many=True, context={'request':request})
     return Response(serializer.data)
 
 def calculate_week(date_str):
