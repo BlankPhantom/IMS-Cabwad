@@ -41,7 +41,8 @@ urlpatterns = [
 
     path('transaction-detail/<int:id>/', views.get_transaction_details, name='create-transaction-detail'),
     path('transaction-product/<int:detailID>/<int:id>/', views.get_transaction_product, name='get-transaction-product'),
-    path('transaction-history/', views.get_transaction_by_itemID, name='get-transaction-product-by-itemID'),
+    path('transaction-history/<str:itemID>/', views.get_transaction_by_itemID, name='get-transaction-history'),
+    path('transaction-history/', views.get_transaction_by_itemID, name='transaction-history'),
     
     path('transaction-detail/create/', views.transaction_detail_create, name='create-transaction-detail'),
     path('transaction-product/create/', views.transaction_product_create, name='create-transaction-product'),

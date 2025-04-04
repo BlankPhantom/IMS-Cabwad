@@ -13,6 +13,7 @@ import BackupRestore from "./components/Sections/BackupRestore";
 import AccManagement from "./components/Sections/AccManagement";
 import MyProfile from "./components/Sections/MyProfile";
 import ProtectedRoute from "./components/ProtectedRoute"; // Import Protected Route
+import TransactionHistory from "./components/Sections/TransactionHistory";
 
 const App = () => {
     return (
@@ -29,6 +30,7 @@ const App = () => {
                 }>
                     <Route index element={<Masterlist />} />
                     <Route path="masterlist" element={<Masterlist />} />
+                    <Route path="transaction-history/:itemID/:itemName"element={<TransactionHistory />}/>
                     <Route path="beginning-balance" element={<BeginningBalance />} />
                     <Route path="transactions" element={<Transactions />} />
                     <Route path="running-balance" element={<RunningBalance />} />
@@ -36,20 +38,21 @@ const App = () => {
                     <Route path="weekly-consumption" element={<WeeklyConsumption />} />
                     <Route path="account-management" element={<AccManagement />} />
                     <Route path="backup-restore" element={<BackupRestore />} />
-                    <Route path="my-profile" element={<MyProfile />} />   
+                    <Route path="my-profile" element={<MyProfile />} />
                 </Route>
 
                 {/* Non-superusers default to DashboardB */}
                 <Route path="/dashboardB" element={<DashBoardB />}>
                     <Route index element={<Masterlist />} />
                     <Route path="masterlist" element={<Masterlist />} />
+                    <Route path="transaction-history/:itemID/:itemName" element={<TransactionHistory />} />
                     <Route path="beginning-balance" element={<BeginningBalance />} />
                     <Route path="transactions" element={<Transactions />} />
                     <Route path="running-balance" element={<RunningBalance />} />
                     <Route path="monthly-consumption" element={<MonthlyConsumption />} />
                     <Route path="weekly-consumption" element={<WeeklyConsumption />} />
-                    <Route path="my-profile" element={<MyProfile />} />   
-                </Route>           
+                    <Route path="my-profile" element={<MyProfile />} />
+                </Route>
             </Routes>
         </Router>
     );

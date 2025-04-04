@@ -10,11 +10,13 @@ import {
   Modal,
   Button,
 } from "react-bootstrap";
+import { useNavigate } from 'react-router-dom';
 import BtnAddNewItem from "../Button/BtnAddNewItem.jsx";
 import BtnEditDeleteMaster from "../Button/BtnEditDeleteMaster.jsx";
 import EditMasterModal from "../Modals/EditMasterModal.jsx";
 
 const Masterlist = () => {
+  const navigate = useNavigate();
   const [items, setItems] = useState([]);
   const [itemToEdit, setItemToEdit] = useState(null);
   const [currentItems, setCurrentItems] = useState([]);
@@ -112,16 +114,16 @@ const Masterlist = () => {
     }
   };
 
-const handleSearchChange = async (e,page=1) => {
+  const handleSearchChange = async (e, page = 1) => {
     const term = e.target.value.toLowerCase();
     setSearchTerm(term);
-  
+
     if (!term) {
       // Reset to first page of all items
       fetchItems(1);
       return;
     }
-  
+
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch(`${API_ENDPOINTS.ITEM_SEARCH}?search=${term}&page=${page}`, {
@@ -131,7 +133,7 @@ const handleSearchChange = async (e,page=1) => {
           Authorization: `Token ${token}`,
         },
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         setItems(data.results);
@@ -371,10 +373,11 @@ const handleSearchChange = async (e,page=1) => {
                   <td>{item.itemID}</td>
                   <td>{item.itemName}</td>
                   <td>{item.classificationName}</td>
-                  <td>
+                  <td width={"150px"}>
                     <BtnEditDeleteMaster
                       onEdit={() => handleEdit(item.itemID)}
                       onDelete={() => handleDelete(item.itemID)}
+                      onViewHistory={() => navigate(`/dashboard/transaction-history/${item.itemID}/${item.itemName}`)}
                     />
                   </td>
                 </tr>

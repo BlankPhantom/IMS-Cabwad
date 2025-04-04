@@ -52,6 +52,8 @@ export const API_ENDPOINTS = {
     UPDATE_TRANSACTION_PRODUCT: (detailID, id) => `${BASE_URL}ims/transaction-product/update/${detailID}/${id}/`, // Update a product in a transaction
     DELETE_TRANSACTION_PRODUCT: (detailID, id) => `${BASE_URL}ims/transaction-product/delete/${detailID}/${id}/`, // Delete a product in a transaction
 
+    TRANSACTION_HISTORY: `${BASE_URL}ims/transaction-history`,
+
     FETCH_TRANSACTIONS: `${BASE_URL}ims/transaction-detail/`,
 
     CLASSIFICATIONS_LIST: `${BASE_URL}ims/classification/`,
