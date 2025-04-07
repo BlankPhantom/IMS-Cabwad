@@ -9,6 +9,7 @@ import {
   Button,
   Row,
   Col,
+  Pagination,
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
@@ -26,6 +27,11 @@ const TransactionHistory = () => {
   const [groupedData, setGroupedData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [itemsPerPage] = useState(20);
 
   // Fetch all transaction details once
   const fetchTransactionDetails = async () => {
@@ -67,7 +73,7 @@ const TransactionHistory = () => {
   };
 
   // Fetch products for this specific itemID
-  const fetchProductHistory = async () => {
+  const fetchProductHistory = async (page = 1) => {
     try {
       const token = localStorage.getItem("access_token");
       if (!token) {
@@ -78,6 +84,7 @@ const TransactionHistory = () => {
         month: selectedMonthYear.month + 1,
         year: selectedMonthYear.year,
         itemID: itemID,
+        page,
       });
 
       const url = `${
@@ -99,6 +106,9 @@ const TransactionHistory = () => {
 
       const data = await response.json();
       console.log("Received product data:", data);
+
+      setTotalPages(Math.ceil(data.count / itemsPerPage));
+      setCurrentPage(page);
 
       return data.results || data;
     } catch (err) {
@@ -131,14 +141,14 @@ const TransactionHistory = () => {
   };
 
   // Load all data
-  const loadAllData = async () => {
+  const loadAllData = async (page = 1) => {
     try {
       setLoading(true);
 
       // Fetch both datasets concurrently
       const [detailsMap, productsData] = await Promise.all([
         fetchTransactionDetails(),
-        fetchProductHistory(),
+        fetchProductHistory(page),
       ]);
 
       setProducts(productsData);
@@ -163,6 +173,69 @@ const TransactionHistory = () => {
     setTimeout(() => {
       setLoading(false);
     }, 500);
+  };
+
+  const paginate = (pageNumber) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      loadAllData(pageNumber);
+    }
+  };
+
+  const renderPaginationItems = () => {
+    const pageNumbers = [];
+    const totalPagesToShow = 5;
+    let startPage, endPage;
+
+    if (totalPages <= totalPagesToShow) {
+      startPage = 1;
+      endPage = totalPages;
+    } else {
+      if (currentPage <= Math.ceil(totalPagesToShow / 2)) {
+        startPage = 1;
+        endPage = totalPagesToShow;
+      } else if (currentPage + Math.floor(totalPagesToShow / 2) >= totalPages) {
+        startPage = totalPages - totalPagesToShow + 1;
+        endPage = totalPages;
+      } else {
+        startPage = currentPage - Math.floor(totalPagesToShow / 2);
+        endPage = currentPage + Math.floor(totalPagesToShow / 2);
+      }
+    }
+
+    if (startPage > 1) {
+      pageNumbers.push(
+        <Pagination.Item key="first" onClick={() => paginate(1)}>
+          1
+        </Pagination.Item>
+      );
+      if (startPage > 2) {
+        pageNumbers.push(<Pagination.Ellipsis key="first-ellipsis" />);
+      }
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(
+        <Pagination.Item
+          key={i}
+          active={i === currentPage}
+          onClick={() => paginate(i)}>
+          {i}
+        </Pagination.Item>
+      );
+    }
+
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        pageNumbers.push(<Pagination.Ellipsis key="last-ellipsis" />);
+      }
+      pageNumbers.push(
+        <Pagination.Item key="last" onClick={() => paginate(totalPages)}>
+          {totalPages}
+        </Pagination.Item>
+      );
+    }
+
+    return pageNumbers;
   };
 
   useEffect(() => {
@@ -283,7 +356,6 @@ const TransactionHistory = () => {
                     <td rowSpan={transaction.products?.length + 1 || 2}>
                       {transaction.purpose || transaction.purposeName}
                     </td>
-                    <td colSpan="12"></td>
                   </tr>
                   {transaction.products?.length > 0 ? (
                     transaction.products.map((product, pIndex) => (
@@ -314,12 +386,39 @@ const TransactionHistory = () => {
             ) : (
               <tr>
                 <td colSpan="19" className="text-center">
-                  No transactions found for item {itemID}
+                  No transactions found for item {itemName} - {itemID} 
                 </td>
               </tr>
             )}
           </tbody>
         </Table>
+      )}
+      {!loading && !error && totalPages > 1 && (
+        <Row>
+          <Col className="d-flex justify-content-center mt-3">
+            <Pagination>
+              <Pagination.First
+                onClick={() => paginate(1)}
+                disabled={currentPage === 1}
+              />
+              <Pagination.Prev
+                onClick={() => paginate(currentPage - 1)}
+                disabled={currentPage === 1}
+              />
+
+              {renderPaginationItems()}
+
+              <Pagination.Next
+                onClick={() => paginate(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              />
+              <Pagination.Last
+                onClick={() => paginate(totalPages)}
+                disabled={currentPage === totalPages}
+              />
+            </Pagination>
+          </Col>
+        </Row>
       )}
     </Container>
   );
