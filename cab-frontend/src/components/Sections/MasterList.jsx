@@ -377,7 +377,11 @@ const Masterlist = () => {
                     <BtnEditDeleteMaster
                       onEdit={() => handleEdit(item.itemID)}
                       onDelete={() => handleDelete(item.itemID)}
-                      onViewHistory={() => navigate(`/dashboard/transaction-history/${item.itemID}/${item.itemName}`)}
+                      onViewHistory={() =>
+                        navigate(
+                          `/dashboard/transaction-history/${item.itemID}/${encodeURIComponent(item.itemName)}`
+                        )
+                      }
                     />
                   </td>
                 </tr>

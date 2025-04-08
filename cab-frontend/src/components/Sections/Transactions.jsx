@@ -236,8 +236,19 @@ const Transactions = () => {
         const term = e.target.value.toLowerCase();
         setSearchTerm(term);
 
-        // Filter transactions based on search term
+        // Filter transactions based on search term and selected month/year
         const filtered = transactions.filter((transaction) => {
+            const transactionDate = new Date(transaction.date);
+
+            // Ensure the transaction matches the selected month and year
+            const isInSelectedMonthYear =
+                transactionDate.getMonth() === selectedMonthYear.month &&
+                transactionDate.getFullYear() === selectedMonthYear.year;
+
+            if (!isInSelectedMonthYear) {
+                return false;
+            }
+
             // Search in transaction main fields
             const mainFieldsMatch = [
                 transaction.date,

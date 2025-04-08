@@ -115,26 +115,24 @@ const RunningBalance = () => {
     const term = event.target.value;
     setSearchTerm(term);
     setCurrentPage(1); // Reset to first page when searching
-    
-    // We'll handle the actual search in the useEffect
   };
 
   // Perform search with current filters
   const performSearch = async (term, page = 1) => {
     try {
       const token = localStorage.getItem("access_token");
-      
+
       const queryParams = buildQueryParams(page);
-      
+
       // Add search term if present
       if (term.trim()) {
         queryParams.append("search", term.trim());
       }
 
-      const endpoint = term.trim() 
-        ? API_ENDPOINTS.RUNNING_BAL_SEARCH 
+      const endpoint = term.trim()
+        ? API_ENDPOINTS.RUNNING_BAL_SEARCH
         : API_ENDPOINTS.RUNNING_BAL_LIST;
-      
+
       const response = await fetch(
         `${endpoint}?${queryParams}`,
         {
@@ -165,7 +163,7 @@ const RunningBalance = () => {
     setRemarks(remark);
     setCurrentPage(1); // Reset to first page when filter changes
   };
-  
+
   const handleAvailableOnlyFilter = (event) => {
     const checked = event.target.checked;
     setShowAvailableOnly(checked);
@@ -181,9 +179,16 @@ const RunningBalance = () => {
 
   // Single useEffect to handle all filter changes
   useEffect(() => {
-    // Always use performSearch which handles both search and regular fetching
     performSearch(searchTerm, currentPage);
-  }, [selectedMonth, selectedYear, selectedMeasurement, remarks, showAvailableOnly, searchTerm, currentPage]);
+  }, [
+    selectedMonth,
+    selectedYear,
+    selectedMeasurement,
+    remarks,
+    showAvailableOnly,
+    searchTerm,
+    currentPage,
+  ]);
 
   // Initial setup
   useEffect(() => {
@@ -205,8 +210,6 @@ const RunningBalance = () => {
   const paginate = (pageNumber) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
-      // No need to call fetchRunningBalance or performSearch here
-      // as the useEffect will handle it
     }
   };
 
@@ -422,8 +425,8 @@ const RunningBalance = () => {
                         item.itemQuantity <= item.beginningBalance * 0.1
                           ? "red"
                           : item.itemQuantity >= item.beginningBalance
-                          ? "green"
-                          : "",
+                            ? "green"
+                            : "",
                     }}>
                     {item.itemQuantity}
                   </td>

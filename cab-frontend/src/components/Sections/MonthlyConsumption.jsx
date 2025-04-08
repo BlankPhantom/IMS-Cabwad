@@ -125,7 +125,6 @@ const MonthlyConsumption = () => {
       return;
     }
 
-    setLoading(true);
     try {
       const token = localStorage.getItem("access_token");
       const queryParams = new URLSearchParams({
