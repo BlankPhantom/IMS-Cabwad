@@ -917,62 +917,67 @@ def export_consumption_to_excel(request):
     response['Cleanup-Temp-File'] = temp_file_path  # Custom header for cleanup
     return response
 
-# @csrf_exempt  # Remove in production; use proper authentication
-# def xlsm_to_json(request):
-#     if request.method == "POST" and request.FILES.get("file"):
-#         excel_file = request.FILES["file"]
-#         sheet_name = request.POST.get("sheet_name", "Beginning Balance")  # Default to "Sheet1"
+# JSON converter for ITEMS model for masterlist
+@csrf_exempt  # Remove in production; use proper authentication
+def bb_xlsm_to_json(request):
+    if request.method == "POST" and request.FILES.get("file"):
+        excel_file = request.FILES["file"]
+        sheet_name = request.POST.get("sheet_name", "Beginning Balance")  # Default to "Sheet1"
         
-#         # Save file temporarily, overwrite if exists
-#         file_path = f"temp/{excel_file.name}"
-#         if default_storage.exists(file_path):
-#             default_storage.delete(file_path)
-#         file_path = default_storage.save(file_path, excel_file)
+        # Save file temporarily, overwrite if exists
+        file_path = f"temp/{excel_file.name}"
+        if default_storage.exists(file_path):
+            default_storage.delete(file_path)
+        file_path = default_storage.save(file_path, excel_file)
 
-#         try:
-#             # Read the specified sheet from the .xlsm file
-#             df = pd.read_excel(file_path, sheet_name=sheet_name, engine="openpyxl")
+        try:
+            # Read the specified sheet from the .xlsm file
+            df = pd.read_excel(file_path, sheet_name=sheet_name, engine="openpyxl")
             
-#             column_mapping = {
-#                 "Item ID": "itemID",
-#                 "PRODUCT NAME": "itemName",
-#                 "UNIT OF MEASURE": "measurementName",
-#                 "Available Stocks": "itemQuantity",
-#                 "Ave. Unit Cost": "unitCost"
-#             } 
+            column_mapping = {
+                "Product Name": "itemName",
+                "Unit of Measure": "measurementName",
+                "Available Stocks": "itemQuantity",
+                "Ave. Unit Cost": "unitCost"
+            }
             
-#             # Specify the columns you want to extract
-#             selected_columns = ["Item ID","PRODUCT NAME", "UNIT OF MEASURE", "Available Stocks", "Ave. Unit Cost"]
-#             df_selected = df[selected_columns].rename(columns=column_mapping)
+            # Map itemID from the items model based on their name
+            item_name_to_id = {item.itemName: item.itemID for item in Item.objects.all()}
+            # Specify the columns you want to extract
+            selected_columns = ["Product Name", "Unit of Measure", "Available Stocks", "Ave. Unit Cost"]
+            df_selected = df[selected_columns].rename(columns=column_mapping)
 
-#             # Trim whitespace from string columns
-#             df_selected = df_selected.applymap(lambda x: x.strip() if isinstance(x, str) else x)
+            # Map itemID to the extracted data
+            df_selected['itemID'] = df_selected['itemName'].map(item_name_to_id)
 
-#             # Replace NaN with None (which becomes null in JSON)
-#             df_selected = df_selected.where(pd.notnull(df_selected), 0)
+            # Trim whitespace from string columns
+            df_selected = df_selected.map(lambda x: x.strip() if isinstance(x, str) else x)
 
-#             # Convert to JSON and trim all string values
-#             json_data = df_selected.to_dict(orient="records")
-#             for item in json_data:
-#                 for key, value in item.items():
-#                     if isinstance(value, str):
-#                         item[key] = value.strip()
+            # Replace NaN with None (which becomes null in JSON)
+            df_selected = df_selected.where(pd.notnull(df_selected), 0)
 
-#             response = JsonResponse(json_data, safe=False)
-#             default_storage.delete(file_path)
-#             return response
+            # Convert to JSON and trim all string values
+            json_data = df_selected.to_dict(orient="records")
+            for item in json_data:
+                for key, value in item.items():
+                    if isinstance(value, str):
+                        item[key] = value.strip()
 
-#         except ValueError as ve:
-#             return JsonResponse({"error": f"Sheet '{sheet_name}' not found"}, status=400)
-#         except KeyError as ke:
-#             return JsonResponse({"error": f"Missing columns: {ke}"}, status=400)
-#         except Exception as e:
-#             return JsonResponse({"error": str(e)}, status=500)
+            response = JsonResponse(json_data, safe=False)
+            default_storage.delete(file_path)
+            return response
 
-#     return JsonResponse({"error": "Invalid request"}, status=400)
+        except ValueError as ve:
+            return JsonResponse({"error": f"Sheet '{sheet_name}' not found"}, status=400)
+        except KeyError as ke:
+            return JsonResponse({"error": f"Missing columns: {ke}"}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
 
 @csrf_exempt  # Remove in production; use proper authentication
-def xlsm_to_json(request):
+def itm_xlsm_to_json(request):
     if request.method == "POST" and request.FILES.get("file"):
         excel_file = request.FILES["file"]
         sheet_name = request.POST.get("sheet_name", "Masterlist")  # Default to "Sheet1"
@@ -994,33 +999,31 @@ def xlsm_to_json(request):
                 "CLASSIFICATION": "classificationName"
             } 
             
-            # Specify the columns you want to extract
+            # Extract from Product Name and Classification from the masterlist sheet
             selected_columns = ["PRODUCT NAME", "CLASSIFICATION"]
             df_selected = df[selected_columns].rename(columns=column_mapping)
 
             additional_col_map = {
-                "PRODUCT NAME": "itemName", 
-                "UNIT OF MEASURE": "measurementName",
+                "Product Name": "itemName", 
+                "Unit of Measure": "measurementName",
                 "Available Stocks": "itemQuantity",
                 "Ave. Unit Cost": "unitCost"
             }
-            # Extract Unit of Measurement from the additional sheet
-            additional_columns = ["PRODUCT NAME", "UNIT OF MEASURE", "Available Stocks", "Ave. Unit Cost"]
+            # Extract Unit of Measurement from the additional sheet Beginning Balance
+            additional_columns = ["Product Name", "Unit of Measure", "Available Stocks", "Ave. Unit Cost"]
             df_additional_selected = df_additional[additional_columns].rename(columns=additional_col_map)
 
             # Merge the dataframes on "itemName"
             df_merged = pd.merge(df_selected, df_additional_selected, on="itemName", how="left")
 
             # Trim whitespace from string columns
-            df_merged = df_merged.applymap(lambda x: x.strip() if isinstance(x, str) else x)
+            df_merged = df_merged.map(lambda x: x.strip() if isinstance(x, str) else x)
 
             # Ensure itemQuantity is 0.00 if it's 0
             df_merged['itemQuantity'] = df_merged['itemQuantity'].apply(lambda x: 0.00 if x == 0 else x)
             df_merged['unitCost'] = df_merged['unitCost'].apply(lambda x: 0.00 if x == 0 else x)
             # Replace NaN with None (which becomes null in JSON)
-            df_merged = df_merged.where(pd.notnull(df_merged), "N/A")
-
-
+            df_merged = df_merged.where(pd.notnull(df_merged), 0.0)
 
             # Convert to JSON and trim all string values
             json_data = df_merged.to_dict(orient="records")

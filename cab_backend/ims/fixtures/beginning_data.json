@@ -11,7 +11,7 @@
         "itemName": "Chlorine Dioxide - Powder",
         "measurementName": "drum",
         "itemQuantity": 0,
-        "unitCost": "0"
+        "unitCost": 0
     },
     {
         "itemID": "01-003",

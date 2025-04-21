@@ -21,7 +21,7 @@ class Command(BaseCommand):
             Classification.objects.get_or_create(classification=name)
 
         #seed data for measurement
-        measure = ['N/A','gal','bag','bags','box','bot','bundle','Can','drum','drums','Kgs','Lt','ltr','mtr','mtrs','pack','Pail','pc','pcs','roll','set','sets']
+        measure = ['N/A','gal','bag','bags','Box','bot','bundle','Can','drum','drums','Kgs','Lt','Ltr','mtr','mtrs','pack','Pail','pc','pcs','roll','set','sets']
         for name in measure:
             Measurement.objects.get_or_create(measureName=name)
 

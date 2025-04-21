@@ -1,0 +1,5546 @@
+[
+    {
+        "itemName": "Chlorine Dioxide - Liquid",
+        "measurementName": "sets",
+        "itemQuantity": 1328,
+        "unitCost": 255.0,
+        "itemID": "01-001"
+    },
+    {
+        "itemName": "Chlorine Dioxide - Powder",
+        "measurementName": "drum",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "01-002"
+    },
+    {
+        "itemName": "Chlorine Granules",
+        "measurementName": "drum",
+        "itemQuantity": 4,
+        "unitCost": 9800.0,
+        "itemID": "01-003"
+    },
+    {
+        "itemName": "Asphalt",
+        "measurementName": "drums",
+        "itemQuantity": 30,
+        "unitCost": 380.0,
+        "itemID": "02-001"
+    },
+    {
+        "itemName": "Cement- RIZAL",
+        "measurementName": "bags",
+        "itemQuantity": 117,
+        "unitCost": 212.0,
+        "itemID": "02-002"
+    },
+    {
+        "itemName": "Gravel",
+        "measurementName": "pcs",
+        "itemQuantity": 61,
+        "unitCost": 50.0,
+        "itemID": "02-003"
+    },
+    {
+        "itemName": "White Sand",
+        "measurementName": "pcs",
+        "itemQuantity": 116,
+        "unitCost": 60.80000000000007,
+        "itemID": "02-004"
+    },
+    {
+        "itemName": "Concrete Hollow Blocks #5",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 28.0,
+        "itemID": "02-005"
+    },
+    {
+        "itemName": "Flexible Hose 1/2\" - TAILEE",
+        "measurementName": "mtrs",
+        "itemQuantity": 0,
+        "unitCost": 75.0,
+        "itemID": "02-006"
+    },
+    {
+        "itemName": "C-Clamp PVC",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "02-007"
+    },
+    {
+        "itemName": "THHN 14\" - BOSTON",
+        "measurementName": "pcs",
+        "itemQuantity": 1,
+        "unitCost": 2250.0,
+        "itemID": "02-008"
+    },
+    {
+        "itemName": "FI Hose 1/2 x 1/2 x 24",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "02-009"
+    },
+    {
+        "itemName": "Flexible Hose 1/2 X 50 - OMEGA",
+        "measurementName": "roll",
+        "itemQuantity": 0,
+        "unitCost": 390.0,
+        "itemID": "02-010"
+    },
+    {
+        "itemName": "Flexible Hose 3/8",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "02-011"
+    },
+    {
+        "itemName": "Skim Coat- VCC",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 520.0,
+        "itemID": "02-012"
+    },
+    {
+        "itemName": "Angle Valve 1/2 x 3/8",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "02-013"
+    },
+    {
+        "itemName": "Angle Valve 1/2 x 1/2",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 235.0,
+        "itemID": "02-014"
+    },
+    {
+        "itemName": "Angle Valve 1/2 x 3/4",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "02-015"
+    },
+    {
+        "itemName": "C Purlins 2x3 GI 1.4",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 635.0,
+        "itemID": "02-016"
+    },
+    {
+        "itemName": "Angel Bar 4.5mm x 2",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "02-017"
+    },
+    {
+        "itemName": "Air Release Valve 1\" Brass",
+        "measurementName": "pcs",
+        "itemQuantity": 12,
+        "unitCost": 550.0,
+        "itemID": "03-001"
+    },
+    {
+        "itemName": "Air Release Valve 1\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-002"
+    },
+    {
+        "itemName": "Adaptor 2\" CI",
+        "measurementName": "pcs",
+        "itemQuantity": 1,
+        "unitCost": 1300.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Adaptor 3\" CI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Adaptor 4\" CI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Adaptor 6\" CI",
+        "measurementName": "pcs",
+        "itemQuantity": 1,
+        "unitCost": 4900.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Ball Valve 1\"",
+        "measurementName": "pcs",
+        "itemQuantity": 9,
+        "unitCost": 669.0,
+        "itemID": "03-007"
+    },
+    {
+        "itemName": "Ball Valve 1/2\" Brass Lockwing - Double Lin",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 207.59683742429235,
+        "itemID": "03-008"
+    },
+    {
+        "itemName": "Ball Valve 1/2 Magnetic",
+        "measurementName": "pcs",
+        "itemQuantity": 3718,
+        "unitCost": 380.0,
+        "itemID": "03-009"
+    },
+    {
+        "itemName": "Ball Valve 2\"",
+        "measurementName": "pcs",
+        "itemQuantity": 6,
+        "unitCost": 2400.0,
+        "itemID": "03-010"
+    },
+    {
+        "itemName": "Ball Valve 3/4\" Lockwing",
+        "measurementName": "pcs",
+        "itemQuantity": 3,
+        "unitCost": 362.96999999999997,
+        "itemID": "03-011"
+    },
+    {
+        "itemName": "Bell Reducer 3 x 2 B.I",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-012"
+    },
+    {
+        "itemName": "Bell Reducer 1 1/4 x 1\" GI",
+        "measurementName": "pcs",
+        "itemQuantity": 40,
+        "unitCost": 65.10000000000001,
+        "itemID": "03-013"
+    },
+    {
+        "itemName": "Bell Reducer 1\" x 3/4 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 763,
+        "unitCost": 49.82000000000001,
+        "itemID": "03-014"
+    },
+    {
+        "itemName": "Bell Reducer 2 x 1 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 113,
+        "unitCost": 14.0,
+        "itemID": "03-015"
+    },
+    {
+        "itemName": "Bell Reducer 3 x 2 1/2",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-016"
+    },
+    {
+        "itemName": "Bell Reducer 4 x 3 BI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-017"
+    },
+    {
+        "itemName": "Bell Reducer 6 x 4 BI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-018"
+    },
+    {
+        "itemName": "Bell Reducer 6 x 4 GI - Mechanical",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-019"
+    },
+    {
+        "itemName": "Mechanical Elbow 8\" 90 deg.",
+        "measurementName": "pcs",
+        "itemQuantity": 2,
+        "unitCost": 14090.02,
+        "itemID": "03-020"
+    },
+    {
+        "itemName": "Bushing 3/4 x 1/2 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 67,
+        "unitCost": 41.02117647058824,
+        "itemID": "03-021"
+    },
+    {
+        "itemName": "Bushing 1 x 3/4 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 119,
+        "unitCost": 45.0,
+        "itemID": "03-022"
+    },
+    {
+        "itemName": "Bushing 2 x 1 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 88,
+        "unitCost": 30.0,
+        "itemID": "03-023"
+    },
+    {
+        "itemName": "Bushing 2 x 2 1/2 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-024"
+    },
+    {
+        "itemName": "Bushing 4 x 3/4 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-025"
+    },
+    {
+        "itemName": "Butterfly Valve 4\"",
+        "measurementName": "pcs",
+        "itemQuantity": 8,
+        "unitCost": 4662.0,
+        "itemID": "03-026"
+    },
+    {
+        "itemName": "Butterfly Valve 6\"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 7108.0,
+        "itemID": "03-027"
+    },
+    {
+        "itemName": "Checkvalve 1\" - Brass",
+        "measurementName": "pcs",
+        "itemQuantity": 38,
+        "unitCost": 551.85,
+        "itemID": "03-028"
+    },
+    {
+        "itemName": "Checkvalve 1/2\" Brass",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 190.55990684980225,
+        "itemID": "03-029"
+    },
+    {
+        "itemName": "Checkvalve 1 1/2\" Brass",
+        "measurementName": "pcs",
+        "itemQuantity": 2,
+        "unitCost": 1097.25,
+        "itemID": "03-030"
+    },
+    {
+        "itemName": "Checkvalve 2\" - Brass",
+        "measurementName": "pcs",
+        "itemQuantity": 13,
+        "unitCost": 1848.0,
+        "itemID": "03-031"
+    },
+    {
+        "itemName": "Checkvalve 3\" Brass",
+        "measurementName": "pcs",
+        "itemQuantity": 15,
+        "unitCost": 6507.0,
+        "itemID": "03-032"
+    },
+    {
+        "itemName": "Checkvalve 4\"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 15418.0,
+        "itemID": "03-033"
+    },
+    {
+        "itemName": "Checkvalve 6\"",
+        "measurementName": "pcs",
+        "itemQuantity": 3,
+        "unitCost": 22566.0,
+        "itemID": "03-034"
+    },
+    {
+        "itemName": "Checkvalve 6\" CI",
+        "measurementName": "pcs",
+        "itemQuantity": 2,
+        "unitCost": 22431.576,
+        "itemID": 0
+    },
+    {
+        "itemName": "Coupling 1\" GI (S40)",
+        "measurementName": "pcs",
+        "itemQuantity": 54,
+        "unitCost": 50.01647058823529,
+        "itemID": "03-036"
+    },
+    {
+        "itemName": "Coupling 1\" GI (S80)",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-037"
+    },
+    {
+        "itemName": "Coupling 1\" NLC - PBP",
+        "measurementName": "pcs",
+        "itemQuantity": 196,
+        "unitCost": 163.782980160491,
+        "itemID": "03-038"
+    },
+    {
+        "itemName": "Coupling 1/2 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 157,
+        "unitCost": 21.366863905325445,
+        "itemID": "03-039"
+    },
+    {
+        "itemName": "Coupling 1/2 PVC",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 4.655558249310906,
+        "itemID": "03-040"
+    },
+    {
+        "itemName": "Coupling 1/2 PVC w/ Thread",
+        "measurementName": "pcs",
+        "itemQuantity": 172,
+        "unitCost": 30.0,
+        "itemID": "03-041"
+    },
+    {
+        "itemName": "Coupling 1/2 HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 107,
+        "unitCost": 305.0,
+        "itemID": "03-042"
+    },
+    {
+        "itemName": "Coupling 2\" GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-043"
+    },
+    {
+        "itemName": "Coupling 2\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 2,
+        "unitCost": 950.0,
+        "itemID": "03-044"
+    },
+    {
+        "itemName": "Coupling 3\" GI",
+        "measurementName": "pcs",
+        "itemQuantity": 9,
+        "unitCost": 275.0,
+        "itemID": "03-045"
+    },
+    {
+        "itemName": "Coupling 3\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 3,
+        "unitCost": 1528.4369068459064,
+        "itemID": "03-046"
+    },
+    {
+        "itemName": "Coupling 3/4 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 171,
+        "unitCost": 34.654569725429106,
+        "itemID": "03-047"
+    },
+    {
+        "itemName": "Coupling 3/4 HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 252,
+        "unitCost": 171.38476357267956,
+        "itemID": "03-048"
+    },
+    {
+        "itemName": "Coupling 4 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 8,
+        "unitCost": 817.0500000000001,
+        "itemID": "03-049"
+    },
+    {
+        "itemName": "Coupling 4\" HDPE- FISH",
+        "measurementName": "pcs",
+        "itemQuantity": 15,
+        "unitCost": 3698.1297727272727,
+        "itemID": "03-050"
+    },
+    {
+        "itemName": "Coupling 4X3 GI (SCHED 80)",
+        "measurementName": "pcs",
+        "itemQuantity": 6,
+        "unitCost": 817.0499999999998,
+        "itemID": "03-051"
+    },
+    {
+        "itemName": "Coupling 6\" GI",
+        "measurementName": "pcs",
+        "itemQuantity": 3,
+        "unitCost": 5198.0,
+        "itemID": "03-052"
+    },
+    {
+        "itemName": "Coupling 6\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 43,
+        "unitCost": 10537.0,
+        "itemID": "03-053"
+    },
+    {
+        "itemName": "Coupling 3/4\"  PVC",
+        "measurementName": "pcs",
+        "itemQuantity": 11,
+        "unitCost": 20.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Coupling Reducer 3 x 2 - Mechanical",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-055"
+    },
+    {
+        "itemName": "Coupling Reducer 3 x 2 NLC - FISH",
+        "measurementName": "pcs",
+        "itemQuantity": 15,
+        "unitCost": 1223.0,
+        "itemID": "03-056"
+    },
+    {
+        "itemName": "Coupling Reducer 4 x 2 - Mechanical",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-057"
+    },
+    {
+        "itemName": "Cross Tee 1\" GI",
+        "measurementName": "pcs",
+        "itemQuantity": 81,
+        "unitCost": 85.0,
+        "itemID": "03-058"
+    },
+    {
+        "itemName": "Cross Tee 1/2 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-059"
+    },
+    {
+        "itemName": "Cross Tee 2\" GI",
+        "measurementName": "pcs",
+        "itemQuantity": 27,
+        "unitCost": 85.0,
+        "itemID": "03-060"
+    },
+    {
+        "itemName": "Cross Tee 3 x 2 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Cross Tee 3\" GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Cross Tee 4 x 2 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-063"
+    },
+    {
+        "itemName": "Cross Tee 4 x 3 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-064"
+    },
+    {
+        "itemName": "Cross Tee 4\" GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-065"
+    },
+    {
+        "itemName": "Cross Tee 6 x 3",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-066"
+    },
+    {
+        "itemName": "Elbow 45deg - Flange Type 6\" CI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-067"
+    },
+    {
+        "itemName": "Elbow 90 deg - 4\" BI",
+        "measurementName": "pcs",
+        "itemQuantity": 3,
+        "unitCost": 1071.46,
+        "itemID": "03-068"
+    },
+    {
+        "itemName": "Elbow 90deg - Flange Type 6\" CI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-069"
+    },
+    {
+        "itemName": "Elbow 1\" GI",
+        "measurementName": "pcs",
+        "itemQuantity": 362,
+        "unitCost": 62.81803357314149,
+        "itemID": 0
+    },
+    {
+        "itemName": "Elbow 1\" GI 45 deg.",
+        "measurementName": "pcs",
+        "itemQuantity": 198,
+        "unitCost": 50.0,
+        "itemID": "03-071"
+    },
+    {
+        "itemName": "Elbow 1\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 120,
+        "unitCost": 173.53585817888796,
+        "itemID": "03-072"
+    },
+    {
+        "itemName": "Elbow 1\" PVC",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 495.0,
+        "itemID": "03-073"
+    },
+    {
+        "itemName": "Elbow 1/2 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 88,
+        "unitCost": 25.339807219051973,
+        "itemID": "03-074"
+    },
+    {
+        "itemName": "Elbow 1/2 HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 78,
+        "unitCost": 129.05137395459977,
+        "itemID": "03-075"
+    },
+    {
+        "itemName": "Elbow 1/2 (plain)  PVC",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 6.800087271867172,
+        "itemID": "03-076"
+    },
+    {
+        "itemName": "Elbow 2\" GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-077"
+    },
+    {
+        "itemName": "Elbow 2\" HDPE- FISH",
+        "measurementName": "pcs",
+        "itemQuantity": 3,
+        "unitCost": 572.0,
+        "itemID": "03-078"
+    },
+    {
+        "itemName": "Elbow 3\" BI 45 deg.",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-079"
+    },
+    {
+        "itemName": "Elbow 3\" GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-080"
+    },
+    {
+        "itemName": "Elbow 3\" GI 45 deg.",
+        "measurementName": "pcs",
+        "itemQuantity": 9,
+        "unitCost": 448.5,
+        "itemID": "03-081"
+    },
+    {
+        "itemName": "Elbow 3\" HDPE- FISH",
+        "measurementName": "pcs",
+        "itemQuantity": 10,
+        "unitCost": 1860.0,
+        "itemID": "03-082"
+    },
+    {
+        "itemName": "Elbow 3/4 GI- JB",
+        "measurementName": "pcs",
+        "itemQuantity": 215,
+        "unitCost": 36.52024044926911,
+        "itemID": "03-083"
+    },
+    {
+        "itemName": "Elbow 3/4 HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 172,
+        "unitCost": 227.2975786924939,
+        "itemID": "03-084"
+    },
+    {
+        "itemName": "Elbow 4\" 45deg (80) BI",
+        "measurementName": "pcs",
+        "itemQuantity": 6,
+        "unitCost": 434.0,
+        "itemID": "03-085"
+    },
+    {
+        "itemName": "Elbow 4\" 45deg GI",
+        "measurementName": "pcs",
+        "itemQuantity": 1,
+        "unitCost": 950.0,
+        "itemID": "03-086"
+    },
+    {
+        "itemName": "Elbow 4\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 6,
+        "unitCost": 2420.0,
+        "itemID": "03-087"
+    },
+    {
+        "itemName": "Elbow 6\" BI  45 DEG",
+        "measurementName": "pcs",
+        "itemQuantity": 2,
+        "unitCost": 1050.0,
+        "itemID": "03-088"
+    },
+    {
+        "itemName": "Elbow 6\" BI  90 DEG",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-089"
+    },
+    {
+        "itemName": "Elbow Reducer 1\" x 1 1/4 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 29,
+        "unitCost": 117.0,
+        "itemID": "03-090"
+    },
+    {
+        "itemName": "Elbow Reducer 1\" x 1/2 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 97,
+        "unitCost": 68.41,
+        "itemID": "03-091"
+    },
+    {
+        "itemName": "Elbow Reducer 1\" x 3/4 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 531,
+        "unitCost": 70.29999999999998,
+        "itemID": "03-092"
+    },
+    {
+        "itemName": "Elbow Reducer 3/4 x 1/2 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 1587,
+        "unitCost": 37.01384250528336,
+        "itemID": "03-093"
+    },
+    {
+        "itemName": "Elbow Straight 1/2\"",
+        "measurementName": "pcs",
+        "itemQuantity": 338,
+        "unitCost": 30.710000000000004,
+        "itemID": "03-094"
+    },
+    {
+        "itemName": "Elbow Straight 1\"",
+        "measurementName": "pcs",
+        "itemQuantity": 218,
+        "unitCost": 70.30000000000004,
+        "itemID": "03-095"
+    },
+    {
+        "itemName": "Elbow Straight 3/4\"",
+        "measurementName": "pcs",
+        "itemQuantity": 271,
+        "unitCost": 43.190000000000005,
+        "itemID": "03-096"
+    },
+    {
+        "itemName": "Elbow Threaded 1/2 PVC",
+        "measurementName": "pcs",
+        "itemQuantity": 237,
+        "unitCost": 8.929999999999998,
+        "itemID": "03-097"
+    },
+    {
+        "itemName": "End Cap 1\" GI",
+        "measurementName": "pcs",
+        "itemQuantity": 437,
+        "unitCost": 45.0,
+        "itemID": "03-098"
+    },
+    {
+        "itemName": "End Cap 1/2 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 265,
+        "unitCost": 25.0,
+        "itemID": "03-099"
+    },
+    {
+        "itemName": "End Cap 2\"  GI",
+        "measurementName": "pcs",
+        "itemQuantity": 172,
+        "unitCost": 70.0,
+        "itemID": "03-100"
+    },
+    {
+        "itemName": "End Cap 2\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 66,
+        "unitCost": 950.0,
+        "itemID": "03-101"
+    },
+    {
+        "itemName": "End Cap 3\" GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-102"
+    },
+    {
+        "itemName": "End Cap 3\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 1,
+        "unitCost": 1500.0,
+        "itemID": "03-103"
+    },
+    {
+        "itemName": "End Cap 3/4 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 12,
+        "unitCost": 31.5,
+        "itemID": "03-104"
+    },
+    {
+        "itemName": "End Cap 4 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-105"
+    },
+    {
+        "itemName": "End Cap 6\"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-106"
+    },
+    {
+        "itemName": "End Cap 8\"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-107"
+    },
+    {
+        "itemName": "End Plug 1\" GI - MECH",
+        "measurementName": "pcs",
+        "itemQuantity": 200,
+        "unitCost": 26.632941176470577,
+        "itemID": "03-108"
+    },
+    {
+        "itemName": "End Plug 1/2 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 92,
+        "unitCost": 17.94,
+        "itemID": "03-109"
+    },
+    {
+        "itemName": "End Plug 2\" GI",
+        "measurementName": "pcs",
+        "itemQuantity": 19,
+        "unitCost": 79.16999999999999,
+        "itemID": "03-110"
+    },
+    {
+        "itemName": "End Plug 3 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-111"
+    },
+    {
+        "itemName": "End Plug 3/4 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 19.190746268656714,
+        "itemID": "03-112"
+    },
+    {
+        "itemName": "End Plug 4 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 2,
+        "unitCost": 28.0,
+        "itemID": "03-113"
+    },
+    {
+        "itemName": "Sleeve-Type Coupling 8\"",
+        "measurementName": "pcs",
+        "itemQuantity": 2,
+        "unitCost": 4878.88,
+        "itemID": 0
+    },
+    {
+        "itemName": "Fabricated Elbow 3\"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-115"
+    },
+    {
+        "itemName": "Fabricated Elbow 4\"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-116"
+    },
+    {
+        "itemName": "Fabricated Elbow 6",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-117"
+    },
+    {
+        "itemName": "Fabricated Reducer 3 x 2",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-118"
+    },
+    {
+        "itemName": "Fabricated Tee 3 x 2",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-119"
+    },
+    {
+        "itemName": "Fabricated Tee 3",
+        "measurementName": "pcs",
+        "itemQuantity": 52,
+        "unitCost": 2400.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Fabricated Tee 4 x 2",
+        "measurementName": "pcs",
+        "itemQuantity": 24,
+        "unitCost": 7881.481481481482,
+        "itemID": "03-121"
+    },
+    {
+        "itemName": "Fabricated Tee 4 x 3",
+        "measurementName": "pcs",
+        "itemQuantity": 8,
+        "unitCost": 4416.0,
+        "itemID": "03-122"
+    },
+    {
+        "itemName": "Fabricated Tee 4",
+        "measurementName": "pcs",
+        "itemQuantity": 47,
+        "unitCost": 2317.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Fabricated Tee 6 x 2",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 2800.0,
+        "itemID": "03-124"
+    },
+    {
+        "itemName": "Fabricated Tee 6 x 3",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-125"
+    },
+    {
+        "itemName": "Fabricated Tee 6 x 4",
+        "measurementName": "pcs",
+        "itemQuantity": 1,
+        "unitCost": 8250.0,
+        "itemID": "03-126"
+    },
+    {
+        "itemName": "Fabricated Tee 6",
+        "measurementName": "pcs",
+        "itemQuantity": 10,
+        "unitCost": 7000.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Fabricated Tee 8 x 2",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-128"
+    },
+    {
+        "itemName": "Fabricated Tee 8 x 3",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-129"
+    },
+    {
+        "itemName": "Fabricated Tee 8",
+        "measurementName": "pcs",
+        "itemQuantity": 11,
+        "unitCost": 18600.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Female Adaptor 1/2\" PVC",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-131"
+    },
+    {
+        "itemName": "Female Elbow 1\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 180,
+        "unitCost": 262.0,
+        "itemID": "03-132"
+    },
+    {
+        "itemName": "Female Elbow 1/2 HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 46,
+        "unitCost": 83.82510608116444,
+        "itemID": "03-133"
+    },
+    {
+        "itemName": "Female Elbow 2\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 82,
+        "unitCost": 1950.75,
+        "itemID": "03-134"
+    },
+    {
+        "itemName": "Female Elbow 3 HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 18,
+        "unitCost": 2348.0,
+        "itemID": "03-135"
+    },
+    {
+        "itemName": "Female Elbow 3/4 HDPE - NLC- PBP",
+        "measurementName": "pcs",
+        "itemQuantity": 321,
+        "unitCost": 205.0,
+        "itemID": "03-136"
+    },
+    {
+        "itemName": "Flange 2\"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 97.6,
+        "itemID": "03-137"
+    },
+    {
+        "itemName": "Flange 3\" ( 8 hole )",
+        "measurementName": "pcs",
+        "itemQuantity": 34,
+        "unitCost": 212.27592592592592,
+        "itemID": "03-138"
+    },
+    {
+        "itemName": "Flange 6\" - SOLID",
+        "measurementName": "pcs",
+        "itemQuantity": 11,
+        "unitCost": 627.75,
+        "itemID": "03-139"
+    },
+    {
+        "itemName": "Flange 8\"",
+        "measurementName": "pcs",
+        "itemQuantity": 4,
+        "unitCost": 595.0,
+        "itemID": "03-140"
+    },
+    {
+        "itemName": "Gasket 1/2\"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-141"
+    },
+    {
+        "itemName": "Gasket 3\" - LOCAL",
+        "measurementName": "pcs",
+        "itemQuantity": 50,
+        "unitCost": 105.50338983050848,
+        "itemID": "03-142"
+    },
+    {
+        "itemName": "Gasket 3/4 \"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-143"
+    },
+    {
+        "itemName": "Gasket 8\"",
+        "measurementName": "pcs",
+        "itemQuantity": 22,
+        "unitCost": 156.0,
+        "itemID": "03-144"
+    },
+    {
+        "itemName": "Gate Valve 1\" Brass",
+        "measurementName": "pcs",
+        "itemQuantity": 40,
+        "unitCost": 330.0,
+        "itemID": "03-145"
+    },
+    {
+        "itemName": "Gate Valve 1/2\" Brass",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-146"
+    },
+    {
+        "itemName": "Gate Valve 2\" Brass",
+        "measurementName": "pcs",
+        "itemQuantity": 4,
+        "unitCost": 2006.0,
+        "itemID": "03-147"
+    },
+    {
+        "itemName": "Gate Valve 2\" Flange",
+        "measurementName": "pcs",
+        "itemQuantity": 22,
+        "unitCost": 1729.24,
+        "itemID": "03-148"
+    },
+    {
+        "itemName": "Gate Valve 2\" Mechanical",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-149"
+    },
+    {
+        "itemName": "Gate Valve 3\" Mechanical",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-150"
+    },
+    {
+        "itemName": "Gate Valve 3\" Brass",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-151"
+    },
+    {
+        "itemName": "Gate Valve 3\" Flange- DI (BOHAI)",
+        "measurementName": "pcs",
+        "itemQuantity": 10,
+        "unitCost": 5568.0,
+        "itemID": "03-152"
+    },
+    {
+        "itemName": "Gate Valve 3/4\" Brass",
+        "measurementName": "pcs",
+        "itemQuantity": 45,
+        "unitCost": 233.0,
+        "itemID": "03-153"
+    },
+    {
+        "itemName": "Gate Valve 4\" Flange - PV",
+        "measurementName": "pcs",
+        "itemQuantity": 6,
+        "unitCost": 233.0,
+        "itemID": "03-154"
+    },
+    {
+        "itemName": "Gate Valve 4\" Mechanical",
+        "measurementName": "pcs",
+        "itemQuantity": 6,
+        "unitCost": 11624.0,
+        "itemID": "03-155"
+    },
+    {
+        "itemName": "Gate Valve 6\" Brass",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-156"
+    },
+    {
+        "itemName": "Gate Valve 6\" Flange",
+        "measurementName": "pcs",
+        "itemQuantity": 3,
+        "unitCost": 16924.36,
+        "itemID": "03-157"
+    },
+    {
+        "itemName": "Gate Valve 6\" Mechanical",
+        "measurementName": "pcs",
+        "itemQuantity": 1,
+        "unitCost": 16460.0,
+        "itemID": "03-158"
+    },
+    {
+        "itemName": "Gate Valve 8\" Mechanical",
+        "measurementName": "pcs",
+        "itemQuantity": 3,
+        "unitCost": 19900.0,
+        "itemID": "03-159"
+    },
+    {
+        "itemName": "GiBault 2\"",
+        "measurementName": "pcs",
+        "itemQuantity": 6,
+        "unitCost": 669.92,
+        "itemID": "03-160"
+    },
+    {
+        "itemName": "GiBault 3\"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-161"
+    },
+    {
+        "itemName": "GiBault 4\"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 1607.05,
+        "itemID": "03-162"
+    },
+    {
+        "itemName": "GiBault 6\"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-163"
+    },
+    {
+        "itemName": "GiBault 8\"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-164"
+    },
+    {
+        "itemName": "Gate Valve 2\" Flange Type CI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Gate Valve 3\" Flange Type CI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-166"
+    },
+    {
+        "itemName": "Gate Valve 4\" Flange Type CI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-167"
+    },
+    {
+        "itemName": "Mechanical Flange 3\" - LOCAL",
+        "measurementName": "pcs",
+        "itemQuantity": 19,
+        "unitCost": 750.0,
+        "itemID": "03-168"
+    },
+    {
+        "itemName": "Mechanical Flange 4\"- LOCAL",
+        "measurementName": "pcs",
+        "itemQuantity": 6,
+        "unitCost": 1268.0,
+        "itemID": "03-169"
+    },
+    {
+        "itemName": "Male Adaptor 1\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 134.0113709677419,
+        "itemID": "03-170"
+    },
+    {
+        "itemName": "Male Adaptor 1\" PVC",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-171"
+    },
+    {
+        "itemName": "Male Adaptor 1/2\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 34,
+        "unitCost": 55.168707447643506,
+        "itemID": "03-172"
+    },
+    {
+        "itemName": "Male Adaptor 1/2\" PVC",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 8.157375537731632,
+        "itemID": "03-173"
+    },
+    {
+        "itemName": "Male Adaptor 2\" HDPE- FISH",
+        "measurementName": "pcs",
+        "itemQuantity": 5,
+        "unitCost": 277.0,
+        "itemID": "03-174"
+    },
+    {
+        "itemName": "Male Adaptor 2\" PVC",
+        "measurementName": "pcs",
+        "itemQuantity": 104,
+        "unitCost": 1229.4499999999998,
+        "itemID": "03-175"
+    },
+    {
+        "itemName": "Male Adaptor 3\"",
+        "measurementName": "pcs",
+        "itemQuantity": 25,
+        "unitCost": 1020.0,
+        "itemID": "03-176"
+    },
+    {
+        "itemName": "Male Adaptor 3/4 HDPE - FISH",
+        "measurementName": "pcs",
+        "itemQuantity": 216,
+        "unitCost": 48.0,
+        "itemID": "03-177"
+    },
+    {
+        "itemName": "Male Adaptor 3/4\" PVC",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-178"
+    },
+    {
+        "itemName": "Mechanical Elbow 2\" 90 deg.",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-179"
+    },
+    {
+        "itemName": "Mechanical Elbow 3\" 45 deg.",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-180"
+    },
+    {
+        "itemName": "Mechanical Elbow 3\" 90 deg.",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-181"
+    },
+    {
+        "itemName": "Mechanical Elbow 4\" 90 deg.",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-182"
+    },
+    {
+        "itemName": "Mechanical Elbow 6\" 45 deg.",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-183"
+    },
+    {
+        "itemName": "Mechanical Elbow 6\" 90 deg.",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-184"
+    },
+    {
+        "itemName": "Mechanical End Cap 2\"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-185"
+    },
+    {
+        "itemName": "Mechanical End Cap 4\"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-186"
+    },
+    {
+        "itemName": "Mechanical Tee 2\"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-187"
+    },
+    {
+        "itemName": "Mechanical Tee 3 x 3",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-188"
+    },
+    {
+        "itemName": "Mechanical Tee 4 x 2 CI",
+        "measurementName": "pcs",
+        "itemQuantity": 4,
+        "unitCost": 6000.0,
+        "itemID": "03-189"
+    },
+    {
+        "itemName": "Mechanical Tee 4 x 3",
+        "measurementName": "pcs",
+        "itemQuantity": 1,
+        "unitCost": 5140.0,
+        "itemID": "03-190"
+    },
+    {
+        "itemName": "Mechanical Tee 4 x 4",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-191"
+    },
+    {
+        "itemName": "Mechanical Tee 6 x 2",
+        "measurementName": "pcs",
+        "itemQuantity": 1,
+        "unitCost": 9500.0,
+        "itemID": "03-192"
+    },
+    {
+        "itemName": "Mechanical Tee 6 x 3",
+        "measurementName": "pcs",
+        "itemQuantity": 3,
+        "unitCost": 8500.0,
+        "itemID": "03-193"
+    },
+    {
+        "itemName": "Mechanical Tee 6 x 4",
+        "measurementName": "pcs",
+        "itemQuantity": 6,
+        "unitCost": 5928.0,
+        "itemID": "03-194"
+    },
+    {
+        "itemName": "Mechanical Tee 6\"",
+        "measurementName": "pcs",
+        "itemQuantity": 2,
+        "unitCost": 5928.0,
+        "itemID": "03-195"
+    },
+    {
+        "itemName": "Nipple 1 x 12 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-196"
+    },
+    {
+        "itemName": "Nipple 1 x 5 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 64.4844111218769,
+        "itemID": "03-197"
+    },
+    {
+        "itemName": "Nipple 1 x 8 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 99.71475320406833,
+        "itemID": "03-198"
+    },
+    {
+        "itemName": "Nipple 1\" x 2\" GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-199"
+    },
+    {
+        "itemName": "Nipple 1\" x 6\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 1742,
+        "unitCost": 142.0,
+        "itemID": "03-200"
+    },
+    {
+        "itemName": "Nipple 1\" x 8\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 2047,
+        "unitCost": 212.0,
+        "itemID": "03-201"
+    },
+    {
+        "itemName": "Nipple 1/2 x 1 GI - FS",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 12.848298962978589,
+        "itemID": "03-202"
+    },
+    {
+        "itemName": "Nipple 1/2 x 12 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 10,
+        "unitCost": 90.0,
+        "itemID": "03-203"
+    },
+    {
+        "itemName": "Nipple 1/2 x 16 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 112,
+        "unitCost": 90.0,
+        "itemID": "03-204"
+    },
+    {
+        "itemName": "Nipple 1/2 x 2 GI - JB",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 21.328465693813303,
+        "itemID": "03-205"
+    },
+    {
+        "itemName": "Nipple 1/2 x 2\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-206"
+    },
+    {
+        "itemName": "Nipple 1/2 x 3 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-207"
+    },
+    {
+        "itemName": "Nipple 1/2 x 4 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 26,
+        "unitCost": 23.63623595505618,
+        "itemID": "03-208"
+    },
+    {
+        "itemName": "Nipple 1/2 x 6 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 78,
+        "unitCost": 38.36057692307692,
+        "itemID": "03-209"
+    },
+    {
+        "itemName": "Nipple 1/2 x 8 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 62,
+        "unitCost": 63.0,
+        "itemID": "03-210"
+    },
+    {
+        "itemName": "Nipple 2 1/2 x 5 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-211"
+    },
+    {
+        "itemName": "Nipple 2 x 5 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-212"
+    },
+    {
+        "itemName": "Nipple 3 x 5 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-213"
+    },
+    {
+        "itemName": "Nipple 3/4 x 10 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-214"
+    },
+    {
+        "itemName": "Nipple 3/4 x 4 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-215"
+    },
+    {
+        "itemName": "Nipple 3/4 x 5 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 30.21443109457492,
+        "itemID": "03-216"
+    },
+    {
+        "itemName": "Nipple 3/4 x 6 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-217"
+    },
+    {
+        "itemName": "Nipple 3/4 x 6 HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 1295,
+        "unitCost": 91.70999999999998,
+        "itemID": "03-218"
+    },
+    {
+        "itemName": "Nipple 3/4 x 8 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 40.436908173520415,
+        "itemID": "03-219"
+    },
+    {
+        "itemName": "Nipple 3/4 x 8 HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 666,
+        "unitCost": 102.71,
+        "itemID": "03-220"
+    },
+    {
+        "itemName": "Nipple 4 x 12 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-221"
+    },
+    {
+        "itemName": "Nipple 5 x 10 BI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-222"
+    },
+    {
+        "itemName": "Repair Clamp 2\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 4,
+        "unitCost": 1016.7400000000001,
+        "itemID": "03-223"
+    },
+    {
+        "itemName": "Repair Clamp 3\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 4,
+        "unitCost": 1779.29,
+        "itemID": "03-224"
+    },
+    {
+        "itemName": "Repair Clamp 4\" HDPE - MIE",
+        "measurementName": "pcs",
+        "itemQuantity": 3,
+        "unitCost": 2485.719999999999,
+        "itemID": "03-225"
+    },
+    {
+        "itemName": "Repair Clamp 6\" HDPE - MIE",
+        "measurementName": "pcs",
+        "itemQuantity": 4,
+        "unitCost": 3728.5699999999997,
+        "itemID": "03-226"
+    },
+    {
+        "itemName": "Repair Clamp 8\" HDPE - MIE",
+        "measurementName": "pcs",
+        "itemQuantity": 5,
+        "unitCost": 0.0,
+        "itemID": "03-227"
+    },
+    {
+        "itemName": "Saddle Clamp 2 x 1 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 317,
+        "unitCost": 284.85,
+        "itemID": "03-228"
+    },
+    {
+        "itemName": "Saddle Clamp 2 x 1 HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 6,
+        "unitCost": 210.0,
+        "itemID": "03-229"
+    },
+    {
+        "itemName": "Saddle Clamp 2 x 3/4 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 91,
+        "unitCost": 273.85967741935485,
+        "itemID": "03-230"
+    },
+    {
+        "itemName": "Saddle Clamp 3 x 1 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 236,
+        "unitCost": 410.65000000000015,
+        "itemID": "03-231"
+    },
+    {
+        "itemName": "Saddle Clamp 3 x 3/4 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 317.8800231939281,
+        "itemID": "03-232"
+    },
+    {
+        "itemName": "Saddle Clamp 4 x 1 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 228,
+        "unitCost": 476.07541899441344,
+        "itemID": "03-233"
+    },
+    {
+        "itemName": "Saddle Clamp 4 x 3/4 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 212,
+        "unitCost": 486.0,
+        "itemID": "03-234"
+    },
+    {
+        "itemName": "Saddle Clamp 4x2 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-235"
+    },
+    {
+        "itemName": "Saddle Clamp 6 x 1 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 33,
+        "unitCost": 634.5,
+        "itemID": "03-236"
+    },
+    {
+        "itemName": "Saddle Clamp 6 x 1/2 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-237"
+    },
+    {
+        "itemName": "Saddle Clamp 6 x 2 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 76,
+        "unitCost": 1381.6299999999999,
+        "itemID": "03-238"
+    },
+    {
+        "itemName": "Saddle Clamp 6 x 3/4 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 218,
+        "unitCost": 634.5,
+        "itemID": "03-239"
+    },
+    {
+        "itemName": "Saddle Clamp 6\" x 1\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 499,
+        "unitCost": 1012.0,
+        "itemID": "03-240"
+    },
+    {
+        "itemName": "Saddle Clamp 8\" x 1\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-241"
+    },
+    {
+        "itemName": "Saddle Clamp 8\" x 1\" GI",
+        "measurementName": "pcs",
+        "itemQuantity": 3,
+        "unitCost": 1294.0,
+        "itemID": "03-242"
+    },
+    {
+        "itemName": "Saddle Clamp 8\" x 2\" - HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 18,
+        "unitCost": 1294.0,
+        "itemID": "03-243"
+    },
+    {
+        "itemName": "Saddle Clamp 8\" x 2\" GI",
+        "measurementName": "pcs",
+        "itemQuantity": 7,
+        "unitCost": 1551.0,
+        "itemID": "03-244"
+    },
+    {
+        "itemName": "Side Bolts 3/4 x 8",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-245"
+    },
+    {
+        "itemName": "Sleeve-Type Coupling 2\"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 1289.3669230769233,
+        "itemID": "03-246"
+    },
+    {
+        "itemName": "Sleeve-Type Coupling 3\" DI pvc to pvc- PVMC",
+        "measurementName": "pcs",
+        "itemQuantity": 2,
+        "unitCost": 3548.0,
+        "itemID": "03-247"
+    },
+    {
+        "itemName": "Sleeve-Type Coupling 4 x 2",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-248"
+    },
+    {
+        "itemName": "Sleeve-Type Coupling 4\" DI pvc to pvc- PVMC",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 1805.6600000000003,
+        "itemID": "03-249"
+    },
+    {
+        "itemName": "STC (GI-PVC) 6\" (GI to GI)",
+        "measurementName": "pcs",
+        "itemQuantity": 13,
+        "unitCost": 5446.545454545455,
+        "itemID": "03-250"
+    },
+    {
+        "itemName": "Sleeve-Type Coupling 6\" DI (PVC to PVC)- PVMC",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 4500.0,
+        "itemID": "03-251"
+    },
+    {
+        "itemName": "Stub End 2\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 12,
+        "unitCost": 800.0,
+        "itemID": "03-252"
+    },
+    {
+        "itemName": "Stub End 3\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 17,
+        "unitCost": 850.0,
+        "itemID": "03-253"
+    },
+    {
+        "itemName": "Stub End 4\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 1,
+        "unitCost": 3677.0,
+        "itemID": "03-254"
+    },
+    {
+        "itemName": "Stub End 6\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 7,
+        "unitCost": 2873.829268292683,
+        "itemID": "03-255"
+    },
+    {
+        "itemName": "Stub End 8\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 6,
+        "unitCost": 11687.5,
+        "itemID": "03-256"
+    },
+    {
+        "itemName": "Tee 1\" GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-257"
+    },
+    {
+        "itemName": "Tee 1\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 140,
+        "unitCost": 244.39999999999992,
+        "itemID": "03-258"
+    },
+    {
+        "itemName": "Tee 1/2\" GI",
+        "measurementName": "pcs",
+        "itemQuantity": 49,
+        "unitCost": 36.47244094488188,
+        "itemID": "03-259"
+    },
+    {
+        "itemName": "Tee 1/2\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 203,
+        "unitCost": 475.0,
+        "itemID": "03-260"
+    },
+    {
+        "itemName": "Tee 1/2\" PVC",
+        "measurementName": "pcs",
+        "itemQuantity": 481,
+        "unitCost": 10.5,
+        "itemID": "03-261"
+    },
+    {
+        "itemName": "Tee 2\" Flange",
+        "measurementName": "pcs",
+        "itemQuantity": 1,
+        "unitCost": 1727.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Tee 2\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 131,
+        "unitCost": 1727.0,
+        "itemID": "03-263"
+    },
+    {
+        "itemName": "Tee 3\" Flange",
+        "measurementName": "pcs",
+        "itemQuantity": 1,
+        "unitCost": 430.0,
+        "itemID": "03-264"
+    },
+    {
+        "itemName": "Tee 3\" GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-265"
+    },
+    {
+        "itemName": "Tee 3\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 22,
+        "unitCost": 3600.0,
+        "itemID": "03-266"
+    },
+    {
+        "itemName": "Tee 3/4\" GI",
+        "measurementName": "pcs",
+        "itemQuantity": 2,
+        "unitCost": 44.49338529770675,
+        "itemID": "03-267"
+    },
+    {
+        "itemName": "Tee 3/4\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 316,
+        "unitCost": 169.0,
+        "itemID": "03-268"
+    },
+    {
+        "itemName": "Tee 4\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 8,
+        "unitCost": 4800.0,
+        "itemID": "03-269"
+    },
+    {
+        "itemName": "Tee Reducer 1 x 3/4 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 88.99163785230229,
+        "itemID": "03-270"
+    },
+    {
+        "itemName": "Tee Reducer 1\" x 1/2 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 31,
+        "unitCost": 39.5,
+        "itemID": "03-271"
+    },
+    {
+        "itemName": "Tee Reducer 1/2 x 3/4 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 89,
+        "unitCost": 59.76999999999999,
+        "itemID": "03-272"
+    },
+    {
+        "itemName": "Tee Reducer 3 x 2 HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 29,
+        "unitCost": 2500.0,
+        "itemID": "03-273"
+    },
+    {
+        "itemName": "Tee Reducer 4 x 2 HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 40,
+        "unitCost": 9800.0,
+        "itemID": "03-274"
+    },
+    {
+        "itemName": "Tee Reducer 4 x 3 HDPE- FISH",
+        "measurementName": "pcs",
+        "itemQuantity": 10,
+        "unitCost": 5850.0,
+        "itemID": "03-275"
+    },
+    {
+        "itemName": "Tee 6\" Flange",
+        "measurementName": "pcs",
+        "itemQuantity": 5,
+        "unitCost": 9699.3,
+        "itemID": 0
+    },
+    {
+        "itemName": "Tee 6 x 4  Mechanical CI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Valve Cover - 4\" GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-278"
+    },
+    {
+        "itemName": "Valve Cover - 6\" G.I.",
+        "measurementName": "pcs",
+        "itemQuantity": 19,
+        "unitCost": 1088.42,
+        "itemID": "03-279"
+    },
+    {
+        "itemName": "Y-connector with ferrul 3/4\"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-280"
+    },
+    {
+        "itemName": "Y-Strainer 2\"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-281"
+    },
+    {
+        "itemName": "Y-Strainer 3\"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 1201.0,
+        "itemID": "03-282"
+    },
+    {
+        "itemName": "Y-Strainer 4\"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-283"
+    },
+    {
+        "itemName": "Y-Strainer 6\" Flange",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Elbow 6 x 45 deg (sched 80) GI",
+        "measurementName": "pcs",
+        "itemQuantity": 10,
+        "unitCost": 2554.4444444444443,
+        "itemID": "03-285"
+    },
+    {
+        "itemName": "Elbow 6 x 90 deg (sched 80) GI - LOCAL",
+        "measurementName": "pcs",
+        "itemQuantity": 16,
+        "unitCost": 3800.0,
+        "itemID": "03-286"
+    },
+    {
+        "itemName": "STC (GI-HDPE) 6\" - BLACK - CMI",
+        "measurementName": "pcs",
+        "itemQuantity": 10,
+        "unitCost": 6183.32,
+        "itemID": "03-287"
+    },
+    {
+        "itemName": "STC (GI-PVC) 2\"",
+        "measurementName": "pcs",
+        "itemQuantity": 3,
+        "unitCost": 2000.0,
+        "itemID": "03-288"
+    },
+    {
+        "itemName": "STC (GI-PVC) 4\"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 2300.0,
+        "itemID": "03-289"
+    },
+    {
+        "itemName": "Checkvalve 3\" GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 5000.0,
+        "itemID": "03-290"
+    },
+    {
+        "itemName": "Cross Tee Fabricated HDPE 4\"",
+        "measurementName": "pcs",
+        "itemQuantity": 15,
+        "unitCost": 5800.0,
+        "itemID": "03-291"
+    },
+    {
+        "itemName": "Cross Tee HDPE 3\"",
+        "measurementName": "pcs",
+        "itemQuantity": 10,
+        "unitCost": 2500.0,
+        "itemID": "03-292"
+    },
+    {
+        "itemName": "Cross Tee HDPE 4x3",
+        "measurementName": "pcs",
+        "itemQuantity": 24,
+        "unitCost": 4383.333333333333,
+        "itemID": "03-293"
+    },
+    {
+        "itemName": "Cross Tee HDPE 6x3",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 7141.0,
+        "itemID": "03-294"
+    },
+    {
+        "itemName": "Cross Tee HDPE 6x4",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-295"
+    },
+    {
+        "itemName": "Mechanical Elbow 8\" 90 deg.",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 14090.02,
+        "itemID": "03-020"
+    },
+    {
+        "itemName": "Nipple 1\"x24\" GI (sched 80)",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-296"
+    },
+    {
+        "itemName": "Coupling Reducer 1\" x 3/4\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 58,
+        "unitCost": 141.86,
+        "itemID": "03-297"
+    },
+    {
+        "itemName": "Tee w/ Thread 1/2",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-298"
+    },
+    {
+        "itemName": "Pipe 1\" HDPE- MIG",
+        "measurementName": "pcs",
+        "itemQuantity": 67,
+        "unitCost": 53.00882352941176,
+        "itemID": "04-001"
+    },
+    {
+        "itemName": "Pipe 1\" PVC",
+        "measurementName": "mtr",
+        "itemQuantity": 1,
+        "unitCost": 58.0,
+        "itemID": "04-002"
+    },
+    {
+        "itemName": "Pipe 1/2 HDPE - MIG",
+        "measurementName": "mtr",
+        "itemQuantity": 330,
+        "unitCost": 21.763637907823874,
+        "itemID": "04-003"
+    },
+    {
+        "itemName": "Pipe 1/2 PVC",
+        "measurementName": "mtr",
+        "itemQuantity": 0,
+        "unitCost": 100.80168265707326,
+        "itemID": "04-004"
+    },
+    {
+        "itemName": "Pipe 2\" HDPE",
+        "measurementName": "mtr",
+        "itemQuantity": 0,
+        "unitCost": 125.42999999999999,
+        "itemID": "04-005"
+    },
+    {
+        "itemName": "Pipe 3\" HDPE",
+        "measurementName": "mtr",
+        "itemQuantity": 1200,
+        "unitCost": 270.43333333333334,
+        "itemID": "04-006"
+    },
+    {
+        "itemName": "Pipe 3\" RISER PIPE",
+        "measurementName": "mtr",
+        "itemQuantity": 7,
+        "unitCost": 364.0,
+        "itemID": "04-007"
+    },
+    {
+        "itemName": "Pipe 3/4 HDPE - MIG",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 33.05696277777778,
+        "itemID": "04-008"
+    },
+    {
+        "itemName": "Pipe 4\" HDPE",
+        "measurementName": "mtr",
+        "itemQuantity": 550,
+        "unitCost": 400.6748190305525,
+        "itemID": "04-009"
+    },
+    {
+        "itemName": "Pipe 4\" PVC",
+        "measurementName": "mtr",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "04-010"
+    },
+    {
+        "itemName": "Pipe 4\" RISER HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 18,
+        "unitCost": 12500.0,
+        "itemID": "04-011"
+    },
+    {
+        "itemName": "Pipe 4\" GI",
+        "measurementName": "pcs",
+        "itemQuantity": 7,
+        "unitCost": 18995.3125,
+        "itemID": "04-012"
+    },
+    {
+        "itemName": "Pipe 6\" GI (sched 80)",
+        "measurementName": "pcs",
+        "itemQuantity": 4,
+        "unitCost": 41300.0,
+        "itemID": "04-013"
+    },
+    {
+        "itemName": "Pipe 6\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 7,
+        "unitCost": 5083.998275374336,
+        "itemID": "04-014"
+    },
+    {
+        "itemName": "Pipe 8\" PVC",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "04-015"
+    },
+    {
+        "itemName": "Pipe 10\" PVC",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "04-016"
+    },
+    {
+        "itemName": "Pipe RISER 4\" GI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 13500.0,
+        "itemID": "04-017"
+    },
+    {
+        "itemName": "Flow Meter 2\"",
+        "measurementName": "pcs",
+        "itemQuantity": 14,
+        "unitCost": 36000.0,
+        "itemID": "05-001"
+    },
+    {
+        "itemName": "Flow Meter 3\"- ZENNER",
+        "measurementName": "pcs",
+        "itemQuantity": 2,
+        "unitCost": 38083.33333333333,
+        "itemID": "05-002"
+    },
+    {
+        "itemName": "Flow Meter 4\"",
+        "measurementName": "pcs",
+        "itemQuantity": 4,
+        "unitCost": 41600.0,
+        "itemID": "05-003"
+    },
+    {
+        "itemName": "Flow Meter 6\"",
+        "measurementName": "pcs",
+        "itemQuantity": 2,
+        "unitCost": 89000.0,
+        "itemID": "05-004"
+    },
+    {
+        "itemName": "Water Meter - Brass 1/2\" - HYJET",
+        "measurementName": "pcs",
+        "itemQuantity": 842,
+        "unitCost": 825.2889731190203,
+        "itemID": "05-005"
+    },
+    {
+        "itemName": "Water Meter - Plastic 1/2",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "05-006"
+    },
+    {
+        "itemName": "Water Meter 3/4 - Brass - ACE",
+        "measurementName": "pcs",
+        "itemQuantity": 5,
+        "unitCost": 2520.0,
+        "itemID": "05-007"
+    },
+    {
+        "itemName": "Water Meter - Brass 1\" - ACE",
+        "measurementName": "pcs",
+        "itemQuantity": 5,
+        "unitCost": 3859.0,
+        "itemID": "05-008"
+    },
+    {
+        "itemName": "Water Meter - Brass 2\"",
+        "measurementName": "pcs",
+        "itemQuantity": 7,
+        "unitCost": 14400.0,
+        "itemID": "05-009"
+    },
+    {
+        "itemName": "Chemical Solution Tank 100L",
+        "measurementName": "drum",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-001"
+    },
+    {
+        "itemName": "Caution Tape",
+        "measurementName": "pcs",
+        "itemQuantity": 120,
+        "unitCost": 462.421518987342,
+        "itemID": "06-002"
+    },
+    {
+        "itemName": "Fire Hydrant Head 2 1/2",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-003"
+    },
+    {
+        "itemName": "Fire Hydrant Head 3 X 2 1/2",
+        "measurementName": "pcs",
+        "itemQuantity": 4,
+        "unitCost": 16925.503999999997,
+        "itemID": "06-004"
+    },
+    {
+        "itemName": "Pressure Gauge 0-60 PSI",
+        "measurementName": "pcs",
+        "itemQuantity": 10,
+        "unitCost": 1163.4736842105262,
+        "itemID": "06-005"
+    },
+    {
+        "itemName": "Pressure Reducer Valve 3\"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-006"
+    },
+    {
+        "itemName": "Pressure Reducer Valve 4\"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-007"
+    },
+    {
+        "itemName": "Pressure Reducer Valve 6\"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-008"
+    },
+    {
+        "itemName": "PVC Pipe Cement- ATLANTA",
+        "measurementName": "pcs",
+        "itemQuantity": 183,
+        "unitCost": 145.05605608960227,
+        "itemID": "06-009"
+    },
+    {
+        "itemName": "Padlock",
+        "measurementName": "pcs",
+        "itemQuantity": 123,
+        "unitCost": 171.82247606302474,
+        "itemID": "06-010"
+    },
+    {
+        "itemName": "Hacksaw Blade 12\" Sandflex",
+        "measurementName": "pcs",
+        "itemQuantity": 35,
+        "unitCost": 46.595375235427966,
+        "itemID": "06-011"
+    },
+    {
+        "itemName": "Teflon Tape - ROYAL",
+        "measurementName": "pcs",
+        "itemQuantity": 3082,
+        "unitCost": 5.0313848138671915,
+        "itemID": "06-012"
+    },
+    {
+        "itemName": "Pressure Gauge 100 PSI",
+        "measurementName": "pcs",
+        "itemQuantity": 5,
+        "unitCost": 951.5384615384615,
+        "itemID": "06-013"
+    },
+    {
+        "itemName": "Concrete Cutter Blade 14\"",
+        "measurementName": "pcs",
+        "itemQuantity": 1,
+        "unitCost": 5400.0,
+        "itemID": "06-014"
+    },
+    {
+        "itemName": "Chemical Solution Tank 200L",
+        "measurementName": "drum",
+        "itemQuantity": 2,
+        "unitCost": 11500.0,
+        "itemID": "06-015"
+    },
+    {
+        "itemName": "Pressure Gauge 300 PSI",
+        "measurementName": "pcs",
+        "itemQuantity": 10,
+        "unitCost": 810.0,
+        "itemID": "06-016"
+    },
+    {
+        "itemName": "Goose Neck Faucet- SUNRISE",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 700.0,
+        "itemID": "06-017"
+    },
+    {
+        "itemName": "Lavatory Valve",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-018"
+    },
+    {
+        "itemName": "Faucet Brass hose Bibb- HAWK",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 324.0,
+        "itemID": "06-019"
+    },
+    {
+        "itemName": "Two-Way Faucet Valve",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-020"
+    },
+    {
+        "itemName": "Lavatory Faucet",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 430.0,
+        "itemID": "06-021"
+    },
+    {
+        "itemName": "Diamond Cutting Disc",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-022"
+    },
+    {
+        "itemName": "GI Bolts & Nuts 5/8 5\" (Fullthread)- SC",
+        "measurementName": "pcs",
+        "itemQuantity": 200,
+        "unitCost": 147.29,
+        "itemID": "06-023"
+    },
+    {
+        "itemName": "Cable Tie 6 x 2mm - POWER HOUSE",
+        "measurementName": "pack",
+        "itemQuantity": 0,
+        "unitCost": 400.0,
+        "itemID": "06-024"
+    },
+    {
+        "itemName": "Padlock - Hardware",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 225.0,
+        "itemID": "06-025"
+    },
+    {
+        "itemName": "Rubber O-ring 4\" PVC sure lock riser pipe",
+        "measurementName": "pcs",
+        "itemQuantity": 140,
+        "unitCost": 274.0,
+        "itemID": "06-026"
+    },
+    {
+        "itemName": "Hardiflex 3/16 - JAMES HARDI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 600.0,
+        "itemID": "06-027"
+    },
+    {
+        "itemName": "Two Gang Outlet - ROYU",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 125.0,
+        "itemID": "06-028"
+    },
+    {
+        "itemName": "Elbow 4 x 90 sched80",
+        "measurementName": "pcs",
+        "itemQuantity": 11,
+        "unitCost": 1300.0,
+        "itemID": "06-029"
+    },
+    {
+        "itemName": "STC 4\" ( GI to HDPE) DI - BLUE",
+        "measurementName": "pcs",
+        "itemQuantity": 10,
+        "unitCost": 3000.0,
+        "itemID": "06-030"
+    },
+    {
+        "itemName": "Hook",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-031"
+    },
+    {
+        "itemName": "Aluminum Silver (PAINT)",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-032"
+    },
+    {
+        "itemName": "Welding Rod 6013 Special- LOCAL",
+        "measurementName": "Kgs",
+        "itemQuantity": 15,
+        "unitCost": 190.0,
+        "itemID": "06-033"
+    },
+    {
+        "itemName": "Tie Wire",
+        "measurementName": "Kgs",
+        "itemQuantity": 0,
+        "unitCost": 93.0,
+        "itemID": "06-034"
+    },
+    {
+        "itemName": "Bosny Black- Pylox",
+        "measurementName": "Can",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-035"
+    },
+    {
+        "itemName": "Electrical Tape- Royu",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 49.0,
+        "itemID": "06-036"
+    },
+    {
+        "itemName": "Masking Tape 3/4",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-037"
+    },
+    {
+        "itemName": "Regular Plug",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 40.0,
+        "itemID": "06-038"
+    },
+    {
+        "itemName": "Three Gang Outlet",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 189.0,
+        "itemID": "06-039"
+    },
+    {
+        "itemName": "Cross Tee HDPE 3 x 2 - fabricated",
+        "measurementName": "pcs",
+        "itemQuantity": 10,
+        "unitCost": 3976.71,
+        "itemID": "06-040"
+    },
+    {
+        "itemName": "Marine Ply Wood - 3/4",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 1200.0,
+        "itemID": "06-041"
+    },
+    {
+        "itemName": "Barateha",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-042"
+    },
+    {
+        "itemName": "Piano Hinges",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-043"
+    },
+    {
+        "itemName": "Concrete Nail 1 1/2",
+        "measurementName": "Kgs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-044"
+    },
+    {
+        "itemName": "Stikwel - Wood Glue",
+        "measurementName": "Lt",
+        "itemQuantity": 0,
+        "unitCost": 92.0,
+        "itemID": "06-045"
+    },
+    {
+        "itemName": "Cabinet Handle",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-046"
+    },
+    {
+        "itemName": "STC 3\" (GI to HDPE)",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 3548.0,
+        "itemID": "06-047"
+    },
+    {
+        "itemName": "Thalo blue - Acrylic",
+        "measurementName": "Lt",
+        "itemQuantity": 0,
+        "unitCost": 213.0,
+        "itemID": "06-048"
+    },
+    {
+        "itemName": "Pipe 3\" GI (sched 80)",
+        "measurementName": "pcs",
+        "itemQuantity": 4,
+        "unitCost": 23595.0,
+        "itemID": "06-049"
+    },
+    {
+        "itemName": "Elbow 3\" GI 90deg (sched 80)",
+        "measurementName": "pcs",
+        "itemQuantity": 10,
+        "unitCost": 682.5,
+        "itemID": "06-050"
+    },
+    {
+        "itemName": "THHN WIRE 12\" -  Philflex",
+        "measurementName": "Box",
+        "itemQuantity": 0,
+        "unitCost": 4950.0,
+        "itemID": "06-051"
+    },
+    {
+        "itemName": "THHN WIRE 14\" -  Philflex",
+        "measurementName": "Box",
+        "itemQuantity": 0,
+        "unitCost": 3080.0,
+        "itemID": "06-052"
+    },
+    {
+        "itemName": "BLIND RIVITS 1/8 X 3/4",
+        "measurementName": "Box",
+        "itemQuantity": 0,
+        "unitCost": 585.0,
+        "itemID": "06-053"
+    },
+    {
+        "itemName": "Bolt & Nut  w/ washer",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-054"
+    },
+    {
+        "itemName": "Bolt & Nut m-6 x 20 w/ washer",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-055"
+    },
+    {
+        "itemName": "Lock Washer",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-056"
+    },
+    {
+        "itemName": "Cement spoon",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-057"
+    },
+    {
+        "itemName": "STC 8\"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-058"
+    },
+    {
+        "itemName": "Elbow 3\" 45 deg. (schd.80)",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-059"
+    },
+    {
+        "itemName": "Tubular 1 x 1 1.4",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 382.0,
+        "itemID": "06-060"
+    },
+    {
+        "itemName": "Cylindrical Hinges 3/4",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 45.0,
+        "itemID": "06-061"
+    },
+    {
+        "itemName": "Door Knob",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 423.0,
+        "itemID": "06-062"
+    },
+    {
+        "itemName": "Deform Bar - 10mm",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 134.53,
+        "itemID": "06-063"
+    },
+    {
+        "itemName": "PVC Door 60 x 210 w/ Hinges",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-064"
+    },
+    {
+        "itemName": "Blue Clamp 1/2 - Hardware",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-065"
+    },
+    {
+        "itemName": "Solignum- All aroud",
+        "measurementName": "Lt",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-066"
+    },
+    {
+        "itemName": "Gate Valve Flange type 8\" w/ bang",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-067"
+    },
+    {
+        "itemName": "Liha - 1000 & 100",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-068"
+    },
+    {
+        "itemName": "Tansi",
+        "measurementName": "roll",
+        "itemQuantity": 0,
+        "unitCost": 22.0,
+        "itemID": "06-069"
+    },
+    {
+        "itemName": "Drill bit 5/16",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-070"
+    },
+    {
+        "itemName": "Chalk stone",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 17.0,
+        "itemID": "06-071"
+    },
+    {
+        "itemName": "Nipple 1/2 x 5",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 50.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "PE Hose 4 x 6 - white",
+        "measurementName": "roll",
+        "itemQuantity": 2,
+        "unitCost": 10000.0,
+        "itemID": "06-073"
+    },
+    {
+        "itemName": "Epoxy primer",
+        "measurementName": "Lt",
+        "itemQuantity": 0,
+        "unitCost": 280.0,
+        "itemID": "06-074"
+    },
+    {
+        "itemName": "Latex Gloss - Paint",
+        "measurementName": "Lt",
+        "itemQuantity": 0,
+        "unitCost": 202.5,
+        "itemID": "06-075"
+    },
+    {
+        "itemName": "Sahara- ( water proofing )",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-076"
+    },
+    {
+        "itemName": "Singer Oil",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-077"
+    },
+    {
+        "itemName": "Varnish",
+        "measurementName": "Lt",
+        "itemQuantity": 0,
+        "unitCost": 160.0,
+        "itemID": "06-078"
+    },
+    {
+        "itemName": "Rust Converter",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-079"
+    },
+    {
+        "itemName": "WD - 40",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 262.0,
+        "itemID": "06-080"
+    },
+    {
+        "itemName": "Pipe 8\" - HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 16,
+        "unitCost": 10022.9,
+        "itemID": "06-081"
+    },
+    {
+        "itemName": "Elbow 8 x 90 deg. - HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 4,
+        "unitCost": 14076.0,
+        "itemID": "06-082"
+    },
+    {
+        "itemName": "Coupling Reducer 8 x 6 - HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 8,
+        "unitCost": 16740.0,
+        "itemID": "06-083"
+    },
+    {
+        "itemName": "Bolt and Nut 3/4 x 4 -full thread",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 75.0,
+        "itemID": "06-084"
+    },
+    {
+        "itemName": "Tape Measure",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 180.0,
+        "itemID": "06-085"
+    },
+    {
+        "itemName": "Fabricated Coupling 6 x 8",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-086"
+    },
+    {
+        "itemName": "Check Valve 3/4- Brass",
+        "measurementName": "pcs",
+        "itemQuantity": 19,
+        "unitCost": 600.0,
+        "itemID": "06-087"
+    },
+    {
+        "itemName": "C. Clamp 3/4",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-088"
+    },
+    {
+        "itemName": "C. Clamp 1\"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-089"
+    },
+    {
+        "itemName": "Single Switch",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 115.0,
+        "itemID": "06-090"
+    },
+    {
+        "itemName": "Valve Cover 6\" HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 2682.0,
+        "itemID": "06-091"
+    },
+    {
+        "itemName": "Receptacle Size 4\" - FIREFLY",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 50.0,
+        "itemID": "06-092"
+    },
+    {
+        "itemName": "Junction Box 4 x 4 - EURO",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 33.0,
+        "itemID": "06-093"
+    },
+    {
+        "itemName": "Utility Box 2 x 4 - ROYU",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 30.0,
+        "itemID": "06-094"
+    },
+    {
+        "itemName": "1 Gang Switch- Panasonic",
+        "measurementName": "set",
+        "itemQuantity": 0,
+        "unitCost": 120.0,
+        "itemID": "06-095"
+    },
+    {
+        "itemName": "2 Gang Switch- Panasonic",
+        "measurementName": "set",
+        "itemQuantity": 0,
+        "unitCost": 49.0,
+        "itemID": "06-096"
+    },
+    {
+        "itemName": "Flat Hose 1/2",
+        "measurementName": "roll",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-097"
+    },
+    {
+        "itemName": "2 Gang Outlet- Panasonic",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 319.0,
+        "itemID": "06-098"
+    },
+    {
+        "itemName": "Blind Rivits 5/32 x 1/2",
+        "measurementName": "box",
+        "itemQuantity": 0,
+        "unitCost": 280.0,
+        "itemID": "06-099"
+    },
+    {
+        "itemName": "Bathroom Bidet-  SUNRISE",
+        "measurementName": "set",
+        "itemQuantity": 0,
+        "unitCost": 490.0,
+        "itemID": "06-100"
+    },
+    {
+        "itemName": "Concrete nail #2",
+        "measurementName": "Kgs",
+        "itemQuantity": 0,
+        "unitCost": 100.0,
+        "itemID": "06-101"
+    },
+    {
+        "itemName": "Concrete nail #3",
+        "measurementName": "Kgs",
+        "itemQuantity": 0,
+        "unitCost": 100.0,
+        "itemID": "06-102"
+    },
+    {
+        "itemName": "Tek screw 1 1/2",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 2.0,
+        "itemID": "06-103"
+    },
+    {
+        "itemName": "Hand Riveter",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 800.0,
+        "itemID": "06-104"
+    },
+    {
+        "itemName": "Tank Lever Flush",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-105"
+    },
+    {
+        "itemName": "Tank Fittings",
+        "measurementName": "set",
+        "itemQuantity": 0,
+        "unitCost": 756.0,
+        "itemID": "06-106"
+    },
+    {
+        "itemName": "Electrical PVC Pipe 1/2 - (Orange)",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 120.0,
+        "itemID": "06-107"
+    },
+    {
+        "itemName": "PVC Pipe 4\" ( Orange )",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-108"
+    },
+    {
+        "itemName": "Elbow  4\" ( Orange )",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-109"
+    },
+    {
+        "itemName": "Clean Out Cover 4\" pvc",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-110"
+    },
+    {
+        "itemName": "Pollituff",
+        "measurementName": "Lt",
+        "itemQuantity": 0,
+        "unitCost": 292.0,
+        "itemID": "06-111"
+    },
+    {
+        "itemName": "Hardener Cream",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-112"
+    },
+    {
+        "itemName": "Cutting Disc 4\"- BLUE SHARK",
+        "measurementName": "pcs",
+        "itemQuantity": 300,
+        "unitCost": 55.0,
+        "itemID": "06-113"
+    },
+    {
+        "itemName": "Cut Off 14\"",
+        "measurementName": "pcs",
+        "itemQuantity": 3,
+        "unitCost": 440.27,
+        "itemID": "06-114"
+    },
+    {
+        "itemName": "Saddle Clamp w/ Ferrule - 8 x 1 - HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 24,
+        "unitCost": 4050.0,
+        "itemID": "06-115"
+    },
+    {
+        "itemName": "Submeter",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-116"
+    },
+    {
+        "itemName": "Expansion Bolt 3/5 x 3",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 33.0,
+        "itemID": "06-117"
+    },
+    {
+        "itemName": "Hinges 3 x 3",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 280.0,
+        "itemID": "06-118"
+    },
+    {
+        "itemName": "Plug Adapter",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-119"
+    },
+    {
+        "itemName": "Fabricated Elbow 4 x 90 deg. HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 1718.5999999999997,
+        "itemID": "06-120"
+    },
+    {
+        "itemName": "Fabricated Elbow 6 x 90 deg. HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-121"
+    },
+    {
+        "itemName": "Fabricated Elbow 8 x 45 deg. HDPE",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-122"
+    },
+    {
+        "itemName": "Coupling Reducer 8 x 4 - HDPE ( Fabricated)",
+        "measurementName": "pcs",
+        "itemQuantity": 2,
+        "unitCost": 4110.6,
+        "itemID": "06-123"
+    },
+    {
+        "itemName": "Coupling Reducer 8 x 6 - HDPE ( Fabricated)",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-124"
+    },
+    {
+        "itemName": "Gasket- 6\"",
+        "measurementName": "pcs",
+        "itemQuantity": 45,
+        "unitCost": 215.29999999999998,
+        "itemID": "06-125"
+    },
+    {
+        "itemName": "DI Gate Valve Flange Type 8\"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-126"
+    },
+    {
+        "itemName": "Grinding Disc- For Finishing",
+        "measurementName": "pcs",
+        "itemQuantity": 95,
+        "unitCost": 62.91117662824979,
+        "itemID": "06-127"
+    },
+    {
+        "itemName": "Spatula",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-128"
+    },
+    {
+        "itemName": "Wall Scrapper - (Paleta)",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 60.0,
+        "itemID": "06-129"
+    },
+    {
+        "itemName": "Blind Rivits  1/8 x 1/2 - LOCAL",
+        "measurementName": "Box",
+        "itemQuantity": 0,
+        "unitCost": 260.0,
+        "itemID": "06-130"
+    },
+    {
+        "itemName": "Gunting ng Yero",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-131"
+    },
+    {
+        "itemName": "Paint Remover",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-132"
+    },
+    {
+        "itemName": "Rugby",
+        "measurementName": "bot",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-133"
+    },
+    {
+        "itemName": "Bolt and nut 5/8 x 8- Full Thread",
+        "measurementName": "pcs",
+        "itemQuantity": 36,
+        "unitCost": 58.0,
+        "itemID": "06-134"
+    },
+    {
+        "itemName": "Rodela - Bakal",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-135"
+    },
+    {
+        "itemName": "Rodela - Kahoy",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-136"
+    },
+    {
+        "itemName": "Elasto Seal - water proofing sealant",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-137"
+    },
+    {
+        "itemName": "Rope",
+        "measurementName": "mtr",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-138"
+    },
+    {
+        "itemName": "Full thread 3/4 x 10 ft.",
+        "measurementName": "pcs",
+        "itemQuantity": 4,
+        "unitCost": 662.0,
+        "itemID": "06-139"
+    },
+    {
+        "itemName": "Circuit Breaker - 60A PLUG IN- GE",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 880.0,
+        "itemID": "06-140"
+    },
+    {
+        "itemName": "Toks screw",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 4.0,
+        "itemID": "06-141"
+    },
+    {
+        "itemName": "Elbow 2\" Orange",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 40.0,
+        "itemID": "06-142"
+    },
+    {
+        "itemName": "PVC 2\" Orange",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 40.0,
+        "itemID": "06-143"
+    },
+    {
+        "itemName": "Square Bar 10mm",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-144"
+    },
+    {
+        "itemName": "Sealant",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 201.6,
+        "itemID": "06-145"
+    },
+    {
+        "itemName": "Faucet - 6\"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-146"
+    },
+    {
+        "itemName": "C. Clamp 1/2",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 6.0,
+        "itemID": "06-147"
+    },
+    {
+        "itemName": "Cocolumber 2 x 3 x 12",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-148"
+    },
+    {
+        "itemName": "Flat Cord #14",
+        "measurementName": "mtr",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-149"
+    },
+    {
+        "itemName": "Common Nail #3- LOCAL",
+        "measurementName": "Kgs",
+        "itemQuantity": 0,
+        "unitCost": 90.0,
+        "itemID": "06-150"
+    },
+    {
+        "itemName": "Common Nail #2- LOCAL",
+        "measurementName": "Kgs",
+        "itemQuantity": 0,
+        "unitCost": 90.0,
+        "itemID": "06-151"
+    },
+    {
+        "itemName": "Umbrella Nail",
+        "measurementName": "Kgs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "PVC Elbow 3/4 - Orange",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-153"
+    },
+    {
+        "itemName": "PVC Pipe 3/4- Orange",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-154"
+    },
+    {
+        "itemName": "PVC Pipe 2\" Orange",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 138.0,
+        "itemID": "06-155"
+    },
+    {
+        "itemName": "PVC Pipe 3\" Orange",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 368.0,
+        "itemID": "06-156"
+    },
+    {
+        "itemName": "P- Trap 2\" Orange",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 61.0,
+        "itemID": "06-157"
+    },
+    {
+        "itemName": "Tee 2\" Orange",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 48.0,
+        "itemID": "06-158"
+    },
+    {
+        "itemName": "Elbow 3\" Orange",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 49.0,
+        "itemID": "06-159"
+    },
+    {
+        "itemName": "PVC- Y 3 x 2 -Orange",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 73.0,
+        "itemID": "06-160"
+    },
+    {
+        "itemName": "Clean Out Cover 3\" pvc",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 96.0,
+        "itemID": "06-161"
+    },
+    {
+        "itemName": "Kiln Dry Wood- 1 1/2 x 2 x 12",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-162"
+    },
+    {
+        "itemName": "Kiln Dry Wood- 1/2 x 2 x 12",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-163"
+    },
+    {
+        "itemName": "Flat Disc",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 54.0,
+        "itemID": "06-164"
+    },
+    {
+        "itemName": "Flat Nail 1\"",
+        "measurementName": "Kgs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-165"
+    },
+    {
+        "itemName": "Flat Nail 1/2",
+        "measurementName": "Kgs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-166"
+    },
+    {
+        "itemName": "Tile Trim",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-167"
+    },
+    {
+        "itemName": "Kitchen Sink",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 960.0,
+        "itemID": "06-168"
+    },
+    {
+        "itemName": "PMR Strainer",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-169"
+    },
+    {
+        "itemName": "Flex Hose - 1/2 x 16",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-170"
+    },
+    {
+        "itemName": "Vulca Seal - BOSTIK",
+        "measurementName": "Ltr",
+        "itemQuantity": 2,
+        "unitCost": 760.0,
+        "itemID": "06-171"
+    },
+    {
+        "itemName": "Metal Furring 0.5",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 162.0,
+        "itemID": "06-172"
+    },
+    {
+        "itemName": "QDE Enamel white",
+        "measurementName": "gal",
+        "itemQuantity": 0,
+        "unitCost": 716.0,
+        "itemID": "06-173"
+    },
+    {
+        "itemName": "Hamba 80 x 210",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 3500.0,
+        "itemID": "06-174"
+    },
+    {
+        "itemName": "Garden Hose 5/8- EXCEL",
+        "measurementName": "mtr",
+        "itemQuantity": 0,
+        "unitCost": 40.0,
+        "itemID": "06-175"
+    },
+    {
+        "itemName": "Hose- connector",
+        "measurementName": "pc",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-176"
+    },
+    {
+        "itemName": "PVC Pipe 1\" -Orange",
+        "measurementName": "pc",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-177"
+    },
+    {
+        "itemName": "PVC  Elbow 1\" -Orange",
+        "measurementName": "pc",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-178"
+    },
+    {
+        "itemName": "PVC  Male Adaptor 1\" -Orange",
+        "measurementName": "pc",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-179"
+    },
+    {
+        "itemName": "LED Light 15W - OMNI",
+        "measurementName": "pc",
+        "itemQuantity": 0,
+        "unitCost": 180.0,
+        "itemID": "06-180"
+    },
+    {
+        "itemName": "Baby Roller 4\"- JUPITER",
+        "measurementName": "pc",
+        "itemQuantity": 1,
+        "unitCost": 85.0,
+        "itemID": "06-181"
+    },
+    {
+        "itemName": "Screw Bit",
+        "measurementName": "pc",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-182"
+    },
+    {
+        "itemName": "End cap 1/2 PVC",
+        "measurementName": "pc",
+        "itemQuantity": 0,
+        "unitCost": 21.0,
+        "itemID": "06-183"
+    },
+    {
+        "itemName": "Toilet Bowl",
+        "measurementName": "pc",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-184"
+    },
+    {
+        "itemName": "Cylindrical Hinges 1\"",
+        "measurementName": "pc",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-185"
+    },
+    {
+        "itemName": "Cylindrical Hinges 1/2\"",
+        "measurementName": "pc",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-186"
+    },
+    {
+        "itemName": "Blind Rivet 3/16 x 1/2",
+        "measurementName": "box",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-187"
+    },
+    {
+        "itemName": "Universal Padlock -ACE",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 195.0,
+        "itemID": "06-188"
+    },
+    {
+        "itemName": "Sand Paper",
+        "measurementName": "bundle",
+        "itemQuantity": 0,
+        "unitCost": 1197.0,
+        "itemID": "06-189"
+    },
+    {
+        "itemName": "Squala",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-190"
+    },
+    {
+        "itemName": "Hose Bibb Faucet",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 291.2,
+        "itemID": "06-191"
+    },
+    {
+        "itemName": "Flexi Bond",
+        "measurementName": "gal",
+        "itemQuantity": 0,
+        "unitCost": 840.0,
+        "itemID": "06-192"
+    },
+    {
+        "itemName": "Paint Thinner- PUREE",
+        "measurementName": "Gal",
+        "itemQuantity": 0,
+        "unitCost": 120.0,
+        "itemID": "06-193"
+    },
+    {
+        "itemName": "Rubber Tape",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 159.0,
+        "itemID": "06-194"
+    },
+    {
+        "itemName": "Paint brush #2- HIPO",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 70.0,
+        "itemID": "06-195"
+    },
+    {
+        "itemName": "Drill bit 1/2\" - DOORMER",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 100.0,
+        "itemID": "06-196"
+    },
+    {
+        "itemName": "Pipe 3/4 x 20 GI schd.40",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 592.0,
+        "itemID": "06-197"
+    },
+    {
+        "itemName": "Circuit Breaker - 30 A PLUG IN- GE",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 850.0,
+        "itemID": "06-198"
+    },
+    {
+        "itemName": "AC - Outlet",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 150.0,
+        "itemID": "06-199"
+    },
+    {
+        "itemName": "Black Screw",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 2.0,
+        "itemID": "06-200"
+    },
+    {
+        "itemName": "Insulation Foam",
+        "measurementName": "mtr",
+        "itemQuantity": 0,
+        "unitCost": 115.0,
+        "itemID": "06-201"
+    },
+    {
+        "itemName": "Metal Furring 0.6",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 173.0,
+        "itemID": "06-202"
+    },
+    {
+        "itemName": "3 Gang Switch- Panasonic",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 189.0,
+        "itemID": "06-203"
+    },
+    {
+        "itemName": "Universal Outlet - Royu",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 49.0,
+        "itemID": "06-204"
+    },
+    {
+        "itemName": "2 Gang- Royu",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 33.0,
+        "itemID": "06-205"
+    },
+    {
+        "itemName": "3 Gang- Royu",
+        "measurementName": "set",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-206"
+    },
+    {
+        "itemName": "National Universal Outlet",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 98.0,
+        "itemID": "06-207"
+    },
+    {
+        "itemName": "National Outlet Classic",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 96.0,
+        "itemID": "06-208"
+    },
+    {
+        "itemName": "Phenolic Board 3/4",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 368.33333,
+        "itemID": "06-209"
+    },
+    {
+        "itemName": "Lag Screw 3/1 x 13",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 11.0,
+        "itemID": "06-210"
+    },
+    {
+        "itemName": "Sanding Sealer Lacquer",
+        "measurementName": "gal",
+        "itemQuantity": 0,
+        "unitCost": 243.0,
+        "itemID": "06-211"
+    },
+    {
+        "itemName": "Paint Brush #1- HIPO",
+        "measurementName": "pcs",
+        "itemQuantity": 2,
+        "unitCost": 35.0,
+        "itemID": "06-212"
+    },
+    {
+        "itemName": "Metal Screw",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 3.0,
+        "itemID": "06-213"
+    },
+    {
+        "itemName": "Baby Roller - Refill 4\" - Bryan",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 36.0,
+        "itemID": "06-214"
+    },
+    {
+        "itemName": "Electrode Holder- 300amps",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 702.0,
+        "itemID": "06-215"
+    },
+    {
+        "itemName": "Sand Paper - #120",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 17.0,
+        "itemID": "06-216"
+    },
+    {
+        "itemName": "Steel Brush",
+        "measurementName": "pcs",
+        "itemQuantity": 9,
+        "unitCost": 110.0,
+        "itemID": "06-217"
+    },
+    {
+        "itemName": "Concrete Nail #4",
+        "measurementName": "Kgs",
+        "itemQuantity": 0,
+        "unitCost": 100.0,
+        "itemID": "06-218"
+    },
+    {
+        "itemName": "QDE black- Paint",
+        "measurementName": "ltr",
+        "itemQuantity": 0,
+        "unitCost": 100.0,
+        "itemID": "06-219"
+    },
+    {
+        "itemName": "Panel Box - 4 Branches / 2 Pole -GE",
+        "measurementName": "pc",
+        "itemQuantity": 0,
+        "unitCost": 650.0,
+        "itemID": "06-220"
+    },
+    {
+        "itemName": "Circuit Breaker - 20 A PLUG IN- GE",
+        "measurementName": "pc",
+        "itemQuantity": 0,
+        "unitCost": 850.0,
+        "itemID": "06-221"
+    },
+    {
+        "itemName": "Drill Bit 5/32",
+        "measurementName": "pc",
+        "itemQuantity": 0,
+        "unitCost": 92.0,
+        "itemID": "06-222"
+    },
+    {
+        "itemName": "Concrete Nail - # 1",
+        "measurementName": "Kgs",
+        "itemQuantity": 0,
+        "unitCost": 141.0,
+        "itemID": "06-223"
+    },
+    {
+        "itemName": "Mesh Tape / Gasa",
+        "measurementName": "roll",
+        "itemQuantity": 0,
+        "unitCost": 92.0,
+        "itemID": "06-224"
+    },
+    {
+        "itemName": "Adhesive - Cement - ABC",
+        "measurementName": "bag",
+        "itemQuantity": 0,
+        "unitCost": 310.0,
+        "itemID": "06-225"
+    },
+    {
+        "itemName": "QDE - Maple",
+        "measurementName": "ltr",
+        "itemQuantity": 0,
+        "unitCost": 250.0,
+        "itemID": "06-226"
+    },
+    {
+        "itemName": "Angle Valve - 1/2 ( 3 way )",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 405.0,
+        "itemID": "06-227"
+    },
+    {
+        "itemName": "Bolt and Nut - 10mm x 2 1/2",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 30.0,
+        "itemID": "06-228"
+    },
+    {
+        "itemName": "Drill Bit- 1/4 (concrete)",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 79.0,
+        "itemID": "06-229"
+    },
+    {
+        "itemName": "Drill Bit- 3/16 (concrete)",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 56.0,
+        "itemID": "06-230"
+    },
+    {
+        "itemName": "Screw w/ Tox - 3/16",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 3.0,
+        "itemID": "06-231"
+    },
+    {
+        "itemName": "Flexible Hose - 1/2 x 1/2 x 1/2",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 125.0,
+        "itemID": "06-232"
+    },
+    {
+        "itemName": "Spring Door",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 40.0,
+        "itemID": "06-233"
+    },
+    {
+        "itemName": "Flexible Hose - 1/2 x 1/2 x 1/8",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 198.0,
+        "itemID": "06-234"
+    },
+    {
+        "itemName": "Lavatory Bracket",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 320.0,
+        "itemID": "06-235"
+    },
+    {
+        "itemName": "Lavatory Fittings",
+        "measurementName": "set",
+        "itemQuantity": 0,
+        "unitCost": 168.0,
+        "itemID": "06-236"
+    },
+    {
+        "itemName": "Dyna Bolt 5/16",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 23.0,
+        "itemID": "06-237"
+    },
+    {
+        "itemName": "Terminal Battery",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 45.0,
+        "itemID": "06-238"
+    },
+    {
+        "itemName": "Moulding Strips-  3/4- ATLANTA",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 65.0,
+        "itemID": "06-239"
+    },
+    {
+        "itemName": "Atlanta PVC type - 1/2",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 125.0,
+        "itemID": "06-240"
+    },
+    {
+        "itemName": "Screw - #1",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 2.2,
+        "itemID": "06-241"
+    },
+    {
+        "itemName": "Amco Box - ROYU",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 51.0,
+        "itemID": "06-242"
+    },
+    {
+        "itemName": "Plug In - 30 Amp",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 358.0,
+        "itemID": "06-243"
+    },
+    {
+        "itemName": "Duct Tape",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 201.0,
+        "itemID": "06-244"
+    },
+    {
+        "itemName": "Cutter Blade - hardware",
+        "measurementName": "set",
+        "itemQuantity": 0,
+        "unitCost": 201.0,
+        "itemID": "06-245"
+    },
+    {
+        "itemName": "Paint Tray",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 56.0,
+        "itemID": "06-246"
+    },
+    {
+        "itemName": "Half moon Wood",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 102.0,
+        "itemID": "06-247"
+    },
+    {
+        "itemName": "Bell Reducer 5 x 4 GI",
+        "measurementName": "pcs",
+        "itemQuantity": 2,
+        "unitCost": 3294.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Tee 4\" Flange type CI",
+        "measurementName": "pcs",
+        "itemQuantity": 2,
+        "unitCost": 7972.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Nut GI - 5/8\"- LOCAL",
+        "measurementName": "pcs",
+        "itemQuantity": 200,
+        "unitCost": 3.2,
+        "itemID": "06-250"
+    },
+    {
+        "itemName": "Bell Reducer GI 1/2 x 3/4 - JB",
+        "measurementName": "pcs",
+        "itemQuantity": 94,
+        "unitCost": 37.42,
+        "itemID": "03-299"
+    },
+    {
+        "itemName": "End Cap 3/4 GI - MECH",
+        "measurementName": "pcs",
+        "itemQuantity": 100,
+        "unitCost": 31.19,
+        "itemID": 0
+    },
+    {
+        "itemName": "End Plug 3/4 GI - JB",
+        "measurementName": "pcs",
+        "itemQuantity": 289,
+        "unitCost": 23.33,
+        "itemID": "03-301"
+    },
+    {
+        "itemName": "End Plug 1\"GI - JB",
+        "measurementName": "pcs",
+        "itemQuantity": 32,
+        "unitCost": 32.34,
+        "itemID": "03-302"
+    },
+    {
+        "itemName": "Nipple 3/4 x 5 GI - JB",
+        "measurementName": "pcs",
+        "itemQuantity": 149,
+        "unitCost": 41.98,
+        "itemID": "03-303"
+    },
+    {
+        "itemName": "Nipple 3/4 x 8 GI - FS",
+        "measurementName": "pcs",
+        "itemQuantity": 139,
+        "unitCost": 63.76,
+        "itemID": "03-304"
+    },
+    {
+        "itemName": "Nipple 1 x 5 GI - AKUA",
+        "measurementName": "pcs",
+        "itemQuantity": 262,
+        "unitCost": 82.05,
+        "itemID": "03-305"
+    },
+    {
+        "itemName": "Nipple 1 x 8 GI - AKUA",
+        "measurementName": "pcs",
+        "itemQuantity": 120,
+        "unitCost": 121.6,
+        "itemID": "03-306"
+    },
+    {
+        "itemName": "Saddle Clamp 3 x 3/4 DI - PV",
+        "measurementName": "pcs",
+        "itemQuantity": 178,
+        "unitCost": 388.6,
+        "itemID": "03-307"
+    },
+    {
+        "itemName": "Saddle Clamp 6 x 1 DI - PV",
+        "measurementName": "pcs",
+        "itemQuantity": 50,
+        "unitCost": 629.8,
+        "itemID": "03-308"
+    },
+    {
+        "itemName": "Junction Box 4 x 2 - pvc - OMNI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 29.0,
+        "itemID": "02-018"
+    },
+    {
+        "itemName": "Pinlight Fixture Alum- AKARI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 199.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "LED Light- 9w -FIREFLY",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 359.0,
+        "itemID": "02-020"
+    },
+    {
+        "itemName": "LED Ceiling Lamp Surface Type- 18w - OMNI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 999.75,
+        "itemID": "02-021"
+    },
+    {
+        "itemName": "2 Gang Switch- PANASONIC",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 339.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "1 Gang 3 way Switch- PANASONIC",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 299.0,
+        "itemID": "02-023"
+    },
+    {
+        "itemName": "3 Gang Switch- PANASONIC",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 409.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Faucet Stainless - WATERGATE",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 449.0,
+        "itemID": "02-025"
+    },
+    {
+        "itemName": "Faucet Brass - Gold -  WATERGATE",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 369.0,
+        "itemID": "02-026"
+    },
+    {
+        "itemName": "Junction Box Cover - OMNI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 19.0,
+        "itemID": "02-027"
+    },
+    {
+        "itemName": "Hinges 35 x 35 x 2- GATEMAN",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 164.0,
+        "itemID": "02-028"
+    },
+    {
+        "itemName": "Sleeve-Type Coupling 3\" DI pvc to pvc- BOHAI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 2736.0,
+        "itemID": "03-309"
+    },
+    {
+        "itemName": "Sleeve-Type Coupling 4\" DI pvc to pvc- BOHAI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 3360.0,
+        "itemID": "03-310"
+    },
+    {
+        "itemName": "Sleeve-Type Coupling 6\" DI (PVC to PVC)- BOHAI",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 4800.0,
+        "itemID": "03-311"
+    },
+    {
+        "itemName": "Circuit breaker 60A bolt-On - GE",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 1550.0,
+        "itemID": "02-029"
+    },
+    {
+        "itemName": "Faucet hose bib white PVC - DOWEL",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 100.0,
+        "itemID": "02-030"
+    },
+    {
+        "itemName": "Hose Clamp 5/8 -",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 100.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Angle Bar 1 X 1 4mm",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 717.0,
+        "itemID": "02-032"
+    },
+    {
+        "itemName": "TILE 60 X 60 AK 6882",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 195.0,
+        "itemID": "02-033"
+    },
+    {
+        "itemName": "TILE 60 X 60 AK 6889",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 195.0,
+        "itemID": "02-034"
+    },
+    {
+        "itemName": "ALUM. Door Brown",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 2200.0,
+        "itemID": "02-035"
+    },
+    {
+        "itemName": "MJ Water Closet",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 3700.0,
+        "itemID": "02-036"
+    },
+    {
+        "itemName": "Grout White",
+        "measurementName": "Bag",
+        "itemQuantity": 0,
+        "unitCost": 120.0,
+        "itemID": "02-037"
+    },
+    {
+        "itemName": "TILE 60 x 60 FC 6013",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 185.0,
+        "itemID": "02-038"
+    },
+    {
+        "itemName": "Rib type 05.mm x 3.66m",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 1647.0,
+        "itemID": "02-039"
+    },
+    {
+        "itemName": "Rib type 05.mm x 3.05m",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 1372.5,
+        "itemID": "02-040"
+    },
+    {
+        "itemName": "Rib type 05.mm x 6.10m",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 2745.0,
+        "itemID": "02-041"
+    },
+    {
+        "itemName": "Tek screw 12 x 55 steel",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 2.5,
+        "itemID": "02-042"
+    },
+    {
+        "itemName": "Panel Door 80 x 200  jamb 2 x 5 kd w/ holes",
+        "measurementName": "set",
+        "itemQuantity": 0,
+        "unitCost": 7000.0,
+        "itemID": "02-043"
+    },
+    {
+        "itemName": "Ply Wood  ORDINARY 1/2- LOCAL",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 520.0,
+        "itemID": "02-044"
+    },
+    {
+        "itemName": "Cocolumber 2 x 2 x 10FT- LOCAL",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 109.0,
+        "itemID": "02-045"
+    },
+    {
+        "itemName": "G.I. Wire #16",
+        "measurementName": "Kgs",
+        "itemQuantity": 0,
+        "unitCost": 90.0,
+        "itemID": "02-046"
+    },
+    {
+        "itemName": "Male Adaptor 3/4 nlc- PBP",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 119.17,
+        "itemID": "03-312"
+    },
+    {
+        "itemName": "Male Adaptor 1 nlc- PBP",
+        "measurementName": "pcs",
+        "itemQuantity": 173,
+        "unitCost": 146.83,
+        "itemID": "03-313"
+    },
+    {
+        "itemName": "PVC Pipe 1/2 w/ hub- NELTEX",
+        "measurementName": "pcs",
+        "itemQuantity": 70,
+        "unitCost": 91.12,
+        "itemID": "03-314"
+    },
+    {
+        "itemName": "Male Adaptor 1/2 PVC- TIAN BLUE",
+        "measurementName": "pcs",
+        "itemQuantity": 587,
+        "unitCost": 7.91,
+        "itemID": "03-315"
+    },
+    {
+        "itemName": "Coupling 1/2 PVC- TIAN BLUE",
+        "measurementName": "pcs",
+        "itemQuantity": 695,
+        "unitCost": 4.45,
+        "itemID": "03-316"
+    },
+    {
+        "itemName": "Elbow Plain 1/2 PVC- TIAN BLUE",
+        "measurementName": "pcs",
+        "itemQuantity": 642,
+        "unitCost": 6.57,
+        "itemID": "03-317"
+    },
+    {
+        "itemName": "Flat latex White - BOYSEN 30f - 100m",
+        "measurementName": "Pail",
+        "itemQuantity": 5,
+        "unitCost": 2560.0,
+        "itemID": "02-047"
+    },
+    {
+        "itemName": "Flat latex White -MENNISOTA 30f - 100m",
+        "measurementName": "Pail",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "02-048"
+    },
+    {
+        "itemName": "Flat latex White - COAT SAVER (solo88)",
+        "measurementName": "Pail",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "02-049"
+    },
+    {
+        "itemName": "Latex Gloss White- BOYSEN",
+        "measurementName": "Pail",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "02-050"
+    },
+    {
+        "itemName": "Roofing Paint Blue- RAIN OR SHINE",
+        "measurementName": "Pail",
+        "itemQuantity": 2,
+        "unitCost": 2960.0,
+        "itemID": "02-051"
+    },
+    {
+        "itemName": "Acry Color Raw Sienna -DESTINY",
+        "measurementName": "Can",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "02-052"
+    },
+    {
+        "itemName": "Ting Ting Color Thalo Blue #16- DESTINY",
+        "measurementName": "Can",
+        "itemQuantity": 0,
+        "unitCost": 61.25,
+        "itemID": "02-053"
+    },
+    {
+        "itemName": "Ting Ting Color Thalo Blue - BOYSEN (B2306)",
+        "measurementName": "Can",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "02-054"
+    },
+    {
+        "itemName": "Pylox Spray Paint Sky Blue",
+        "measurementName": "Can",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "02-055"
+    },
+    {
+        "itemName": "Pylox Spray Paint Silver",
+        "measurementName": "Can",
+        "itemQuantity": 3,
+        "unitCost": 142.0,
+        "itemID": "02-056"
+    },
+    {
+        "itemName": "Spray Paint Pearl White- SAMURAI",
+        "measurementName": "Can",
+        "itemQuantity": 0,
+        "unitCost": 410.0,
+        "itemID": "02-057"
+    },
+    {
+        "itemName": "Spray Paint Gloss Black- BOSNY",
+        "measurementName": "gal",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "02-058"
+    },
+    {
+        "itemName": "Spray Paint Light Sky Blue- NIPPON",
+        "measurementName": "gal",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "02-059"
+    },
+    {
+        "itemName": "Laquer Thinner- PUREE 3Ltr",
+        "measurementName": "gal",
+        "itemQuantity": 0,
+        "unitCost": 120.0,
+        "itemID": "02-060"
+    },
+    {
+        "itemName": "Paint Thinner- LESCO 3Ltr",
+        "measurementName": "gal",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "02-061"
+    },
+    {
+        "itemName": "QDE - Yellow - SALAMAT BRO",
+        "measurementName": "gal",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "02-062"
+    },
+    {
+        "itemName": "QDE - Yellow - TKO",
+        "measurementName": "gal",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "02-063"
+    },
+    {
+        "itemName": "Prolux Glazing Putty White- DAVIES",
+        "measurementName": "gal",
+        "itemQuantity": 4,
+        "unitCost": 240.0,
+        "itemID": "02-064"
+    },
+    {
+        "itemName": "Butterfly Paint Brush - 1/2",
+        "measurementName": "pcs",
+        "itemQuantity": 2,
+        "unitCost": 20.0,
+        "itemID": "02-065"
+    },
+    {
+        "itemName": "Paint Brush 1\" - Bronco",
+        "measurementName": "pcs",
+        "itemQuantity": 1,
+        "unitCost": 35.0,
+        "itemID": "02-066"
+    },
+    {
+        "itemName": "Paint Brush - 2\" - Bronco",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 70.0,
+        "itemID": "02-067"
+    },
+    {
+        "itemName": "Butterfly Paint Brush - 3\"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "02-068"
+    },
+    {
+        "itemName": "Butterfly Paint Brush - 4\"",
+        "measurementName": "pcs",
+        "itemQuantity": 18,
+        "unitCost": 115.0,
+        "itemID": "02-069"
+    },
+    {
+        "itemName": "Paint Roller - 7\" - Bryan",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "02-070"
+    },
+    {
+        "itemName": "QDE- Black -DOMINO",
+        "measurementName": "gal",
+        "itemQuantity": 0,
+        "unitCost": 860.0,
+        "itemID": "02-071"
+    },
+    {
+        "itemName": "GreenField Floodlight LED 50w",
+        "measurementName": "pcs",
+        "itemQuantity": 3,
+        "unitCost": 1500.0,
+        "itemID": "02-072"
+    },
+    {
+        "itemName": "Flat White 16Ltrs. SINCLAIR",
+        "measurementName": "Pail",
+        "itemQuantity": 2,
+        "unitCost": 2560.0,
+        "itemID": "02-073"
+    },
+    {
+        "itemName": "Pylox Spray Paint Heat Black",
+        "measurementName": "Can",
+        "itemQuantity": 0,
+        "unitCost": 290.0,
+        "itemID": "02-074"
+    },
+    {
+        "itemName": "Red Oxide Primer",
+        "measurementName": "gal",
+        "itemQuantity": 0,
+        "unitCost": 740.0,
+        "itemID": "02-075"
+    },
+    {
+        "itemName": "Epoxy Reducer- PUREE",
+        "measurementName": "gal",
+        "itemQuantity": 4,
+        "unitCost": 740.0,
+        "itemID": "02-076"
+    },
+    {
+        "itemName": "Laquer Flow- PUREE",
+        "measurementName": "gal",
+        "itemQuantity": 0,
+        "unitCost": 85.0,
+        "itemID": "02-077"
+    },
+    {
+        "itemName": "Permacoat Gloss White B710- BOYSEN",
+        "measurementName": "Pail",
+        "itemQuantity": 0,
+        "unitCost": 2960.0,
+        "itemID": "02-078"
+    },
+    {
+        "itemName": "Flat Enamel - BOYSEN",
+        "measurementName": "Pail",
+        "itemQuantity": 0,
+        "unitCost": 750.0,
+        "itemID": "02-079"
+    },
+    {
+        "itemName": "Exhaust Fan- OMNI",
+        "measurementName": "pcs",
+        "itemQuantity": 3,
+        "unitCost": 1500.0,
+        "itemID": "02-080"
+    },
+    {
+        "itemName": "Yellow -RAIN OR SHINE",
+        "measurementName": "gal",
+        "itemQuantity": 3,
+        "unitCost": 940.0,
+        "itemID": "02-081"
+    },
+    {
+        "itemName": "Royal Blue- RAIN OR SHINE",
+        "measurementName": "gal",
+        "itemQuantity": 5,
+        "unitCost": 2960.0,
+        "itemID": "02-082"
+    },
+    {
+        "itemName": "Door Closer- Lotus Tubular",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 499.0,
+        "itemID": "02-083"
+    },
+    {
+        "itemName": "QDE- White -BOYSEN",
+        "measurementName": "gal",
+        "itemQuantity": 0,
+        "unitCost": 920.0,
+        "itemID": "02-084"
+    },
+    {
+        "itemName": "Repair Clamp 2\" HDPE -MIE",
+        "measurementName": "pcs",
+        "itemQuantity": 5,
+        "unitCost": 864.5,
+        "itemID": "03-318"
+    },
+    {
+        "itemName": "Repair Clamp 3\" HDPE -MIE",
+        "measurementName": "pcs",
+        "itemQuantity": 3,
+        "unitCost": 1330.0,
+        "itemID": "03-319"
+    },
+    {
+        "itemName": "PANEL BOARD 6 HOLES PLUG IN- AMERICA",
+        "measurementName": "PC",
+        "itemQuantity": 0,
+        "unitCost": 660.0,
+        "itemID": "02-085"
+    },
+    {
+        "itemName": "Tee Reducer 1 x 3/4 GI - JB",
+        "measurementName": "pcs",
+        "itemQuantity": 98,
+        "unitCost": 94.43,
+        "itemID": "03-320"
+    },
+    {
+        "itemName": "Tee 3/4 GI - JB",
+        "measurementName": "pcs",
+        "itemQuantity": 300,
+        "unitCost": 49.21,
+        "itemID": "03-321"
+    },
+    {
+        "itemName": "Nipple 1/2 x 1 GI - MICRO",
+        "measurementName": "pcs",
+        "itemQuantity": 306,
+        "unitCost": 10.2,
+        "itemID": "03-322"
+    },
+    {
+        "itemName": "Nipple 1/2 x 2 GI - MICRO",
+        "measurementName": "pcs",
+        "itemQuantity": 208,
+        "unitCost": 12.6,
+        "itemID": "03-323"
+    },
+    {
+        "itemName": "Flat Gloss- BOYSEN",
+        "measurementName": "pail",
+        "itemQuantity": 1,
+        "unitCost": 2890.0,
+        "itemID": "02-086"
+    },
+    {
+        "itemName": "QDE WHITE- BOYSEN (pail)",
+        "measurementName": "pail",
+        "itemQuantity": 0,
+        "unitCost": 3450.0,
+        "itemID": "02-087"
+    },
+    {
+        "itemName": "Ting ting Color Thalo Blue- BOYSEN",
+        "measurementName": "Lt",
+        "itemQuantity": 0,
+        "unitCost": 880.0,
+        "itemID": "02-088"
+    },
+    {
+        "itemName": "Guilder Epoxy primer Gray- BOYSEN",
+        "measurementName": "gal",
+        "itemQuantity": 2,
+        "unitCost": 1360.0,
+        "itemID": "02-089"
+    },
+    {
+        "itemName": "Acry Color Raw Sienna -BOYSEN",
+        "measurementName": "Can",
+        "itemQuantity": 5,
+        "unitCost": 120.0,
+        "itemID": "02-090"
+    },
+    {
+        "itemName": "Acry Color Thalo Blue- BOYSEN",
+        "measurementName": "Can",
+        "itemQuantity": 5,
+        "unitCost": 120.0,
+        "itemID": "02-091"
+    },
+    {
+        "itemName": "Roller Brush w/h 2b -ACRYLON",
+        "measurementName": "Pcs",
+        "itemQuantity": 0,
+        "unitCost": 145.0,
+        "itemID": "02-092"
+    },
+    {
+        "itemName": "Baby Roller w/o- OMEGA",
+        "measurementName": "Pcs",
+        "itemQuantity": 0,
+        "unitCost": 80.0,
+        "itemID": "02-093"
+    },
+    {
+        "itemName": "Zimcoat Skimcoat",
+        "measurementName": "bag",
+        "itemQuantity": 2,
+        "unitCost": 780.0,
+        "itemID": "02-094"
+    },
+    {
+        "itemName": "DIB Cable Tie 100pcs 7 in BLACK/WHITE",
+        "measurementName": "pack",
+        "itemQuantity": 0,
+        "unitCost": 199.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Pipe 1 1/2 GI SCHD 40- LOCAL",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 1106.0,
+        "itemID": "02-095"
+    },
+    {
+        "itemName": "Pipe 1 1 /2 GI s20",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 777.0,
+        "itemID": "02-096"
+    },
+    {
+        "itemName": "Deform Bar - 16mm",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 355.9,
+        "itemID": "02-097"
+    },
+    {
+        "itemName": "Coupling 1\" HDPE - FISH",
+        "measurementName": "pcs",
+        "itemQuantity": 1,
+        "unitCost": 95.0,
+        "itemID": "03-324"
+    },
+    {
+        "itemName": "Female Elbow 1/2 HDPE- PBP",
+        "measurementName": "pcs",
+        "itemQuantity": 50,
+        "unitCost": 70.0,
+        "itemID": "03-325"
+    },
+    {
+        "itemName": "1/4 Thick Plastic Acrylic 4 x 8",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 4720.0,
+        "itemID": "02-098"
+    },
+    {
+        "itemName": "Anzahl Anti Corrosion",
+        "measurementName": "lt",
+        "itemQuantity": 3,
+        "unitCost": 740.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Anzahl Surfacer Primer",
+        "measurementName": "lt",
+        "itemQuantity": 4,
+        "unitCost": 740.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Anzahl White w/ Catalest",
+        "measurementName": "gal",
+        "itemQuantity": 2,
+        "unitCost": 3980.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Urethane Thinner",
+        "measurementName": "gal",
+        "itemQuantity": 5,
+        "unitCost": 960.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Body Filler W/ Hardener",
+        "measurementName": "gal",
+        "itemQuantity": 2,
+        "unitCost": 990.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Sand Paper #100 - HIPPO",
+        "measurementName": "pcs",
+        "itemQuantity": 10,
+        "unitCost": 25.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Sand Paper 120\" 400\" 1200",
+        "measurementName": "pcs",
+        "itemQuantity": 30,
+        "unitCost": 22.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Tiles 60 x 60 fc 6013",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 185.0,
+        "itemID": "02-099"
+    },
+    {
+        "itemName": "Tiles 60 x 60 fc 6889",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 195.0,
+        "itemID": "02-100"
+    },
+    {
+        "itemName": "Tiles 60 x 60 ak 6882",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 195.0,
+        "itemID": "02-101"
+    },
+    {
+        "itemName": "Tiles 60 x 60 ak 6888",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 195.0,
+        "itemID": "02-102"
+    },
+    {
+        "itemName": "MJ Water Closet bowl",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 3700.0,
+        "itemID": "02-103"
+    },
+    {
+        "itemName": "DI Sleeve type coupling pvc-pvc 4\"- HIWA",
+        "measurementName": "pcs",
+        "itemQuantity": 7,
+        "unitCost": 2347.49,
+        "itemID": "03-326"
+    },
+    {
+        "itemName": "DI Sleeve type coupling pvc-pvc 6\"-HIWA",
+        "measurementName": "pcs",
+        "itemQuantity": 4,
+        "unitCost": 3473.61,
+        "itemID": "03-327"
+    },
+    {
+        "itemName": "CI Sleeve Type coupling pvc- GI 6\"- CMI",
+        "measurementName": "pcs",
+        "itemQuantity": 4,
+        "unitCost": 7848.64,
+        "itemID": "03-328"
+    },
+    {
+        "itemName": "Flow meter 4\" Paddle Wheel Type- ZENNER",
+        "measurementName": "pcs",
+        "itemQuantity": 2,
+        "unitCost": 56550.0,
+        "itemID": "03-329"
+    },
+    {
+        "itemName": "Flow meter 6\" Paddle Wheel Type- ZENNER",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 98600.0,
+        "itemID": "03-330"
+    },
+    {
+        "itemName": "GASKET 4- LOCAL",
+        "measurementName": "pcs",
+        "itemQuantity": 26,
+        "unitCost": 209.0,
+        "itemID": "03-331"
+    },
+    {
+        "itemName": "STC 4\" ( GI to GI)- CMI",
+        "measurementName": "pcs",
+        "itemQuantity": 4,
+        "unitCost": 6066.0,
+        "itemID": "03-332"
+    },
+    {
+        "itemName": "Cable Tie 6x300",
+        "measurementName": "pack",
+        "itemQuantity": 0,
+        "unitCost": 255.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Check Valve 1/2 Brass- ACE",
+        "measurementName": "pcs",
+        "itemQuantity": 343,
+        "unitCost": 198.0,
+        "itemID": "03-333"
+    },
+    {
+        "itemName": "QDE WHITE- TKO",
+        "measurementName": "gal",
+        "itemQuantity": 4,
+        "unitCost": 920.0,
+        "itemID": "02-104"
+    },
+    {
+        "itemName": "Junction Box- SHUTA",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 28.0,
+        "itemID": "02-105"
+    },
+    {
+        "itemName": "1 Gang Switch- ROYU",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 115.0,
+        "itemID": "02-106"
+    },
+    {
+        "itemName": "2 Gang Outlet Universal- FOCUS",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 165.0,
+        "itemID": "02-107"
+    },
+    {
+        "itemName": "PVC Pipe Orange 1/2- BIO",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 95.0,
+        "itemID": "02-108"
+    },
+    {
+        "itemName": "THHN WIRE 12\"- MAX",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 3400.0,
+        "itemID": "02-109"
+    },
+    {
+        "itemName": "Angle Valve 1/2\" 2 way - HAWK",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 250.0,
+        "itemID": "02-110"
+    },
+    {
+        "itemName": "Faucet 2 way -HAWK",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 350.0,
+        "itemID": "02-111"
+    },
+    {
+        "itemName": "Supply Hose 1/2 x 1/2 - ITALY",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 150.0,
+        "itemID": "02-112"
+    },
+    {
+        "itemName": "Floor Drain 4 x 4- CHICAGO",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 80.0,
+        "itemID": "02-113"
+    },
+    {
+        "itemName": "Faucet s/s - HAWK",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 200.0,
+        "itemID": "02-114"
+    },
+    {
+        "itemName": "Cyclone Wire 4 X 4 3ft 6 mtrs -LOCAL",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 550.0,
+        "itemID": "02-115"
+    },
+    {
+        "itemName": "Ball Valve 1/2 Lockwing -ACE",
+        "measurementName": "pcs",
+        "itemQuantity": 332,
+        "unitCost": 168.75,
+        "itemID": "03-334"
+    },
+    {
+        "itemName": "Nipple 1/2 x 12 GI - JB",
+        "measurementName": "pcs",
+        "itemQuantity": 20,
+        "unitCost": 23.76,
+        "itemID": "03-335"
+    },
+    {
+        "itemName": "Male Adaptor 1/2 HDPE- PBP",
+        "measurementName": "pcs",
+        "itemQuantity": 50,
+        "unitCost": 23.76,
+        "itemID": "03-336"
+    },
+    {
+        "itemName": "Long Span Rib type 0.50m x 1220m Blue",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 2700.0,
+        "itemID": "02-116"
+    },
+    {
+        "itemName": "C- Purlins 2 x 3 1.0",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 452.0,
+        "itemID": "02-117"
+    },
+    {
+        "itemName": "Deform Bar 12mm",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 193.94,
+        "itemID": "02-118"
+    },
+    {
+        "itemName": "Steel Matting 4 x 8 #8 LOCAL",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 390.0,
+        "itemID": "02-119"
+    },
+    {
+        "itemName": "Tubular 2 x 3 1.4",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 1025.0,
+        "itemID": "02-120"
+    },
+    {
+        "itemName": "GASKET 6- MARAKATA",
+        "measurementName": "pcs",
+        "itemQuantity": 14,
+        "unitCost": 80.0,
+        "itemID": "03-337"
+    },
+    {
+        "itemName": "Sleeve-Type Coupling 3\" DI pvc to pvc- AMK",
+        "measurementName": "pcs",
+        "itemQuantity": 10,
+        "unitCost": 2050.8,
+        "itemID": "03-338"
+    },
+    {
+        "itemName": "Sleeve-Type Coupling 4\" DI pvc to pvc- AMK",
+        "measurementName": "pcs",
+        "itemQuantity": 10,
+        "unitCost": 2453.08,
+        "itemID": "03-339"
+    },
+    {
+        "itemName": "Sleeve-Type Coupling 6\" DI pvc to pvc- AMK",
+        "measurementName": "pcs",
+        "itemQuantity": 10,
+        "unitCost": 3630.6,
+        "itemID": "03-340"
+    },
+    {
+        "itemName": "Pipe 2\" HDPE - BLUE (HDR)",
+        "measurementName": "mtr",
+        "itemQuantity": 180,
+        "unitCost": 129.0,
+        "itemID": "04-018"
+    },
+    {
+        "itemName": "Pipe 6\" HDPE - BLUE (HDR)",
+        "measurementName": "pcs",
+        "itemQuantity": 20,
+        "unitCost": 4968.0,
+        "itemID": "04-019"
+    },
+    {
+        "itemName": "Concrete Hollow Block 4\"",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 25.0,
+        "itemID": "02-121"
+    },
+    {
+        "itemName": "Pipe 3/4 HDPE - BLUE - NP",
+        "measurementName": "pcs",
+        "itemQuantity": 320,
+        "unitCost": 29.4,
+        "itemID": "04-020"
+    },
+    {
+        "itemName": "Pipe 1\" HDPE- BLUE - NP",
+        "measurementName": "pcs",
+        "itemQuantity": 500,
+        "unitCost": 43.75,
+        "itemID": "04-021"
+    },
+    {
+        "itemName": "Coupling 3\" HDPE -FISH",
+        "measurementName": "pcs",
+        "itemQuantity": 20,
+        "unitCost": 1172.0,
+        "itemID": "03-341"
+    },
+    {
+        "itemName": "Mechanical Flange 4\"- CMI",
+        "measurementName": "pcs",
+        "itemQuantity": 12,
+        "unitCost": 1208.0,
+        "itemID": "03-342"
+    },
+    {
+        "itemName": "Flange 6\" - PV",
+        "measurementName": "pcs",
+        "itemQuantity": 10,
+        "unitCost": 1500.0,
+        "itemID": "03-343"
+    },
+    {
+        "itemName": "Coupling 2\" HDPE - CT - FISH",
+        "measurementName": "pcs",
+        "itemQuantity": 10,
+        "unitCost": 433.0,
+        "itemID": "03-344"
+    },
+    {
+        "itemName": "PVC Pipe 1/2 w/ hub- ALASCO",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 123.9,
+        "itemID": "03-345"
+    },
+    {
+        "itemName": "Concrete Cutter Blade 14\" - DSK",
+        "measurementName": "pcs",
+        "itemQuantity": 100,
+        "unitCost": 7000.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Flange 6\" - IMPORTED",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-346"
+    },
+    {
+        "itemName": "SLEEVE TYPE COUPLING -GI TO HDPE 6\" (CIM)",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "60 A CKT BREAKER",
+        "measurementName": "pcs",
+        "itemQuantity": 10,
+        "unitCost": 7000.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "60 A CKT BREAKER/BOLT ON TYPE",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "FOOT VALVE WITH FILTER",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 6500.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "INJECTION VALVE",
+        "measurementName": "pcs",
+        "itemQuantity": 5,
+        "unitCost": 5500.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Chemical Solution Tank 220L - SEKO",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Blind Rivet 1/8 x 1/2 - LOCAL",
+        "measurementName": "pcs",
+        "itemQuantity": 5,
+        "unitCost": 0.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Blind Rivet 1/8 x 3/4 - LOCAL",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Blind Rivet 5/32 x 1/2 - LOCAL",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Blind Rivet 5/32 x 3/4 - LOCAL",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Drill bit 3/32 - DOORMER",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "PLAIN SHEET 0.7mm -LOCAL",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Knitted Gloves",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Ting Ting Color Black - Boysen",
+        "measurementName": "Ltr",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Ting Ting Color Red - Boysen",
+        "measurementName": "Ltr",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Polytuff with Hardener",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Sand Paper 150\" - HIPPO",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Plain Sheet 4x5 , 0.5 mm",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Tubular 2x3 0.5 mm",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Tubular 2x3 0.5 mm",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Tubular 2x3 0.5 mm",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": 0
+    },
+    {
+        "itemName": "Flat Bar 6 mm",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-249"
+    },
+    {
+        "itemName": "Acry Color Raw Sienna -BOYSEN",
+        "measurementName": "Ltr",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "02-090"
+    },
+    {
+        "itemName": "Steel Brush",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-217"
+    },
+    {
+        "itemName": "Chlorinator Electronic Diaphragm - SEKO",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "06-248"
+    },
+    {
+        "itemName": "Check Valve 1/2 Brass- Double-Lin",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-348"
+    },
+    {
+        "itemName": "Ball Valve 3/4\" Lockwing - Ace",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-349"
+    },
+    {
+        "itemName": "Bell Reducer GI 1/2 x 3/4 - JB",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-299"
+    },
+    {
+        "itemName": "Nipple 3/4 x 5 GI - MICRO",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-350"
+    },
+    {
+        "itemName": "Nipple 3/4 x 8 GI - MICRO",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-351"
+    },
+    {
+        "itemName": "Nipple 1 x 8 GI - MICRO",
+        "measurementName": "pcs",
+        "itemQuantity": 0,
+        "unitCost": 0.0,
+        "itemID": "03-352"
+    }
+]

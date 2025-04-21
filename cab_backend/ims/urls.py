@@ -59,5 +59,6 @@ urlpatterns = [
 
     path('download-report/<int:year>/<int:month>/', views.download_report_doc, name='download-report'),
     
-    path('getexcel/', views.xlsm_to_json)
+    path('getexcel_bb/', views.bb_xlsm_to_json),
+    path('getexcel_itm/', views.itm_xlsm_to_json)
 ]

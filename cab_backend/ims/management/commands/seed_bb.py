@@ -12,7 +12,8 @@ class Command(BaseCommand):
     help = 'Seed items from JSON file'
 
     def handle(self, *args, **kwargs):
-        json_path = os.path.join(settings.BASE_DIR, 'ims', 'fixtures', 'beginning_data.json')
+        # json_path = os.path.join(settings.BASE_DIR, 'ims', 'fixtures', 'beginning_data.json')
+        json_path = os.path.join(settings.BASE_DIR, 'ims', 'fixtures', 'beginning_data_march2025.json')
         
         with open(json_path, 'r') as file:
             items_data = json.load(file)
@@ -20,7 +21,7 @@ class Command(BaseCommand):
         created_bb = []
         errors = []
 
-        specific_date = make_aware(datetime.datetime(2025, 2, 12, 9, 30))
+        specific_date = make_aware(datetime.datetime(2025, 3, 31))
 
         for item_data in items_data:
             try:
