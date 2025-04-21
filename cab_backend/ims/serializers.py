@@ -62,7 +62,7 @@ class ItemSerializer(serializers.ModelSerializer):
         fields = ('itemID', 'classificationID', 'classificationName','measurementID','measurementName','itemName','itemQuantity','unitCost','totalCost','month','year','created_at','updated_at')
 
     def to_internal_value(self, data):
-        classification_name = data.pop('classificationName', None)
+        classification_name = data.pop('classification', None)
         measurement_name = data.pop('measurementName', None)
         
         if classification_name:
@@ -70,7 +70,7 @@ class ItemSerializer(serializers.ModelSerializer):
                 classification = Classification.objects.get(classification=classification_name)
                 data['classificationID'] = classification.pk
             except Classification.DoesNotExist:
-                raise serializers.ValidationError({'classifiscationName': 'Invalid classification name'})
+                raise serializers.ValidationError({'classification': 'Invalid classification name'})
         
         if measurement_name:
             try:

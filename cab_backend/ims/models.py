@@ -26,16 +26,21 @@ class Item(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.itemID:
-            max_id = Item.objects.filter(classificationID=self.classificationID).count() + 1
-            self.itemID = f'{self.classificationID.classificationID:02d}-{max_id:03d}'
-            self.totalCost = self.itemQuantity * self.unitCost  # Compute totalCost
+            # Find the highest existing ID number for this classification
+            items = Item.objects.filter(itemID__startswith=f'{self.classificationID.classificationID:02d}-')
+            if items.exists():
+                max_id_item = max(
+                    items, 
+                    key=lambda x: int(x.itemID.split('-')[1]) if x.itemID and '-' in x.itemID else 0
+                )
+                max_id = int(max_id_item.itemID.split('-')[1])
+                next_id = max_id + 1
+            else:
+                next_id = 1
+            
+            self.itemID = f'{self.classificationID.classificationID:02d}-{next_id:03d}'
+            self.totalCost = self.itemQuantity * self.unitCost
         super(Item, self).save(*args, **kwargs)
-
-@receiver(pre_save, sender=Item)
-def create_custom_id(sender, instance, **kwargs):
-    if not instance.itemID:
-        max_id = Item.objects.filter(classificationID=instance.classificationID).count() + 1
-        instance.itemID = f'{instance.classificationID.classificationID:02d}-{max_id:03d}'
 
 class BeginningBalance(models.Model):
     id = models.AutoField(primary_key=True)
@@ -119,6 +124,7 @@ class RunningBalance(models.Model):
     unitCost = models.FloatField(default=0.0)
     totalCost = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     remarks = models.CharField(max_length=100, default="")
+    quality = models.BooleanField(default=True)
     created_at = models.DateTimeField(default= timezone.now)
     updated_at = models.DateTimeField(default= timezone.now)
 

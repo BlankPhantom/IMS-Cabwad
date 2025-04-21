@@ -951,7 +951,7 @@ def bb_xlsm_to_json(request):
             df_selected['itemID'] = df_selected['itemName'].map(item_name_to_id)
 
             # Trim whitespace from string columns
-            df_selected = df_selected.map(lambda x: x.strip() if isinstance(x, str) else x)
+            df_selected = df_selected.applymap(lambda x: x.strip() if isinstance(x, str) else x)
 
             # Replace NaN with None (which becomes null in JSON)
             df_selected = df_selected.where(pd.notnull(df_selected), 0)
@@ -1017,7 +1017,7 @@ def itm_xlsm_to_json(request):
             df_merged = pd.merge(df_selected, df_additional_selected, on="itemName", how="left")
 
             # Trim whitespace from string columns
-            df_merged = df_merged.map(lambda x: x.strip() if isinstance(x, str) else x)
+            df_merged = df_merged.applymap(lambda x: x.strip() if isinstance(x, str) else x)
 
             # Ensure itemQuantity is 0.00 if it's 0
             df_merged['itemQuantity'] = df_merged['itemQuantity'].apply(lambda x: 0.00 if x == 0 else x)
