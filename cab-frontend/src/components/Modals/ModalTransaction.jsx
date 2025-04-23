@@ -96,13 +96,13 @@ const ModalTransaction = ({
   };
 
   const fetchProducts = async () => {
-    try{
+    try {
       const response = await fetch(API_ENDPOINTS.PRODUCT_LIST, {
         method: 'GET',
-        headers:{
+        headers: {
           "Content-Type": "application/json",
         }
-      }) 
+      })
       const data = await response.json()
       setProducts(data);
     } catch (error) {
@@ -466,7 +466,7 @@ const ModalTransaction = ({
 
       {/* ADD PRODUCT MODAL */}
       <Modal show={showProductModal} onHide={handleCloseProductModal} centered>
-        <Modal.Header closeButton>
+        <Modal.Header >
           <Modal.Title>Add New Product</Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -631,16 +631,19 @@ const ModalTransaction = ({
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>Cost</Form.Label>
+              <Form.Label>
+                Unit Cost: {productData?.cost ? parseFloat(productData.cost).toFixed(2) : '0.00'}
+              </Form.Label>
               <Form.Control
                 type="number"
                 name="cost"
-                value={productData.cost}
-                onChange={handleProductChange}
                 min="0"
                 step="0.01"
+                placeholder="Enter new cost"
+                onChange={handleProductChange}
               />
             </Form.Group>
+
             {validationError && (
               <Alert variant="danger">{validationError}</Alert>
             )}
@@ -827,16 +830,19 @@ const ModalTransaction = ({
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>Cost</Form.Label>
+              <Form.Label>
+                Unit Cost: {editProductData?.cost ? parseFloat(editProductData.cost).toFixed(2) : '0.00'}
+              </Form.Label>
               <Form.Control
                 type="number"
                 name="cost"
-                value={editProductData.cost}
-                onChange={handleEditProductChange}
                 min="0"
                 step="0.01"
+                placeholder="Enter new cost"
+                onChange={handleEditProductChange}
               />
             </Form.Group>
+
             {editValidationError && (
               <Alert variant="danger">{editValidationError}</Alert>
             )}

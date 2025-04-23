@@ -308,16 +308,16 @@ const TransactionHistory = () => {
               <th>Product Name</th>
               <th>Area</th>
               <th>
-                Purchased From <br /> Supplier
+                Purchased <br /> From <br /> Supplier
               </th>
               <th>
                 Return to <br /> Supplier
               </th>
               <th>
-                Transfer from <br /> Other Warehouse
+                Transfer <br /> from <br/> Other <br/> Warehouse
               </th>
               <th>
-                Transfer to <br /> Other Warehouse
+                Transfer <br /> to <br/> Other <br/> Warehouse
               </th>
               <th>
                 Issued <br /> Qty.

@@ -120,6 +120,8 @@ const BtnAddNewItem = ({ fetchItems, classifications, measurements }) => {
                             <Form.Control
                                 name="unitCost"
                                 type="number"
+                                min="0" 
+                                step="0.01"
                                 placeholder="Enter unit cost or put 0"
                                 required
                             >

@@ -11,7 +11,7 @@ const EditMasterModal = ({ show, handleClose, itemData, handleInputChange, handl
         setSelectedClassification(itemData?.classificationID || '');
     }, [itemData]);
 
-  const handleMeasureChange = (e) => {
+    const handleMeasureChange = (e) => {
         const selectedId = parseInt(e.target.value, 10);
         setSelectedMeasurement(selectedId);
         handleInputChange({
@@ -90,14 +90,17 @@ const EditMasterModal = ({ show, handleClose, itemData, handleInputChange, handl
                         </Form.Select>
                     </Form.Group>
                     <Form.Group className="mb-3">
-                        <Form.Label>Unit Cost</Form.Label>
+                        <Form.Label>
+                            Unit Cost: {itemData?.unitCost ? parseFloat(itemData.unitCost).toFixed(2) : '0.00'}
+                        </Form.Label>
                         <Form.Control
                             name="unitCost"
                             type="number"
-                            value={itemData?.unitCost}
+                            min="0"
+                            step="0.01"
+                            placeholder="Enter new unit cost"
                             onChange={handleInputChange}
-                        >
-                        </Form.Control>
+                        />
                     </Form.Group>
                     <Form.Group className='d-flex justify-content-end'>
                         <Button variant="danger" onClick={handleClose} className='me-2'>

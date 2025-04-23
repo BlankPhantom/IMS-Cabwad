@@ -374,14 +374,14 @@ const RunningBalance = () => {
               </th>
               <th>Beginning <br /> Balance</th>
               <th>
-                Purchased from <br /> Supplier
+                Purchased <br /> from <br /> Supplier
               </th>
               <th>Return to <br /> Supplier</th>
               <th>
-                Transfer From <br /> Other Warehouse
+                Transfer <br /> From <br /> Other <br /> Warehouse
               </th>
               <th>
-                Transfer to <br /> Other Warehouse
+                Transfer <br /> to <br /> Other <br /> Warehouse
               </th>
               <th>Issued <br /> Qty.</th>
               <th>Returned <br /> Qty.</th>
