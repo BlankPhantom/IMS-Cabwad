@@ -395,8 +395,8 @@ const RunningBalance = () => {
             value={showQuality}
             onChange={handleQualityFilter}>
             <option value="">All Quality</option>
-            <option value="True">True</option>
-            <option value="False">False</option>
+            <option value="True">Good Quality</option>
+            <option value="False">Bad Quality</option>
           </Form.Select>
         </Col>
         <Col xs="auto">
@@ -500,7 +500,7 @@ const RunningBalance = () => {
                   <td>
                   <button
                   onClick={() => handleQualityToggle(index, !item.quality)}
-                  className={`btn position-relative d-inline-block p-0 border-0 ${item.quality ? 'bg-success' : 'bg-secondary'
+                  className={`btn position-relative d-inline-block p-0 border-0 ${item.quality ? 'bg-success' : 'bg-danger'
                     }`}
                   style={{
                     width: '58px',
