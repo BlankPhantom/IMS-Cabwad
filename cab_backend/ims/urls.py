@@ -29,6 +29,7 @@ urlpatterns = [
     path('run-bal/', views.get_running_balance, name='get-running-balance'),
     path('search-run-bal/', views.search_running_balance, name='get-running-balance'),
     path('run-bal/create/', views.create_update_runbal, name='create-running-balance'),
+    path('run-bal/toggle/<int:id>/', views.update_runbal_quality, name='update-runbal-quality'),
 
     path('section/', views.section_list_all, name='get-section'),
     path('purpose/', views.purpose_list_all, name='get-purpose'),

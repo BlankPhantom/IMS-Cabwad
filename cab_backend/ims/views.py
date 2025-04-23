@@ -207,10 +207,6 @@ def item_create(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny 
-
-@csrf_exempt
 @api_view(['POST'])
 def item_bulk_create(request):
     if request.method == 'POST':
@@ -311,7 +307,9 @@ def search_beginning_bal(request):
     serializer = BeginningBalanceSerializer(result_page, many=True)
     return paginator.get_paginated_response(serializer.data)
 
-@csrf_exempt
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def copy_items_to_balance(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Invalid request method'}, status=400)
@@ -343,6 +341,8 @@ def copy_items_to_balance(request):
     return JsonResponse({'message': 'Items copied successfully!'}, status=201)
 
 @api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def beginning_balance_bulk_create(request):
     if request.method == 'POST':
         balances_data = request.data
@@ -579,8 +579,7 @@ from django.db.models import Sum
 from django.db.models import Prefetch
 
 logger = logging.getLogger(__name__)
-
-@csrf_exempt 
+ 
 @api_view(['POST']) 
 def create_update_runbal(request): 
     current_month = timezone.now().month 
@@ -675,7 +674,8 @@ def create_update_runbal(request):
                 returnedQty=0, 
                 consumption=0, 
                 totalCost=0,
-                created_at=timezone.now()
+                created_at=timezone.now(),
+                quality=1,
             )
 
         # Set beginning balance
@@ -742,10 +742,22 @@ def create_update_runbal(request):
             fields=['beginningBalance', 'itemQuantity', 'purchasedFromSupp', 
                     'returnToSupplier', 'transferFromWH', 'transferToWH', 
                     'issuedQty', 'returnedQty', 'consumption', 'unitCost', 
-                    'totalCost', 'remarks']
+                    'totalCost', 'remarks', 'quality']
         )
 
     return Response({"detail": "Running balance processed successfully for all items."})
+
+@api_view(['POST'])
+def update_runbal_quality(request, id):
+    try:
+        running_balance = RunningBalance.objects.get(runningBalID=id)
+        quality = request.data.get('quality')
+        running_balance.quality = quality
+        running_balance.save()
+        return Response({"message": "Quality updated successfully"}, status=status.HTTP_200_OK)
+    except RunningBalance.DoesNotExist:
+        return Response({"error": "Running balance not found"}, status=status.HTTP_404_NOT_FOUND)
+        
 
 @api_view(['GET'])
 def get_monthly_consumption(request):
@@ -918,7 +930,6 @@ def export_consumption_to_excel(request):
     return response
 
 # JSON converter for ITEMS model for masterlist
-@csrf_exempt  # Remove in production; use proper authentication
 def bb_xlsm_to_json(request):
     if request.method == "POST" and request.FILES.get("file"):
         excel_file = request.FILES["file"]
@@ -976,7 +987,7 @@ def bb_xlsm_to_json(request):
 
     return JsonResponse({"error": "Invalid request"}, status=400)
 
-@csrf_exempt  # Remove in production; use proper authentication
+
 def itm_xlsm_to_json(request):
     if request.method == "POST" and request.FILES.get("file"):
         excel_file = request.FILES["file"]
@@ -1056,7 +1067,6 @@ import tempfile
 
 logger = logging.getLogger(__name__)
 
-@csrf_exempt
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def download_report_doc(request, year, month):
