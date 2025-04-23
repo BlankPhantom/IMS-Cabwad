@@ -437,10 +437,13 @@ const RunningBalance = () => {
                   <td>
                     <button
                       onClick={() => handleQualityToggle(index, !item.quality)}
-                      className="relative inline-flex items-center h-6 rounded-full w-12 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      className={`btn position-relative d-inline-block p-0 border-0 ${item.quality ? 'bg-success' : 'bg-secondary'
+                        }`}
                       style={{
-                        backgroundColor: item.quality ? '#10B981' : '#6B7280',
-                        transition: 'background-color 0.2s'
+                        width: '58px',
+                        height: '32px',
+                        borderRadius: '16px',
+                        transition: 'background-color 0.2s ease-in-out'
                       }}
                       aria-pressed={item.quality}
                       type="button"
@@ -448,15 +451,25 @@ const RunningBalance = () => {
                       <span className="sr-only">
                         {item.quality ? 'Mark as bad' : 'Mark as good'}
                       </span>
+
+                      {/* Thumb */}
                       <span
-                        className={`inline-block h-5 w-5 rounded-full bg-white shadow transform ${item.quality ? 'translate-x-6' : 'translate-x-1'
-                          } transition-transform duration-200 ease-in-out`}
+                        className="position-absolute bg-white rounded-circle shadow"
+                        style={{
+                          width: '26px',
+                          height: '26px',
+                          top: '3px',
+                          left: item.quality ? '29px' : '3px',
+                          transition: 'left 0.2s ease-in-out'
+                        }}
                       />
-                      <span
-                        className={`absolute inset-0 flex items-center justify-center text-xs font-medium text-white ${item.quality ? 'pl-1 pr-6' : 'pl-6 pr-1'
-                          }`}
-                      >
-                        {item.quality ? 'Good' : 'Bad'}
+
+                      {/* Icons */}
+                      <span className="position-absolute start-1 top-50 translate-middle-y opacity-100" style={{ transition: 'opacity 0.2s' }}>
+                        <i className={`bi bi-check text-white ${item.quality ? 'opacity-100' : 'opacity-0'}`} style={{ fontSize: '0.8rem' }} />
+                      </span>
+                      <span className="position-absolute end-1 top-50 translate-middle-y" style={{ transition: 'opacity 0.2s' }}>
+                        <i className={`bi bi-x text-white ${item.quality ? 'opacity-0' : 'opacity-100'}`} style={{ fontSize: '0.9rem' }} />
                       </span>
                     </button>
                   </td>

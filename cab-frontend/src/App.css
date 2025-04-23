@@ -68,6 +68,18 @@ html {
   }
 }
 
+.custom-toggle {
+  transition: background-color 0.2s ease-in-out;
+}
+
+.custom-toggle-thumb {
+  transition: left 0.2s ease-in-out;
+}
+
+.custom-toggle-icon {
+  transition: opacity 0.2s ease-in-out;
+}
+
 .topNav {
   width: 100%;
   position: fixed !important;  /* Sticks to the top */
