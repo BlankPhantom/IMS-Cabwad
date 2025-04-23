@@ -523,6 +523,7 @@ def get_running_balance(request):
     measurement_id = request.query_params.get('measurementID')
     remarks = request.query_params.get('remarks')
     available_only = request.query_params.get('available_only')
+    rb_quality = request.query_params.get('quality')
     
     running_balances = RunningBalance.objects.all()
 
@@ -536,6 +537,8 @@ def get_running_balance(request):
         running_balances = running_balances.filter(remarks=remarks)
     if available_only == 'true':
         running_balances = running_balances.filter(itemQuantity__gt=0)
+    if rb_quality:
+        running_balances = running_balances.filter(quality=rb_quality)
         
     paginator = Pagination()
     result_page = paginator.paginate_queryset(running_balances, request)
