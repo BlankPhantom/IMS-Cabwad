@@ -42,8 +42,11 @@ def generate_reports_doc(report):
         except (TypeError, ValueError):
             return "0.00"
 
+     # Fix: Create datetime object with the correct month from report
+    month_date = datetime(year=1900, month=report.updated_at.month, day=1)
+    
     placeholders = {
-        '{{month}}': datetime(1900, int(getattr(report, 'month', 1)+1) if str(getattr(report, 'month', '')).isdigit()+1 else 1, 1).strftime("%B"),
+        '{{month}}': month_date.strftime("%B"),
         '{{year}}': str(getattr(report, 'year', datetime.now().year)),
         
         '(tNSC0)': '₱' + format_number(report.totalNSC),
