@@ -1070,6 +1070,7 @@ import tempfile
 logger = logging.getLogger(__name__)
 
 @api_view(['GET'])
+@authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def download_report_doc(request, year, month):
     try:
