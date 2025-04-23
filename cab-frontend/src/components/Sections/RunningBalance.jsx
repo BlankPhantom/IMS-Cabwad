@@ -498,42 +498,43 @@ const RunningBalance = () => {
                   <td>{formatCurrency(item.totalCost)}</td>
                   <td>{item.remarks}</td>
                   <td>
-                    <button
-                      onClick={() => handleQualityToggle(index)}
-                      className="relative inline-flex items-center h-6 rounded-full w-12 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                      style={{
-                        width: '58px',
-                        height: '32px',
-                        borderRadius: '16px',
-                        transition: 'background-color 0.2s ease-in-out'
-                      }}
-                      aria-pressed={item.quality}
-                      type="button"
-                    >
-                      <span className="sr-only">
-                        {item.quality ? 'Mark as bad' : 'Mark as good'}
-                      </span>
+                  <button
+                  onClick={() => handleQualityToggle(index, !item.quality)}
+                  className={`btn position-relative d-inline-block p-0 border-0 ${item.quality ? 'bg-success' : 'bg-secondary'
+                    }`}
+                  style={{
+                    width: '58px',
+                    height: '32px',
+                    borderRadius: '16px',
+                    transition: 'background-color 0.2s ease-in-out'
+                  }}
+                  aria-pressed={item.quality}
+                  type="button"
+                >
+                  <span className="sr-only">
+                    {item.quality ? 'Mark as bad' : 'Mark as good'}
+                  </span>
 
-                      {/* Thumb */}
-                      <span
-                        className="position-absolute bg-white rounded-circle shadow"
-                        style={{
-                          width: '26px',
-                          height: '26px',
-                          top: '3px',
-                          left: item.quality ? '29px' : '3px',
-                          transition: 'left 0.2s ease-in-out'
-                        }}
-                      />
+                  {/* Thumb */}
+                  <span
+                    className="position-absolute bg-white rounded-circle shadow"
+                    style={{
+                      width: '26px',
+                      height: '26px',
+                      top: '3px',
+                      left: item.quality ? '29px' : '3px',
+                      transition: 'left 0.2s ease-in-out'
+                    }}
+                  />
 
-                      {/* Icons */}
-                      <span className="position-absolute start-1 top-50 translate-middle-y opacity-100" style={{ transition: 'opacity 0.2s' }}>
-                        <i className={`bi bi-check text-white ${item.quality ? 'opacity-100' : 'opacity-0'}`} style={{ fontSize: '0.8rem' }} />
-                      </span>
-                      <span className="position-absolute end-1 top-50 translate-middle-y" style={{ transition: 'opacity 0.2s' }}>
-                        <i className={`bi bi-x text-white ${item.quality ? 'opacity-0' : 'opacity-100'}`} style={{ fontSize: '0.9rem' }} />
-                      </span>
-                    </button>
+                  {/* Icons */}
+                  <span className="position-absolute start-1 top-50 translate-middle-y opacity-100" style={{ transition: 'opacity 0.2s' }}>
+                    <i className={`bi bi-check text-white ${item.quality ? 'opacity-100' : 'opacity-0'}`} style={{ fontSize: '0.8rem' }} />
+                  </span>
+                  <span className="position-absolute end-1 top-50 translate-middle-y" style={{ transition: 'opacity 0.2s' }}>
+                    <i className={`bi bi-x text-white ${item.quality ? 'opacity-0' : 'opacity-100'}`} style={{ fontSize: '0.9rem' }} />
+                  </span>
+                </button>
                   </td>
                 </tr>
               ))
