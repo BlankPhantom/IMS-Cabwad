@@ -788,6 +788,8 @@ def get_monthly_consumption(request):
     return paginator.get_paginated_response(serializer.data)
 
 @api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def search_monthly_consumption(request):
     # Get query parameters
     month = request.query_params.get('month')
@@ -819,6 +821,8 @@ def search_monthly_consumption(request):
     return paginator.get_paginated_response(serializer.data)
 
 @api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def export_consumption_to_excel(request):
     # Extract filter parameters
     section_id = request.GET.get('sectionID') or request.query_params.get('sectionID')
