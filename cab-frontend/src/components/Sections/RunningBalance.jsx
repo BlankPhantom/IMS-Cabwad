@@ -390,18 +390,19 @@ const RunningBalance = () => {
               <th>Cost</th>
               <th>Total</th>
               <th>Remarks</th>
+              <th>Quality</th> {/* New column for Quality */}
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="15" className="text-center">
+                <td colSpan="16" className="text-center">
                   Loading data...
                 </td>
               </tr>
             ) : error ? (
               <tr>
-                <td colSpan="15" className="text-center text-danger">
+                <td colSpan="16" className="text-center text-danger">
                   {error}
                 </td>
               </tr>
@@ -433,11 +434,37 @@ const RunningBalance = () => {
                   <td>{formatCurrency(item.unitCost)}</td>
                   <td>{formatCurrency(item.totalCost)}</td>
                   <td>{item.remarks}</td>
+                  <td>
+                    <button
+                      onClick={() => handleQualityToggle(index, !item.quality)}
+                      className="relative inline-flex items-center h-6 rounded-full w-12 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                      style={{
+                        backgroundColor: item.quality ? '#10B981' : '#6B7280',
+                        transition: 'background-color 0.2s'
+                      }}
+                      aria-pressed={item.quality}
+                      type="button"
+                    >
+                      <span className="sr-only">
+                        {item.quality ? 'Mark as bad' : 'Mark as good'}
+                      </span>
+                      <span
+                        className={`inline-block h-5 w-5 rounded-full bg-white shadow transform ${item.quality ? 'translate-x-6' : 'translate-x-1'
+                          } transition-transform duration-200 ease-in-out`}
+                      />
+                      <span
+                        className={`absolute inset-0 flex items-center justify-center text-xs font-medium text-white ${item.quality ? 'pl-1 pr-6' : 'pl-6 pr-1'
+                          }`}
+                      >
+                        {item.quality ? 'Good' : 'Bad'}
+                      </span>
+                    </button>
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="15" className="text-center">
+                <td colSpan="16" className="text-center">
                   {searchTerm
                     ? `No results found for "${searchTerm}"`
                     : "No records found."}
