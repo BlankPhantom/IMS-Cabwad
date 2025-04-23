@@ -754,8 +754,7 @@ def create_update_runbal(request):
 def update_runbal_quality(request, id):
     try:
         running_balance = RunningBalance.objects.get(runningBalID=id)
-        quality = request.data.get('quality')
-        running_balance.quality = quality
+        running_balance.quality = not running_balance.quality
         running_balance.save()
         return Response({"message": "Quality updated successfully"}, status=status.HTTP_200_OK)
     except RunningBalance.DoesNotExist:

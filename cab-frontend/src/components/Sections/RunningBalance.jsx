@@ -14,6 +14,9 @@ const RunningBalance = () => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [remarks, setRemarks] = useState("");
   const [loading, setLoading] = useState(true);
+  const [qualityToggler, setQualityToggler] = useState(false);
+  const [showQuality, setShowQuality] = useState("");
+  // const [quality, setQuality] = useState("True");
   const [error, setError] = useState(null);
   const [showAvailableOnly, setShowAvailableOnly] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -66,6 +69,10 @@ const RunningBalance = () => {
     // Add available_only parameter if filter is active
     if (showAvailableOnly) {
       queryParams.append("available_only", "true");
+    }
+    
+    if (showQuality && showQuality !== "") {
+      queryParams.append("quality", showQuality);
     }
 
     return queryParams;
@@ -164,6 +171,12 @@ const RunningBalance = () => {
     setCurrentPage(1); // Reset to first page when filter changes
   };
 
+  const handleQualityFilter = (event) => {
+    const showQuality = event.target.value;
+    setShowQuality(showQuality);
+    setCurrentPage(1); // Reset to first page when filter changes
+  };
+
   const handleAvailableOnlyFilter = (event) => {
     const checked = event.target.checked;
     setShowAvailableOnly(checked);
@@ -177,6 +190,39 @@ const RunningBalance = () => {
     setCurrentPage(1); // Reset to first page when date changes
   };
 
+  const handleQualityToggle = async (index) => {
+    try {
+      const token = localStorage.getItem("access_token");
+      // Make sure this matches the ID field from your API response
+      const itemId = currentItems[index].runningBalID || currentItems[index].itemID;
+      
+      // Call the function to get the URL
+      const toggleUrl = API_ENDPOINTS.RUNNING_BAL_TOGGLE(itemId);
+      
+      const response = await fetch(toggleUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`,
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to toggle quality status");
+      }
+  
+      // Update the local state to reflect the change
+      const updatedItems = [...currentItems];
+      updatedItems[index] = {
+        ...updatedItems[index],
+        quality: !updatedItems[index].quality,
+      };
+      setCurrentItems(updatedItems);
+    } catch (error) {
+      console.error("Error toggling quality status:", error);
+    }
+  };
+
   // Single useEffect to handle all filter changes
   useEffect(() => {
     performSearch(searchTerm, currentPage);
@@ -187,6 +233,7 @@ const RunningBalance = () => {
     remarks,
     showAvailableOnly,
     searchTerm,
+    showQuality,
     currentPage,
   ]);
 
@@ -335,6 +382,22 @@ const RunningBalance = () => {
             <option value="Slow Moving">Slow Moving</option>
             <option value="Fast Moving">Fast Moving</option>
           </Form.Select>
+          <Form.Select
+            className="form-select"
+            style={{
+              width: "130px",
+              height: "31px",
+              padding: "3px",
+              borderRadius: "4px",
+              border: ".5px solid rgb(212, 212, 212)",
+              marginLeft: "10px",
+            }}
+            value={showQuality}
+            onChange={handleQualityFilter}>
+            <option value="">All Quality</option>
+            <option value="True">True</option>
+            <option value="False">False</option>
+          </Form.Select>
         </Col>
         <Col xs="auto">
           <Form.Check
@@ -390,7 +453,7 @@ const RunningBalance = () => {
               <th>Cost</th>
               <th>Total</th>
               <th>Remarks</th>
-              <th>Quality</th> {/* New column for Quality */}
+              <th>Quality</th>
             </tr>
           </thead>
           <tbody>
@@ -436,9 +499,8 @@ const RunningBalance = () => {
                   <td>{item.remarks}</td>
                   <td>
                     <button
-                      onClick={() => handleQualityToggle(index, !item.quality)}
-                      className={`btn position-relative d-inline-block p-0 border-0 ${item.quality ? 'bg-success' : 'bg-secondary'
-                        }`}
+                      onClick={() => handleQualityToggle(index)}
+                      className="relative inline-flex items-center h-6 rounded-full w-12 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                       style={{
                         width: '58px',
                         height: '32px',

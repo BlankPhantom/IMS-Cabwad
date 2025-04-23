@@ -31,7 +31,8 @@ export const API_ENDPOINTS = {
     RUNNING_BAL_LIST: `${BASE_URL}ims/run-bal/`,
     RUNNING_BAL_SEARCH: `${BASE_URL}ims/search-run-bal/`,
     RUNNING_BAL_CREATE: `${BASE_URL}ims/run-bal/create/`,
-
+    RUNNING_BAL_TOGGLE: (id) => `${BASE_URL}ims/run-bal/toggle/${id}/`,
+    
     //Monthly Consumption Endpoint
     MONTHLY_CONSUMPTION: `${BASE_URL}ims/monthly-consumption/`,
     MONTHLY_CONSUMPTION_SEARCH: `${BASE_URL}ims/search-monthly-consumption/`,
