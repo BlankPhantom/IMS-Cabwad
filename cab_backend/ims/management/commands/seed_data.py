@@ -26,7 +26,7 @@ class Command(BaseCommand):
             Measurement.objects.get_or_create(measureName=name)
 
         #seed data for section
-        section = ['N/A',"NSC","Production","Meter Maintenance","Special Project","Construction","Commercial","Sales","Gen.Services",]
+        section = ['N/A',"NSC","Production","Meter Maintenance","Special Project","Construction","Commercial","Sales","Gen Services",]
         for name in section:
             Section.objects.get_or_create(sectionName=name)
         
