@@ -502,11 +502,12 @@ const RunningBalance = () => {
                       onClick={() => handleQualityToggle(index, !item.quality)}
                       className={`btn position-relative d-inline-block border-0 p-0 ${item.quality ? 'bg-success' : 'bg-danger'}`}
                       style={{
-                        width: '100px',
-                        height: '34px',
+                        width: '75px',
+                        height: '30px',
                         borderRadius: '17px',
                         transition: 'all 0.2s ease-in-out',
-                        overflow: 'hidden'
+                        overflow: 'hidden',
+                        boxShadow: '4px 3px 5px rgba(0, 0, 0, 0.2)',
                       }}
                       aria-pressed={item.quality}
                       type="button"
@@ -524,16 +525,18 @@ const RunningBalance = () => {
                             backgroundColor : '#3f6399',
                             width: '50%',
                             borderRadius: '15px',
+                            border: '3px solid rgb(58, 57, 61)',
                             transition: 'all 0.2s ease-in-out',
                           }}
                         />
 
                         {/* Labels */}
-                        <div className="position-absolute w-100 h-100 d-flex justify-content-between align-items-center px-3">
+                        <div className="position-absolute w-100 h-100 d-flex justify-content-between align-items-center">
                           <span
                             className={`fw-bold text-white ${item.quality ? 'opacity-100' : 'opacity-0'}`}
                             style={{
-                              fontSize: '0.70rem',
+                              marginLeft: '10px',
+                              fontSize: '0.50rem',
                               transition: 'opacity 0.1s',
                               pointerEvents: 'none'
                             }}
@@ -543,7 +546,8 @@ const RunningBalance = () => {
                           <span
                             className={`fw-bold text-white ${item.quality ? 'opacity-0' : 'opacity-100'}`}
                             style={{
-                              fontSize: '0.70rem',
+                              marginRight: '12px',
+                              fontSize: '0.50rem',
                               transition: 'opacity 0.1s',
                               pointerEvents: 'none'
                             }}
