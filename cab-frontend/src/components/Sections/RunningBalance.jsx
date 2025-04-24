@@ -505,7 +505,7 @@ const RunningBalance = () => {
                         width: '100px',
                         height: '34px',
                         borderRadius: '17px',
-                        transition: 'all 0.3s ease-in-out',
+                        transition: 'all 0.2s ease-in-out',
                         overflow: 'hidden'
                       }}
                       aria-pressed={item.quality}
@@ -524,18 +524,17 @@ const RunningBalance = () => {
                             backgroundColor : '#3f6399',
                             width: '50%',
                             borderRadius: '15px',
-                            transition: 'all 0.3s ease-in-out',
-                            zIndex: 1
+                            transition: 'all 0.2s ease-in-out',
                           }}
                         />
 
                         {/* Labels */}
-                        <div className="position-absolute w-100 h-100 d-flex justify-content-between align-items-center px-3" style={{ zIndex: 2 }}>
+                        <div className="position-absolute w-100 h-100 d-flex justify-content-between align-items-center px-3">
                           <span
                             className={`fw-bold text-white ${item.quality ? 'opacity-100' : 'opacity-0'}`}
                             style={{
                               fontSize: '0.70rem',
-                              transition: 'opacity 0.3s',
+                              transition: 'opacity 0.1s',
                               pointerEvents: 'none'
                             }}
                           >
@@ -545,7 +544,7 @@ const RunningBalance = () => {
                             className={`fw-bold text-white ${item.quality ? 'opacity-0' : 'opacity-100'}`}
                             style={{
                               fontSize: '0.70rem',
-                              transition: 'opacity 0.3s',
+                              transition: 'opacity 0.1s',
                               pointerEvents: 'none'
                             }}
                           >
