@@ -70,7 +70,7 @@ const RunningBalance = () => {
     if (showAvailableOnly) {
       queryParams.append("available_only", "true");
     }
-    
+
     if (showQuality && showQuality !== "") {
       queryParams.append("quality", showQuality);
     }
@@ -195,10 +195,10 @@ const RunningBalance = () => {
       const token = localStorage.getItem("access_token");
       // Make sure this matches the ID field from your API response
       const itemId = currentItems[index].runningBalID || currentItems[index].itemID;
-      
+
       // Call the function to get the URL
       const toggleUrl = API_ENDPOINTS.RUNNING_BAL_TOGGLE(itemId);
-      
+
       const response = await fetch(toggleUrl, {
         method: "POST",
         headers: {
@@ -206,11 +206,11 @@ const RunningBalance = () => {
           Authorization: `Token ${token}`,
         },
       });
-  
+
       if (!response.ok) {
         throw new Error("Failed to toggle quality status");
       }
-  
+
       // Update the local state to reflect the change
       const updatedItems = [...currentItems];
       updatedItems[index] = {
@@ -498,43 +498,62 @@ const RunningBalance = () => {
                   <td>{formatCurrency(item.totalCost)}</td>
                   <td>{item.remarks}</td>
                   <td>
-                  <button
-                  onClick={() => handleQualityToggle(index, !item.quality)}
-                  className={`btn position-relative d-inline-block p-0 border-0 ${item.quality ? 'bg-success' : 'bg-danger'
-                    }`}
-                  style={{
-                    width: '58px',
-                    height: '32px',
-                    borderRadius: '16px',
-                    transition: 'background-color 0.2s ease-in-out'
-                  }}
-                  aria-pressed={item.quality}
-                  type="button"
-                >
-                  <span className="sr-only">
-                    {item.quality ? 'Mark as bad' : 'Mark as good'}
-                  </span>
+                    <button
+                      onClick={() => handleQualityToggle(index, !item.quality)}
+                      className={`btn position-relative d-inline-block border-0 p-0 ${item.quality ? 'bg-success' : 'bg-danger'}`}
+                      style={{
+                        width: '100px',
+                        height: '34px',
+                        borderRadius: '17px',
+                        transition: 'all 0.3s ease-in-out',
+                        overflow: 'hidden'
+                      }}
+                      aria-pressed={item.quality}
+                      type="button"
+                    >
+                      <span className="sr-only">
+                        {item.quality ? 'Mark as bad' : 'Mark as good'}
+                      </span>
 
-                  {/* Thumb */}
-                  <span
-                    className="position-absolute bg-white rounded-circle shadow"
-                    style={{
-                      width: '26px',
-                      height: '26px',
-                      top: '3px',
-                      left: item.quality ? '29px' : '3px',
-                      transition: 'left 0.2s ease-in-out'
-                    }}
-                  />
+                      {/* Text Labels Container */}
+                      <div className="position-relative h-100 w-100">
+                        {/* Active State Background */}
+                        <div
+                          className={`position-absolute h-100 ${item.quality ? 'start-50' : 'start-0'}`}
+                          style={{
+                            backgroundColor : '#3f6399',
+                            width: '50%',
+                            borderRadius: '15px',
+                            transition: 'all 0.3s ease-in-out',
+                            zIndex: 1
+                          }}
+                        />
 
-                  {/* Icons */}
-                  <span className="position-absolute start-1 top-50 translate-middle-y opacity-100" style={{ transition: 'opacity 0.2s' }}>
-                    <i className={`bi bi-check text-white ${item.quality ? 'opacity-100' : 'opacity-0'}`} style={{ fontSize: '0.8rem' }} />
-                  </span>
-                  <span className="position-absolute end-1 top-50 translate-middle-y" style={{ transition: 'opacity 0.2s' }}>
-                    <i className={`bi bi-x text-white ${item.quality ? 'opacity-0' : 'opacity-100'}`} style={{ fontSize: '0.9rem' }} />
-                  </span>
-                </button>
+                        {/* Labels */}
+                        <div className="position-absolute w-100 h-100 d-flex justify-content-between align-items-center px-3" style={{ zIndex: 2 }}>
+                          <span
+                            className={`fw-bold text-white ${item.quality ? 'opacity-100' : 'opacity-0'}`}
+                            style={{
+                              fontSize: '0.70rem',
+                              transition: 'opacity 0.3s',
+                              pointerEvents: 'none'
+                            }}
+                          >
+                            Good
+                          </span>
+                          <span
+                            className={`fw-bold text-white ${item.quality ? 'opacity-0' : 'opacity-100'}`}
+                            style={{
+                              fontSize: '0.70rem',
+                              transition: 'opacity 0.3s',
+                              pointerEvents: 'none'
+                            }}
+                          >
+                            Bad
+                          </span>
+                        </div>
+                      </div>
+                    </button>
                   </td>
                 </tr>
               ))
