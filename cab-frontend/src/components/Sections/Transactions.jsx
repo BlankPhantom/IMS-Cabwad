@@ -554,7 +554,7 @@ const Transactions = () => {
 
             // Close the modal
             setShowDeleteConfirmation(false);
-
+            window.location.reload();
         } catch (error) {
             console.error("Error deleting transaction:", error);
             setShowDeleteConfirmation(false);
