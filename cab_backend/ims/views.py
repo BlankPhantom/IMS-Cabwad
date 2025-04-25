@@ -936,10 +936,11 @@ def export_consumption_to_excel(request):
     return response
 
 # JSON converter for ITEMS model for masterlist
+@csrf_exempt
 def bb_xlsm_to_json(request):
     if request.method == "POST" and request.FILES.get("file"):
         excel_file = request.FILES["file"]
-        sheet_name = request.POST.get("sheet_name", "Beginning Balance")  # Default to "Sheet1"
+        sheet_name = request.POST.get("sheet_name", "Inventory - Running Balance")  # Default to "Sheet1"
         
         # Save file temporarily, overwrite if exists
         file_path = f"temp/{excel_file.name}"
@@ -955,13 +956,13 @@ def bb_xlsm_to_json(request):
                 "Product Name": "itemName",
                 "Unit of Measure": "measurementName",
                 "Available Stocks": "itemQuantity",
-                "Ave. Unit Cost": "unitCost"
+                "Cost": "unitCost"
             }
             
             # Map itemID from the items model based on their name
             item_name_to_id = {item.itemName: item.itemID for item in Item.objects.all()}
             # Specify the columns you want to extract
-            selected_columns = ["Product Name", "Unit of Measure", "Available Stocks", "Ave. Unit Cost"]
+            selected_columns = ["Product Name", "Unit of Measure", "Available Stocks", "Cost"]
             df_selected = df[selected_columns].rename(columns=column_mapping)
 
             # Map itemID to the extracted data
@@ -993,12 +994,12 @@ def bb_xlsm_to_json(request):
 
     return JsonResponse({"error": "Invalid request"}, status=400)
 
-
+@csrf_exempt
 def itm_xlsm_to_json(request):
     if request.method == "POST" and request.FILES.get("file"):
         excel_file = request.FILES["file"]
         sheet_name = request.POST.get("sheet_name", "Masterlist")  # Default to "Sheet1"
-        additional_sheet_name = request.POST.get("additional_sheet", "Beginning Balance")
+        additional_sheet_name = request.POST.get("additional_sheet", "Inventory - Running Balance")
         
         # Save file temporarily, overwrite if exists
         file_path = f"temp/{excel_file.name}"
@@ -1024,10 +1025,10 @@ def itm_xlsm_to_json(request):
                 "Product Name": "itemName", 
                 "Unit of Measure": "measurementName",
                 "Available Stocks": "itemQuantity",
-                "Ave. Unit Cost": "unitCost"
+                "Cost": "unitCost"
             }
             # Extract Unit of Measurement from the additional sheet Beginning Balance
-            additional_columns = ["Product Name", "Unit of Measure", "Available Stocks", "Ave. Unit Cost"]
+            additional_columns = ["Product Name", "Unit of Measure", "Available Stocks", "Cost"]
             df_additional_selected = df_additional[additional_columns].rename(columns=additional_col_map)
 
             # Merge the dataframes on "itemName"

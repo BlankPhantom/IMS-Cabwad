@@ -512,10 +512,6 @@ const RunningBalance = () => {
                       aria-pressed={item.quality}
                       type="button"
                     >
-                      <span className="sr-only">
-                        {item.quality ? 'Mark as bad' : 'Mark as good'}
-                      </span>
-
                       {/* Text Labels Container */}
                       <div className="position-relative h-100 w-100">
                         {/* Active State Background */}
@@ -547,12 +543,12 @@ const RunningBalance = () => {
                             className={`fw-bold text-white ${item.quality ? 'opacity-0' : 'opacity-100'}`}
                             style={{
                               marginRight: '12px',
-                              fontSize: '0.50rem',
+                              fontSize: '0.40rem',
                               transition: 'opacity 0.1s',
                               pointerEvents: 'none'
                             }}
                           >
-                            Bad
+                            No<br/>Good
                           </span>
                         </div>
                       </div>
