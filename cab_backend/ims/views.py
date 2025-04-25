@@ -473,15 +473,29 @@ def transaction_detail_update(request, id):
         return Response(serializer.data)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+from django.db import transaction
 @api_view(['DELETE'])
 def transaction_detail_delete(request, id):
     try:
-        transactionDet = TransactionDetails.objects.get(transactionDetailsID=id)
-    except TransactionDetails.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        with transaction.atomic():
+            # Get the transaction detail and its related products
+            transactionDet = TransactionDetails.objects.get(transactionDetailsID=id)
+            related_products = TransactionProduct.objects.filter(transactionDetailsID=id)
 
-    transactionDet.delete()
-    return Response(status=status.HTTP_204_NO_CONTENT)
+            # Update item quantities for each related product
+            for product in related_products:
+                serializer = TransactionProductSerializer(product)
+                serializer.delete(product)  # This will update item quantities
+
+            # Delete the transaction detail (this will cascade delete products)
+            transactionDet.delete()
+
+        return Response({"message": "Transaction and related products deleted successfully"}, 
+                      status=status.HTTP_204_NO_CONTENT)
+    except TransactionDetails.DoesNotExist:
+        return Response({"error": "Transaction not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 def transaction_product_create(request):
@@ -506,14 +520,18 @@ def transaction_product_update(request, id, detailID):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['DELETE'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def transaction_product_delete(request, id, detailID):
     try:
-        transactionProd = TransactionProduct.objects.get(transactionProductID=id, transactionDetailsID_id = detailID)
-    except TransactionDetails.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    transactionProd.delete()
-    return Response(status=status.HTTP_204_NO_CONTENT)
+        transaction = TransactionProduct.objects.get(pk=id)
+        serializer = TransactionProductSerializer(transaction)
+        serializer.delete(transaction)
+        return Response({"message": "Transaction deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+    except TransactionProduct.DoesNotExist:
+        return Response({"error": "Transaction not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 # end of transaction
 
 @api_view(['GET'])

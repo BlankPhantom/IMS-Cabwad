@@ -324,6 +324,36 @@ class TransactionProductSerializer(serializers.ModelSerializer):
         
         return instance
     
+    def delete(self, instance):
+        """
+        Override delete method to update item quantity before deletion
+        """
+        try:
+            # Calculate the adjustment to revert the transaction
+            revert_qty_adjustment = (
+                -instance.purchasedFromSupp +    # Revert items that came in
+                -instance.returnedQty +          # Revert items that came back
+                -instance.transferFromWH +       # Revert items that came in from warehouse
+                instance.issuedQty +            # Add back items that went out
+                instance.returnToSupplier +     # Add back items returned to supplier
+                instance.transferToWH           # Add back items transferred to warehouse
+            )
+            
+            # Print debug information
+            print(f"Delete - Reverting quantity adjustment: {revert_qty_adjustment}")
+            
+            # Update the item quantity before deleting the transaction
+            self.update_item_quantity(instance.itemID.pk, revert_qty_adjustment)
+            
+            # Perform the actual deletion
+            instance.delete()
+            
+            return True
+            
+        except Exception as e:
+            print(f"Error during deletion: {str(e)}")
+            raise serializers.ValidationError(f"Failed to delete transaction: {str(e)}")
+    
     def validate(self, data):
         request = self.context.get('request')
         if request and request.method == 'PUT':
