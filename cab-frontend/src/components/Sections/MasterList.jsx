@@ -114,18 +114,25 @@ const Masterlist = () => {
     }
   };
 
-  const handleSearchChange = async (e, page = 1) => {
+  const handleSearchChange = (e) => {
     const term = e.target.value.toLowerCase();
     setSearchTerm(term);
-
+    
     if (!term) {
       // Reset to first page of all items
       fetchItems(1);
       return;
     }
-
+    
+    // Always search on page 1 when search term changes
+    searchItems(term, 1);
+  };
+  
+  // Add this new function to handle searching with pagination
+  const searchItems = async (term, page = 1) => {
+    const token = localStorage.getItem("access_token");
+  
     try {
-      const token = localStorage.getItem("access_token");
       const response = await fetch(`${API_ENDPOINTS.ITEM_SEARCH}?search=${term}&page=${page}`, {
         method: "GET",
         headers: {
@@ -133,17 +140,23 @@ const Masterlist = () => {
           Authorization: `Token ${token}`,
         },
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         setItems(data.results);
         setCurrentItems(data.results);
         setTotalPages(Math.ceil(data.count / itemsPerPage));
         setTotalItems(data.count);
-        setCurrentPage(1);
+        setCurrentPage(page);
+      } else {
+        console.error("Search failed");
+        setError("Failed to search items.");
       }
     } catch (error) {
       console.error("Search failed:", error);
+      setError("Failed to search items.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -253,7 +266,11 @@ const Masterlist = () => {
 
   const paginate = (pageNumber) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
-      fetchItems(pageNumber);
+      if (searchTerm.trim()) {
+        searchItems(searchTerm, pageNumber);
+      } else {
+        fetchItems(pageNumber);
+      }
     }
   };
 
