@@ -19,10 +19,16 @@ const BtnEditDeleteTransaction = ({ transaction, onUpdate, onDelete, fetchTransa
 
     const handleEditTransactionChange = (e) => {
         const { name, value } = e.target;
-        setEditTransactionData((prevData) => ({
-            ...prevData,
+        let updatedData = {
+            ...editTransactionData,
             [name]: value,
-        }));
+        };
+    
+        if (name === "date") {
+            updatedData.week = getWeekNumber(value);
+        }
+    
+        setEditTransactionData(updatedData);
     };
 
     return (
@@ -50,3 +56,19 @@ const BtnEditDeleteTransaction = ({ transaction, onUpdate, onDelete, fetchTransa
 };
 
 export default BtnEditDeleteTransaction;
+
+// Helper functions
+function getCurrentDate() {
+    const today = new Date();
+    return today.toISOString().split("T")[0];
+}
+
+function getWeekNumber(dateString) {
+    const date = new Date(dateString);
+    const startDate = new Date(date.getFullYear(), date.getMonth(), 1);
+    const days = Math.floor((date - startDate) / (24 * 60 * 60 * 1000));
+    const week = Math.ceil((days + 1) / 7);
+
+    return Math.min(week, 4);
+}
+

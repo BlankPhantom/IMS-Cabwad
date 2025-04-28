@@ -839,5 +839,7 @@ function getWeekNumber(dateString) {
     const date = new Date(dateString);
     const startDate = new Date(date.getFullYear(), date.getMonth(), 1);
     const days = Math.floor((date - startDate) / (24 * 60 * 60 * 1000));
-    return Math.ceil((days + 1) / 7);
+    const week = Math.ceil((days + 1) / 7);
+
+    return Math.min(week, 4);
 }

@@ -71,6 +71,23 @@ const EditTransactionModal = ({
     }
   }, [show, transactionData]);
 
+  useEffect(() => {
+    const handleWheel = (event) => {
+      if (
+        document.activeElement.type === "number" &&
+        document.activeElement === event.target
+      ) {
+        event.preventDefault(); // Prevent the number field from changing
+      }
+    };
+
+    window.addEventListener("wheel", handleWheel, { passive: false });
+
+    return () => {
+      window.removeEventListener("wheel", handleWheel);
+    };
+  }, []);
+
   const fetchTransactions = async () => {
     try {
       const response = await fetch(API_ENDPOINTS.TRANSACTION_LIST);
@@ -110,6 +127,10 @@ const EditTransactionModal = ({
       }
       const data = await response.json();
       setArea(data);
+
+      if (data.length > 0) {
+        setSelectedArea(data[0].areaID);
+      }
     } catch (error) {
       console.error("Error fetching area:", error);
     }
@@ -678,7 +699,6 @@ const EditTransactionModal = ({
                     name="date"
                     value={transactionData.date}
                     onChange={handleChange}
-                    disabled
                   />
                 </Form.Group>
               </Col>
@@ -690,7 +710,7 @@ const EditTransactionModal = ({
                     name="week"
                     value={"Week " + transactionData.week}
                     onChange={handleChange}
-                    disabled
+                    readOnly
                   />
                 </Form.Group>
               </Col>
@@ -938,7 +958,6 @@ const EditTransactionModal = ({
                 value={selectedArea}
                 onChange={handleAreaChange}
                 required>
-                <option value="">Select Area</option>
                 {area.map((area) => (
                   <option key={area.areaID} value={area.areaID}>
                     {area.areaName}
@@ -1130,6 +1149,7 @@ const EditTransactionModal = ({
                 type="text"
                 name="itemID"
                 value={editProductData.itemID}
+                readOnly
                 required
                 onChange={handleEditProductChange}
               />
@@ -1339,6 +1359,7 @@ const EditTransactionModal = ({
                 name="itemID"
                 value={editProductData.itemID}
                 required
+                readOnly
                 onChange={handleEditProductChange}
               />
             </Form.Group>

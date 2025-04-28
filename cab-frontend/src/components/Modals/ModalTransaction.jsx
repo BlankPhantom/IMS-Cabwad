@@ -56,6 +56,23 @@ const ModalTransaction = ({
     }
   }, [showProductModal]);
 
+  useEffect(() => {
+    const handleWheel = (event) => {
+      if (
+        document.activeElement.type === "number" &&
+        document.activeElement === event.target
+      ) {
+        event.preventDefault(); // Prevent the number field from changing
+      }
+    };
+
+    window.addEventListener("wheel", handleWheel, { passive: false });
+
+    return () => {
+      window.removeEventListener("wheel", handleWheel);
+    };
+  }, []);
+
   const fetchArea = async () => {
     try {
       const response = await fetch(API_ENDPOINTS.AREA_LIST);
@@ -64,6 +81,10 @@ const ModalTransaction = ({
       }
       const data = await response.json();
       setArea(data);
+
+      if (data.length > 0) {
+        setSelectedArea(data[0].areaID);
+      }
     } catch (error) {
       console.error("Error fetching area:", error);
     }
@@ -90,6 +111,10 @@ const ModalTransaction = ({
       }
       const data = await response.json();
       setPurpose(data);
+      
+      if (data.length > 0) {
+        setSelectedPurpose(data[0].purposeID);
+      }
     } catch (error) {
       console.error("Error fetching purpose:", error);
     }
@@ -328,7 +353,6 @@ const ModalTransaction = ({
                     name="date"
                     value={transactionData.date}
                     onChange={handleTransactionChange}
-                    disabled
                   />
                 </Form.Group>
               </Col>
@@ -340,7 +364,7 @@ const ModalTransaction = ({
                     name="week"
                     value={"Week " + transactionData.week}
                     onChange={handleTransactionChange}
-                    disabled
+                    readOnly
                   />
                 </Form.Group>
               </Col>
@@ -403,7 +427,6 @@ const ModalTransaction = ({
                 value={selectedPurpose}
                 onChange={handlePurposeChange}
                 required>
-                <option value="">Select Purpose</option>
                 {purpose.map((purpose) => (
                   <option key={purpose.purposeID} value={purpose.purposeID}>
                     {purpose.purposeName}
@@ -526,7 +549,6 @@ const ModalTransaction = ({
                 value={selectedArea}
                 onChange={handleAreaChange}
                 required>
-                <option value="">Select Area</option>
                 {area.map((area) => (
                   <option key={area.areaID} value={area.areaID}>
                     {area.areaName}
@@ -720,6 +742,7 @@ const ModalTransaction = ({
                 name="itemID"
                 value={editProductData.itemID}
                 required
+                readOnly
                 onChange={handleEditProductChange}
               />
             </Form.Group>
