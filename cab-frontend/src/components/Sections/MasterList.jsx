@@ -377,11 +377,13 @@ const Masterlist = () => {
                     <BtnEditDeleteMaster
                       onEdit={() => handleEdit(item.itemID)}
                       onDelete={() => handleDelete(item.itemID)}
-                      onViewHistory={() =>
+                      onViewHistory={() => {
+                        const currentPath = window.location.pathname;
+                        const basePath = currentPath.includes('/dashboardB') ? '/dashboardB' : '/dashboard';
                         navigate(
-                          `/dashboard/transaction-history/${item.itemID}/${encodeURIComponent(item.itemName)}`
-                        )
-                      }
+                          `${basePath}/transaction-history/${item.itemID}/${encodeURIComponent(item.itemName)}`
+                        );
+                      }}
                     />
                   </td>
                 </tr>
