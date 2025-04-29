@@ -36,6 +36,11 @@ class Command(BaseCommand):
             Purpose.objects.get_or_create(purposeName=name)
 
         #seed data for Area
-        area = ["N/A","Casile","Diezmo","PS1","PS2","PS3"]
+        area = [
+            "N/A", "Baclaran", "Banaybanay", "Banlic", "Butong", "Bigaa", "Casile", 
+            "Gulod", "Mabuhay", "Mamatid", "Marinig", "Niugan", "Pittland", "Pulo", 
+            "Sala", "San Isidro", "Diezmo", "Barangay Uno (Pob.)", "Barangay Dos (Pob.)", 
+            "Barangay Tres (Pob.)", "PS1", "PS2", "PS3"
+        ]
         for name in area:
             Area.objects.get_or_create(areaName=name)
