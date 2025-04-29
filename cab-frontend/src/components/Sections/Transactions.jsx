@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import "../table.css";
-import { v4 as uuidv4 } from "uuid";
 import { Container, Table, Col, Row, Pagination, Modal, Button } from "react-bootstrap";
 import MonthYearPicker from "../MonthYearPicker";
 import BtnAddTransaction from "../Button/BtnAddTransaction";
@@ -31,6 +30,8 @@ const Transactions = () => {
     const [products, setProducts] = useState([]);
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [transactionToDelete, setTransactionToDelete] = useState(null);
+    const [totalPages, setTotalPages] = useState(0);
+    const [totalItems, setTotalItems] = useState(0);
     const [transactionData, setTransactionData] = useState({
         date: getCurrentDate(),
         week: getWeekNumber(getCurrentDate()),
@@ -61,14 +62,25 @@ const Transactions = () => {
 
     useEffect(() => {
         createRunningBal();
-        fetchTransactionsWithProducts();
-    }, []);
+        fetchTransactionsWithProducts(currentPage, itemsPerPage);
+    }, [currentPage]);
 
     useEffect(() => {
-        filterTransactionsByMonthYear();
+        // Reset to page 1 when month/year changes
         setCurrentPage(1);
-    }, [transactions, selectedMonthYear]);
+        fetchTransactionsWithProducts(1, itemsPerPage);
+    }, [selectedMonthYear]);
 
+    useEffect(() => {
+        if (searchTerm) {
+            const filtered = filterTransactions(transactions, searchTerm);
+            setFilteredTransactions(filtered);
+        } else {
+            setFilteredTransactions(transactions);
+        }
+    }, [searchTerm, transactions]);
+
+    // Update the Running Balance page when the page loads or refreshes
     const createRunningBal = async () => {
         const token = localStorage.getItem("access_token");
         if (!token) {
@@ -112,44 +124,61 @@ const Transactions = () => {
         cost: parseFloat(product.cost) || 0,
     });
 
-    const fetchTransactionsWithProducts = async () => {
+    const fetchTransactionsWithProducts = async (pageNumber = 1, pageSize = itemsPerPage) => {
         setLoading(true);
         try {
-            const transactionsResponse = await fetch(API_ENDPOINTS.TRANSACTION_LIST, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Token ${localStorage.getItem("access_token")}`,
-                },
-            });
-
+            const token = localStorage.getItem("access_token");
+            if (!token) {
+                console.error("Authorization token is missing.");
+                alert("Authorization token is missing. Please log in again.");
+                return;
+            }
+    
+            // Add month and year as query parameters if they are selected
+            let queryParams = `page=${pageNumber}&page_size=${pageSize}`;
+            if (selectedMonthYear.month !== null && !isAllMonthSelected) {
+                queryParams += `&month=${selectedMonthYear.month + 1}`; // Add 1 because JS months are 0-based
+            }
+            if (selectedMonthYear.year) {
+                queryParams += `&year=${selectedMonthYear.year}`;
+            }
+    
+            // Fetch paginated transactions
+            const transactionsResponse = await fetch(
+                `${API_ENDPOINTS.TRANSACTION_LIST}?${queryParams}`,
+                {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Token ${token}`,
+                    },
+                }
+            );
+    
             if (!transactionsResponse.ok) {
                 throw new Error(
                     `Transactions API Error: ${transactionsResponse.status} ${transactionsResponse.statusText}`
                 );
             }
-
-            const transactions = await transactionsResponse.json();
-
-            const productsResponse = await fetch(
-                API_ENDPOINTS.TRANSACTION_PRODUCTS_ALL,
-                {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Token ${localStorage.getItem("access_token")}`,
-                    },
-                }
-            );
-
+    
+            const transactionsData = await transactionsResponse.json();
+    
+            // Fetch all products
+            const productsResponse = await fetch(API_ENDPOINTS.TRANSACTION_PRODUCTS_ALL, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Token ${token}`,
+                },
+            });
+    
             if (!productsResponse.ok) {
                 throw new Error(
                     `Products API Error: ${productsResponse.status} ${productsResponse.statusText}`
                 );
             }
-
+    
             const productsText = await productsResponse.text();
-
             let allProducts;
             try {
                 allProducts = JSON.parse(productsText);
@@ -157,30 +186,20 @@ const Transactions = () => {
                 console.error("Invalid JSON from Products API:", productsText);
                 throw new Error("Products API did not return valid JSON.");
             }
-
-            const transactionsWithProducts = transactions.map((transaction) => ({
+    
+            // Combine transactions with their products
+            const transactionsWithProducts = transactionsData.results.map((transaction) => ({
                 ...transaction,
-                products: allProducts
-                    .filter(
-                        (product) =>
-                            product.transactionDetailsID === transaction.transactionDetailsID
-                    )
-                    .map((product) => ({
-                        ...product,
-                        unitCost: product.unitCost || 0, // Make sure unitCost is included
-                    })),
+                products: allProducts.filter(
+                    (product) =>
+                        product.transactionDetailsID === transaction.transactionDetailsID
+                ),
             }));
-
-            transactionsWithProducts.sort((a, b) => {
-                // First compare by date
-                const dateComparison = new Date(b.date) - new Date(a.date);
-                if (dateComparison !== 0) return dateComparison;
-
-                // If dates are equal, compare by ID or timestamp
-                return b.transactionDetailsID - a.transactionDetailsID;
-            });
-
+    
             setTransactions(transactionsWithProducts);
+            setFilteredTransactions(transactionsWithProducts);
+            setTotalItems(transactionsData.count);
+            setTotalPages(Math.ceil(transactionsData.count / pageSize));
         } catch (error) {
             console.error("Error fetching transactions and products:", error);
         } finally {
@@ -188,67 +207,10 @@ const Transactions = () => {
         }
     };
 
-    const filterTransactionsByMonthYear = () => {
-        if (!Array.isArray(transactions)) return;
-
-        const filtered = transactions.filter((transaction) => {
-            const transactionDate = new Date(transaction.date);
-
-            // Otherwise filter by both month and year
-            return (
-                transactionDate.getMonth() === selectedMonthYear.month &&
-                transactionDate.getFullYear() === selectedMonthYear.year
-            );
-        });
-
-        setFilteredTransactions(filtered);
-    };
-
-    const handlePageChange = (pageNumber) => {
-        setCurrentPage(pageNumber);
-    };
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentTransactions = filteredTransactions.slice(
-        indexOfFirstItem,
-        indexOfLastItem
-    );
-    const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
-    const pageNumbers = [];
-
-    for (let i = 1; i <= totalPages; i++) {
-        pageNumbers.push(i);
-    }
-
-    const handleMonthYearChange = (month, year) => {
-        setLoading(true);
-        setSelectedMonthYear({
-            month,
-            year,
-        });
-
-        setTimeout(() => {
-            setLoading(false);
-        }, 500);
-    };
-
-    const handleSearch = (e) => {
-        const term = e.target.value.toLowerCase();
-        setSearchTerm(term);
-
-        // Filter transactions based on search term and selected month/year
-        const filtered = transactions.filter((transaction) => {
-            const transactionDate = new Date(transaction.date);
-
-            // Ensure the transaction matches the selected month and year
-            const isInSelectedMonthYear =
-                transactionDate.getMonth() === selectedMonthYear.month &&
-                transactionDate.getFullYear() === selectedMonthYear.year;
-
-            if (!isInSelectedMonthYear) {
-                return false;
-            }
-
+    const filterTransactions = (transactions, term) => {
+        if (!Array.isArray(transactions)) return [];
+        
+        return transactions.filter((transaction) => {
             // Search in transaction main fields
             const mainFieldsMatch = [
                 transaction.date,
@@ -258,7 +220,7 @@ const Transactions = () => {
                 transaction.requestedBy,
                 transaction.sectionName,
                 transaction.purposeName,
-            ].some((field) => field && field.toString().toLowerCase().includes(term));
+            ].some((field) => field && field.toString().toLowerCase().includes(term.toLowerCase()));
 
             // Search in transaction products
             const productsMatch =
@@ -276,19 +238,41 @@ const Transactions = () => {
                         product.returnedQty,
                         product.consumption,
                     ].some(
-                        (field) => field && field.toString().toLowerCase().includes(term)
+                        (field) => field && field.toString().toLowerCase().includes(term.toLowerCase())
                     )
                 );
 
             return mainFieldsMatch || productsMatch;
         });
+    };
 
-        setFilteredTransactions(filtered);
-        setCurrentPage(1);
+    const handlePageChange = (pageNumber) => {
+        if (pageNumber >= 1 && pageNumber <= totalPages) {
+            setCurrentPage(pageNumber);
+        }
+    };
+
+    const handleMonthYearChange = (month, year) => {
+        setLoading(true);
+        setIsAllMonthSelected(month === null);
+        setSelectedMonthYear({
+            month,
+            year,
+        });
+    };
+
+    const handleSearch = (e) => {
+        const term = e.target.value.toLowerCase();
+        setSearchTerm(term);
+        
+        // If the search term is empty, re-fetch from the API
+        if (!term) {
+            fetchTransactionsWithProducts(currentPage, itemsPerPage);
+        }
     };
 
     // Determine which transactions to display
-    const displayTransactions = currentTransactions;
+    const displayTransactions = searchTerm ? filteredTransactions : transactions;
 
     // Handle modal toggling
     const handleShowTransactionModal = () => setShowTransactionModal(true);
@@ -554,7 +538,7 @@ const Transactions = () => {
 
             // Close the modal
             setShowDeleteConfirmation(false);
-            window.location.reload();
+            fetchTransactionsWithProducts(currentPage, itemsPerPage);
         } catch (error) {
             console.error("Error deleting transaction:", error);
             setShowDeleteConfirmation(false);
@@ -577,6 +561,67 @@ const Transactions = () => {
             maximumFractionDigits: 2,
         })}`;
     };
+
+    // Generate pagination items
+    const generatePaginationItems = () => {
+        const items = [];
+        const maxVisiblePages = 5;
+        
+        // Always add first page
+        items.push(
+            <Pagination.Item 
+                key={1} 
+                active={currentPage === 1} 
+                onClick={() => handlePageChange(1)}
+            >
+                1
+            </Pagination.Item>
+        );
+        
+        // Add ellipsis if needed
+        if (currentPage > maxVisiblePages - 2) {
+            items.push(<Pagination.Ellipsis key="ellipsis-start" />);
+        }
+        
+        // Add pages around current page
+        const startPage = Math.max(2, currentPage - 1);
+        const endPage = Math.min(totalPages - 1, currentPage + 1);
+        
+        for (let i = startPage; i <= endPage; i++) {
+            if (i > 1 && i < totalPages) {
+                items.push(
+                    <Pagination.Item 
+                        key={i} 
+                        active={currentPage === i} 
+                        onClick={() => handlePageChange(i)}
+                    >
+                        {i}
+                    </Pagination.Item>
+                );
+            }
+        }
+        
+        // Add ellipsis if needed
+        if (currentPage < totalPages - 2) {
+            items.push(<Pagination.Ellipsis key="ellipsis-end" />);
+        }
+        
+        // Always add last page if there's more than one page
+        if (totalPages > 1) {
+            items.push(
+                <Pagination.Item 
+                    key={totalPages} 
+                    active={currentPage === totalPages} 
+                    onClick={() => handlePageChange(totalPages)}
+                >
+                    {totalPages}
+                </Pagination.Item>
+            );
+        }
+        
+        return items;
+    };
+
     return (
         <Container
             style={{ width: "100%" }}
@@ -651,8 +696,8 @@ const Transactions = () => {
                                         </div>
                                     </td>
                                 </tr>
-                            ) : currentTransactions.length > 0 ? (
-                                currentTransactions.map((transaction, tIndex) => (
+                            ) : filteredTransactions.length > 0 ? (
+                                filteredTransactions.map((transaction, tIndex) => (
                                     <React.Fragment key={tIndex}>
                                         <tr>
                                             <td rowSpan={transaction.products?.length + 1 || 2}>{transaction.date}</td>
@@ -717,7 +762,7 @@ const Transactions = () => {
             </Row>
 
             {/* Pagination - only show when not loading and has data */}
-            {!loading && filteredTransactions.length > 0 && (
+            {!loading && totalPages > 0 && (
                 <Row>
                     <Col className="d-flex justify-content-center mt-3">
                         <Pagination>
@@ -729,32 +774,9 @@ const Transactions = () => {
                                 onClick={() => handlePageChange(currentPage - 1)}
                                 disabled={currentPage === 1}
                             />
-
-                            {/* Display page numbers */}
-                            {pageNumbers.map((number) => {
-                                // Show 5 pages around current page
-                                if (
-                                    number === 1 ||
-                                    number === totalPages ||
-                                    (number >= currentPage - 2 && number <= currentPage + 2)
-                                ) {
-                                    return (
-                                        <Pagination.Item
-                                            key={number}
-                                            active={number === currentPage}
-                                            onClick={() => handlePageChange(number)}>
-                                            {number}
-                                        </Pagination.Item>
-                                    );
-                                } else if (
-                                    number === currentPage - 3 ||
-                                    number === currentPage + 3
-                                ) {
-                                    return <Pagination.Ellipsis key={number} />;
-                                }
-                                return null;
-                            })}
-
+                            
+                            {generatePaginationItems()}
+                            
                             <Pagination.Next
                                 onClick={() => handlePageChange(currentPage + 1)}
                                 disabled={currentPage === totalPages}

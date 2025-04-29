@@ -78,37 +78,6 @@ const RunningBalance = () => {
     return queryParams;
   };
 
-  const fetchRunningBalance = async (page = 1) => {
-    const token = localStorage.getItem("access_token");
-    try {
-      setLoading(true);
-
-      const queryParams = buildQueryParams(page);
-      const url = `${API_ENDPOINTS.RUNNING_BAL_LIST}?${queryParams}`;
-
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Token ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      // DRF Pagination structure
-      updateRunningState(data, page);
-    } catch (err) {
-      console.error("Error fetching running balance:", err);
-      setError("Failed to load running balance data.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const updateRunningState = (data, page) => {
     setRunningBalanceData(data.results);
     setCurrentItems(data.results);

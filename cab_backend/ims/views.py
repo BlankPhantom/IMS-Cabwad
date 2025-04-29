@@ -394,11 +394,29 @@ def area_list_all(request):
     serializer = AreaSerializer(area, many=True)
     return Response(serializer.data)
 
+class TransactionPagination(PageNumberPagination):
+    page_size = 5
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
 @api_view(['GET'])
 def get_all_transaction_details(request):
+    month = request.query_params.get('month')
+    year = request.query_params.get('year')
+    
     transactionDet = TransactionDetails.objects.all()
-    serializer = TransactionDetailsSerializer(transactionDet, many=True)
-    return Response(serializer.data)
+
+    if month:
+        transactionDet = transactionDet.filter(date__month=month)
+    if year:
+        transactionDet = transactionDet.filter(date__year=year)
+
+    transactionDet = transactionDet.order_by('-date', '-transactionDetailsID')
+
+    paginator = TransactionPagination()
+    result_page = paginator.paginate_queryset(transactionDet, request)
+    serializer = TransactionDetailsSerializer(result_page, many=True)
+    return paginator.get_paginated_response(serializer.data)
 
 @api_view(['GET'])
 def get_transaction_details(request,id):
