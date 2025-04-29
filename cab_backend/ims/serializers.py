@@ -377,3 +377,17 @@ class TransactionProductSerializer(serializers.ModelSerializer):
             returnedQty_sum=Sum('returnedQty'),
             consumption_sum=Sum('consumption')
         )
+
+# Create a new serializer that includes the related products
+class TransactionDetailsWithProductsSerializer(serializers.ModelSerializer):
+    products = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = TransactionDetails
+        fields = '__all__'  # Add all your existing fields
+    
+    def get_products(self, obj):
+        # Get products from context that was passed in the view
+        products_by_detail = self.context.get('products_by_detail', {})
+        products = products_by_detail.get(obj.transactionDetailsID, [])
+        return TransactionProductSerializer(products, many=True).data

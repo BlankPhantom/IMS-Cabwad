@@ -143,7 +143,7 @@ const Transactions = () => {
                 queryParams += `&year=${selectedMonthYear.year}`;
             }
     
-            // Fetch paginated transactions
+            // Fetch paginated transactions with their products included
             const transactionsResponse = await fetch(
                 `${API_ENDPOINTS.TRANSACTION_LIST}?${queryParams}`,
                 {
@@ -162,46 +162,16 @@ const Transactions = () => {
             }
     
             const transactionsData = await transactionsResponse.json();
-    
-            // Fetch all products
-            const productsResponse = await fetch(API_ENDPOINTS.TRANSACTION_PRODUCTS_ALL, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Token ${token}`,
-                },
-            });
-    
-            if (!productsResponse.ok) {
-                throw new Error(
-                    `Products API Error: ${productsResponse.status} ${productsResponse.statusText}`
-                );
-            }
-    
-            const productsText = await productsResponse.text();
-            let allProducts;
-            try {
-                allProducts = JSON.parse(productsText);
-            } catch (error) {
-                console.error("Invalid JSON from Products API:", productsText);
-                throw new Error("Products API did not return valid JSON.");
-            }
-    
-            // Combine transactions with their products
-            const transactionsWithProducts = transactionsData.results.map((transaction) => ({
-                ...transaction,
-                products: allProducts.filter(
-                    (product) =>
-                        product.transactionDetailsID === transaction.transactionDetailsID
-                ),
-            }));
-    
-            setTransactions(transactionsWithProducts);
-            setFilteredTransactions(transactionsWithProducts);
+            
+            // The products are now included in each transaction via the 'products' field
+            // No need for a separate API call to fetch all products
+            
+            setTransactions(transactionsData.results);
+            setFilteredTransactions(transactionsData.results);
             setTotalItems(transactionsData.count);
             setTotalPages(Math.ceil(transactionsData.count / pageSize));
         } catch (error) {
-            console.error("Error fetching transactions and products:", error);
+            console.error("Error fetching transactions:", error);
         } finally {
             setLoading(false);
         }

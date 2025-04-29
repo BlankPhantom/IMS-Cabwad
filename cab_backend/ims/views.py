@@ -26,7 +26,7 @@ from ims.models import (Item, BeginningBalance, Classification, Measurement, Sec
                         TransactionDetails,RunningBalance, Area, MonthlyConsumption, MonthlyConsumptionTotal )                     
 from ims.serializers import (ItemListSerializer, UserSerializer,ItemSerializer, BeginningBalanceSerializer, ClassificationSerializer, MeasurementSerializer, 
                              SectionSerializer, PurposeSerializer, TransactionProductSerializer, TransactionDetailsSerializer, 
-                             RunningBalanceSerializer, AreaSerializer, MonthlyConsumptionTotalSerializer, MonthlyConsumptionSerializer) 
+                             RunningBalanceSerializer, AreaSerializer, MonthlyConsumptionTotalSerializer, MonthlyConsumptionSerializer, TransactionDetailsWithProductsSerializer) 
 class IsSuperAdmin(BasePermission):
     """Allows access only to superadmins."""
     def has_permission(self, request, view):
@@ -405,29 +405,60 @@ def get_all_transaction_details(request):
     year = request.query_params.get('year')
     
     transactionDet = TransactionDetails.objects.all()
-
+    
     if month:
         transactionDet = transactionDet.filter(date__month=month)
     if year:
         transactionDet = transactionDet.filter(date__year=year)
-
+    
     transactionDet = transactionDet.order_by('-date', '-transactionDetailsID')
-
+    
     paginator = TransactionPagination()
     result_page = paginator.paginate_queryset(transactionDet, request)
-    serializer = TransactionDetailsSerializer(result_page, many=True)
+    
+    # Get the IDs of the paginated transaction details
+    detail_ids = [detail.transactionDetailsID for detail in result_page]
+    
+    # Fetch only the related transaction products
+    related_products = TransactionProduct.objects.filter(transactionDetailsID_id__in=detail_ids)
+    
+    # Create a dictionary to group products by their transaction detail ID
+    products_by_detail = {}
+    for product in related_products:
+        detail_id = product.transactionDetailsID_id
+        if detail_id not in products_by_detail:
+            products_by_detail[detail_id] = []
+        products_by_detail[detail_id].append(product)
+    
+    # Serialize transaction details with their related products
+    serializer = TransactionDetailsWithProductsSerializer(
+        result_page, 
+        many=True, 
+        context={'products_by_detail': products_by_detail}
+    )
+    
     return paginator.get_paginated_response(serializer.data)
 
 @api_view(['GET'])
-def get_transaction_details(request,id):
+def get_transaction_details(request, id):
     try:
         transactionDet = TransactionDetails.objects.get(transactionDetailsID=id)
     except TransactionDetails.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     
-    serializer = TransactionDetailsSerializer(transactionDet, context={'request': request})
+    # Fetch only the related products for this specific transaction detail
+    related_products = TransactionProduct.objects.filter(transactionDetailsID_id=id)
+    
+    # Create context with the related products
+    context = {
+        'request': request,
+        'products_by_detail': {id: list(related_products)}
+    }
+    
+    serializer = TransactionDetailsWithProductsSerializer(transactionDet, context=context)
     return Response(serializer.data)
 
+# These methods can remain the same if you still need them
 @api_view(['GET'])
 def get_all_transaction_product(request):
     transactionProd = TransactionProduct.objects.all()
@@ -437,10 +468,9 @@ def get_all_transaction_product(request):
 @api_view(['GET'])
 def get_transaction_product(request, id, detailID):
     try:
-        transactionProd = TransactionProduct.objects.get(transactionDetailsID_id=detailID, transactionProductID = id)
+        transactionProd = TransactionProduct.objects.get(transactionDetailsID_id=detailID, transactionProductID=id)
     except TransactionProduct.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-    
     serializer = TransactionProductSerializer(transactionProd, context={'request': request})
     return Response(serializer.data)
 
